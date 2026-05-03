@@ -42,6 +42,7 @@ export type Database = {
         Row: {
           category: string[]
           created_at: string
+          discount_price: number | null
           featured: boolean
           full_desc: string
           id: string
@@ -54,11 +55,13 @@ export type Database = {
           tech_stack: string[]
           thumbnail_url: string | null
           title: string
+          version: string | null
           video_url: string | null
         }
         Insert: {
           category?: string[]
           created_at?: string
+          discount_price?: number | null
           featured?: boolean
           full_desc?: string
           id?: string
@@ -71,11 +74,13 @@ export type Database = {
           tech_stack?: string[]
           thumbnail_url?: string | null
           title: string
+          version?: string | null
           video_url?: string | null
         }
         Update: {
           category?: string[]
           created_at?: string
+          discount_price?: number | null
           featured?: boolean
           full_desc?: string
           id?: string
@@ -88,6 +93,7 @@ export type Database = {
           tech_stack?: string[]
           thumbnail_url?: string | null
           title?: string
+          version?: string | null
           video_url?: string | null
         }
         Relationships: []
