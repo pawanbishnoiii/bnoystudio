@@ -212,28 +212,29 @@ export default function ProjectDetail() {
               </div>
             )}
 
-            {related && related.length > 0 && (
-              <div>
-                <h3 className="font-display font-bold text-lg mb-4 text-ink">You might also like</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {related.slice(0, 2).map((p: any, i) => (
-                    <ProjectCard key={p.id} project={p} index={i} onPreview={setPreviewUrl} />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="space-y-6">
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl p-6 sticky top-28 border border-border shadow-card">
-              <h1 className="font-display text-[22px] font-extrabold text-ink mb-2 leading-tight">{project.title}</h1>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h1 className="font-display text-[22px] font-extrabold text-ink leading-tight">{project.title}</h1>
+                {project.version && (
+                  <Badge variant="outline" className="border-fire/30 text-fire bg-fire/5 shrink-0">{project.version}</Badge>
+                )}
+              </div>
               <p className="text-muted-foreground text-sm mb-3">{project.short_desc}</p>
 
               <div className="flex items-center gap-1 mb-4">
                 {[1,2,3,4,5].map((i) => <Star key={i} className="h-4 w-4 text-sun fill-sun" />)}
                 <span className="text-xs text-muted-foreground ml-2">4.9 (200+ reviews)</span>
               </div>
+
+              {purchased && (
+                <div className="mb-4 px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-xs font-semibold flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4" /> You own this project
+                </div>
+              )}
 
               <div className={`text-3xl font-display font-extrabold mb-6 ${isFree ? 'text-green-600' : 'text-fire'}`}>
                 {isFree ? 'FREE' : `₹${project.price.toLocaleString('en-IN')}`}
