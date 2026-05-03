@@ -3,8 +3,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
-  LayoutDashboard, Package, PlusCircle, ShoppingCart, Users, BarChart3,
-  Pencil, Trash2, IndianRupee, TrendingUp, Eye
+  LayoutDashboard, Package, PlusCircle, ShoppingBag, Users2, BarChart3,
+  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
@@ -26,9 +26,10 @@ const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: Package },
   { id: 'add', label: 'Add Project', icon: PlusCircle },
-  { id: 'orders', label: 'Orders', icon: ShoppingCart },
-  { id: 'users', label: 'Users', icon: Users },
+  { id: 'orders', label: 'Orders', icon: ShoppingBag },
+  { id: 'users', label: 'Users', icon: Users2 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'settings', label: 'Site Settings', icon: Settings2 },
 ];
 
 const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
@@ -81,6 +82,7 @@ export default function AdminPanel() {
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
+            {activeTab === 'settings' && <AdminSettings />}
           </motion.div>
         </main>
       </div>
