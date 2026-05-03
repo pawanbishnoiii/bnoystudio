@@ -31,7 +31,7 @@ const sidebarItems = [
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
-const COLORS = ['#6366F1', '#22D3EE', '#818CF8', '#67E8F9', '#A78BFA'];
+const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
 
 export default function AdminPanel() {
   const { user, isAdmin } = useAuthStore();
@@ -42,11 +42,10 @@ export default function AdminPanel() {
   if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar /><AuthModal />
-      <div className="flex pt-16">
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-64 flex-col glass-strong border-r border-border min-h-[calc(100vh-4rem)] p-4 fixed left-0 top-16">
+      <div className="flex pt-20">
+        <aside className="hidden md:flex w-64 flex-col warm-bg border-r border-border min-h-[calc(100vh-5rem)] p-4 fixed left-0 top-20">
           <nav className="space-y-1">
             {sidebarItems.map((item) => (
               <button
@@ -54,8 +53,8 @@ export default function AdminPanel() {
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all ${
                   activeTab === item.id
-                    ? 'bg-gradient-to-r from-primary/20 to-accent/20 text-foreground font-semibold'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? 'gradient-fire-strong text-white font-semibold shadow-card'
+                    : 'text-muted-foreground hover:text-ink hover:bg-white'
                 }`}
               >
                 <item.icon className="h-4 w-4" />
@@ -65,17 +64,15 @@ export default function AdminPanel() {
           </nav>
         </aside>
 
-        {/* Mobile nav */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-strong border-t border-border flex justify-around p-2">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border flex justify-around p-2">
           {sidebarItems.slice(0, 5).map((item) => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex flex-col items-center gap-1 p-2 rounded-lg text-xs ${activeTab === item.id ? 'text-primary' : 'text-muted-foreground'}`}>
+            <button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex flex-col items-center gap-1 p-2 rounded-lg text-xs ${activeTab === item.id ? 'text-fire' : 'text-muted-foreground'}`}>
               <item.icon className="h-4 w-4" />
               {item.label}
             </button>
           ))}
         </div>
 
-        {/* Main */}
         <main className="flex-1 md:ml-64 p-6 pb-24 md:pb-6">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             {activeTab === 'dashboard' && <AdminDashboard />}
