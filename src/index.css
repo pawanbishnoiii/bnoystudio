@@ -115,9 +115,9 @@
   .animate-float-delayed { animation: float-y 4s ease-in-out 1s infinite; }
 }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: hsl(var(--background-warm)); }
-::-webkit-scrollbar-thumb { background: hsl(14 100% 57% / 0.4); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(14 100% 57% / 0.7); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #FF5722; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #E64A19; }
 
 ::selection { background: hsl(14 100% 57% / 0.25); color: hsl(var(--foreground)); }

@@ -7,14 +7,8 @@ import { Link } from 'react-router-dom';
 
 interface ProjectCardProps {
   project: {
-    id: string;
-    title: string;
-    short_desc: string;
-    price: number;
-    thumbnail_url: string | null;
-    tech_stack: string[];
-    category: string[];
-    preview_url: string | null;
+    id: string; title: string; short_desc: string; price: number;
+    thumbnail_url: string | null; tech_stack: string[]; category: string[]; preview_url: string | null;
   };
   onPreview?: (url: string) => void;
   onBuy?: (project: any) => void;
@@ -24,6 +18,7 @@ interface ProjectCardProps {
 export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: ProjectCardProps) {
   const { user, setShowAuthModal } = useAuthStore();
   const isFree = project.price === 0;
+  const views = 800 + Math.floor((project.id?.charCodeAt(0) || 50) * 18);
 
   const handleBuy = () => {
     if (!user) {
@@ -42,7 +37,7 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
       whileHover={{ scale: 1.02 }}
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
-      <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20">
+      <Link to={`/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
         {project.thumbnail_url ? (
           <img src={project.thumbnail_url} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
@@ -55,7 +50,7 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
             <Badge className="gradient-fire-strong text-white border-0">₹{project.price.toLocaleString('en-IN')}</Badge>
           )}
         </div>
-      </div>
+      </Link>
 
       <div className="p-5 flex-1 flex flex-col">
         <Link to={`/project/${project.id}`}>
@@ -63,10 +58,13 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
         </Link>
         <p className="text-[13px] text-muted-foreground line-clamp-2 mt-1 mb-3 flex-1">{project.short_desc}</p>
 
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.tech_stack?.slice(0, 3).map((tag) => (
-            <span key={tag} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted border border-border text-ink/70">{tag}</span>
-          ))}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-wrap gap-1.5">
+            {project.tech_stack?.slice(0, 2).map((tag) => (
+              <span key={tag} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted border border-border text-ink/70">{tag}</span>
+            ))}
+          </div>
+          <span className="text-[11px] text-muted-foreground">👁 {views.toLocaleString()}</span>
         </div>
 
         <div className="flex gap-2">

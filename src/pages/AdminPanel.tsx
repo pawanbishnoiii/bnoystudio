@@ -3,8 +3,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
-  LayoutDashboard, Package, PlusCircle, ShoppingCart, Users, BarChart3,
-  Pencil, Trash2, IndianRupee, TrendingUp, Eye
+  LayoutDashboard, Package, PlusCircle, ShoppingBag, Users2, BarChart3,
+  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
@@ -26,9 +26,10 @@ const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: Package },
   { id: 'add', label: 'Add Project', icon: PlusCircle },
-  { id: 'orders', label: 'Orders', icon: ShoppingCart },
-  { id: 'users', label: 'Users', icon: Users },
+  { id: 'orders', label: 'Orders', icon: ShoppingBag },
+  { id: 'users', label: 'Users', icon: Users2 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'settings', label: 'Site Settings', icon: Settings2 },
 ];
 
 const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
@@ -81,6 +82,7 @@ export default function AdminPanel() {
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
+            {activeTab === 'settings' && <AdminSettings />}
           </motion.div>
         </main>
       </div>
@@ -403,6 +405,55 @@ function AdminAnalytics() {
             </ResponsiveContainer>
           ) : <p className="text-muted-foreground text-center py-12">No data yet</p>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminSettings() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { data: settings } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
+  });
+  const [form, setForm] = useState<any>({});
+  if (settings && !form.id) setTimeout(() => setForm(settings), 0);
+
+  const save = async () => {
+    const { error } = await supabase.from('site_settings').update({
+      whatsapp_number: form.whatsapp_number, support_email: form.support_email,
+      phone: form.phone, address: form.address, refund_policy: form.refund_policy,
+      social_github: form.social_github, social_twitter: form.social_twitter,
+      social_linkedin: form.social_linkedin, social_instagram: form.social_instagram,
+      social_youtube: form.social_youtube,
+    }).eq('id', settings!.id);
+    if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    else { toast({ title: 'Saved!' }); queryClient.invalidateQueries({ queryKey: ['site-settings'] }); }
+  };
+  const f = (k: string) => ({ value: form[k] || '', onChange: (e: any) => setForm({ ...form, [k]: e.target.value }) });
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <h1 className="font-display text-2xl font-bold">Site Settings</h1>
+      <div className="bg-white rounded-xl border border-border shadow-card p-6 space-y-4">
+        <h3 className="font-display font-bold">Contact</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2"><Label>WhatsApp number</Label><Input {...f('whatsapp_number')} placeholder="+919999999999" /></div>
+          <div className="space-y-2"><Label>Support email</Label><Input {...f('support_email')} /></div>
+          <div className="space-y-2"><Label>Phone</Label><Input {...f('phone')} /></div>
+          <div className="space-y-2"><Label>Address</Label><Input {...f('address')} /></div>
+        </div>
+        <h3 className="font-display font-bold pt-4">Social Media URLs</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2"><Label>GitHub</Label><Input {...f('social_github')} /></div>
+          <div className="space-y-2"><Label>Twitter</Label><Input {...f('social_twitter')} /></div>
+          <div className="space-y-2"><Label>LinkedIn</Label><Input {...f('social_linkedin')} /></div>
+          <div className="space-y-2"><Label>Instagram</Label><Input {...f('social_instagram')} /></div>
+          <div className="space-y-2 col-span-2"><Label>YouTube</Label><Input {...f('social_youtube')} /></div>
+        </div>
+        <div className="space-y-2"><Label>Refund Policy</Label><Textarea rows={6} {...f('refund_policy')} /></div>
+        <Button onClick={save} className="gradient-fire-strong text-white">Save Settings</Button>
       </div>
     </div>
   );
