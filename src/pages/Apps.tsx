@@ -164,18 +164,12 @@ export default function AppsPage() {
                     <Button onClick={() => setShowAuthModal(true)} variant="outline" className="w-full border-fire text-fire hover:bg-fire/5">
                       <Lock className="h-4 w-4 mr-2" /> Login to Download
                     </Button>
-                  ) : app.price === 0 || owned ? (
-                    <Button onClick={() => downloadApp(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
-                      <Download className="h-4 w-4 mr-2" /> Download {app.price === 0 ? 'Free' : ''}
-                    </Button>
                   ) : (
-                    <Button onClick={() => handleGet(app)} className="w-full gradient-fire-strong text-white">
-                      Buy ₹{app.price} & Download
+                    <Button onClick={() => handleGet(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                      <Download className="h-4 w-4 mr-2" /> Download Free
                     </Button>
                   )}
-                  <p className="text-xs text-center text-fire font-semibold">
-                    {app.price === 0 ? 'FREE' : `₹${app.price}`}
-                  </p>
+                  <p className="text-xs text-center text-green-600 font-semibold">FREE • No payment required</p>
                 </div>
 
                 {app.changelog && (
