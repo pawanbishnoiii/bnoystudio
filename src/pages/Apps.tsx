@@ -69,25 +69,10 @@ export default function AppsPage() {
     }
   };
 
+  // APK / app binaries are always free to download. Source code (web projects) is what users buy.
   const handleGet = async (app: any) => {
     if (!user) { setShowAuthModal(true, `Sign in to download ${app.name}`); return; }
-    if (app.price === 0 || ownedIds.has(app.id)) { downloadApp(app); return; }
-
-    openPayment({
-      amount: app.price,
-      name: app.name,
-      description: `Purchase: ${app.name}`,
-      prefill: { email: user.email || '', name: user.user_metadata?.name || '' },
-      onSuccess: async (paymentId) => {
-        await supabase.from('purchases').insert({
-          user_id: user.id, project_id: app.id, amount: app.price, razorpay_payment_id: paymentId,
-        });
-        toast({ title: 'Payment successful! Downloading…' });
-        qc.invalidateQueries({ queryKey: ['app-purchases'] });
-        downloadApp(app);
-      },
-      onFailure: () => toast({ title: 'Payment cancelled', variant: 'destructive' }),
-    });
+    downloadApp(app);
   };
 
   return (
