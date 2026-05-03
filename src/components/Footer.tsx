@@ -86,6 +86,7 @@ export default function Footer() {
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} DevMarket. All rights reserved.</p>
         </div>
       </div>
+      <WhatsAppFloating number={s?.whatsapp_number || '+919999999999'} />
     </footer>
   );
 }
