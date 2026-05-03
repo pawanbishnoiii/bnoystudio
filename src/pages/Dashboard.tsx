@@ -67,11 +67,13 @@ export default function Dashboard() {
     const file = e.target.files?.[0]; if (!file) return;
     setUploading(true);
     try {
-      const path = `${user.id}/avatar-${Date.now()}.${file.name.split('.').pop()}`;
-      const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, cacheControl: '3600' });
       if (error) throw error;
-      const { data: pub } = supabase.storage.from('project-assets').getPublicUrl(path);
-      await supabase.from('profiles').update({ avatar_url: pub.publicUrl }).eq('id', user.id);
+      const { data: pub } = supabase.storage.from('avatars').getPublicUrl(path);
+      const url = `${pub.publicUrl}?t=${Date.now()}`;
+      await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
       qc.invalidateQueries({ queryKey: ['profile'] });
       toast({ title: 'Avatar updated!' });
     } catch (e: any) {
