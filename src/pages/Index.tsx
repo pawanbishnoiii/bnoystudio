@@ -1,16 +1,46 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuthStore } from '@/store/authStore';
+import Navbar from '@/components/Navbar';
+import AuthModal from '@/components/AuthModal';
+import HeroSection from '@/components/HeroSection';
+import MarqueeTicker from '@/components/MarqueeTicker';
+import StatsSection from '@/components/StatsSection';
+import FeaturedProducts from '@/components/FeaturedProducts';
+import HowItWorks from '@/components/HowItWorks';
+import TestimonialsSection from '@/components/TestimonialsSection';
+import FAQSection from '@/components/FAQSection';
+import NewsletterSection from '@/components/NewsletterSection';
+import Footer from '@/components/Footer';
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+export default function Index() {
+  const { setUser, setSession } = useAuthStore();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, [setUser, setSession]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen">
+      <Navbar />
+      <AuthModal />
+      <HeroSection />
+      <MarqueeTicker />
+      <StatsSection />
+      <FeaturedProducts limit={6} />
+      <HowItWorks />
+      <TestimonialsSection />
+      <FAQSection />
+      <NewsletterSection />
+      <Footer />
     </div>
   );
-};
-
-const Index = PlaceholderIndex;
-
-export default Index;
+}
