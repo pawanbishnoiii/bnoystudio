@@ -165,7 +165,7 @@ function AdminDashboard() {
   );
 }
 
-function AdminProjects({ onEdit }: { onEdit: () => void }) {
+function AdminProjects({ onEdit, onAdd }: { onEdit: (id: string) => void; onAdd: () => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState('');
@@ -183,10 +183,10 @@ function AdminProjects({ onEdit }: { onEdit: () => void }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">Manage Projects</h1>
-        <Button onClick={onEdit} className="bg-gradient-to-r gradient-fire-strong text-white"><PlusCircle className="h-4 w-4 mr-2" />Add New</Button>
+        <Button onClick={onAdd} className="gradient-fire-strong text-white"><PlusCircle className="h-4 w-4 mr-2" />Add New</Button>
       </div>
       <Input placeholder="Search projects..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-warm-bg border-border max-w-sm" />
-      <div className="bg-white rounded-xl border border-border shadow-card overflow-hidden">
+      <div className="bg-white rounded-xl border border-border shadow-card overflow-x-auto">
         <table className="w-full">
           <thead><tr className="border-b border-border">
             <th className="text-left p-4 text-sm">Title</th>
@@ -199,11 +199,11 @@ function AdminProjects({ onEdit }: { onEdit: () => void }) {
             {filtered?.map((p: any) => (
               <tr key={p.id} className="border-b border-border/50">
                 <td className="p-4 text-sm font-semibold">{p.title}</td>
-                <td className="p-4 text-sm">{p.price === 0 ? 'Free' : `₹${p.price}`}</td>
-                <td className="p-4"><Badge variant={p.status === 'published' ? 'default' : 'outline'} className={p.status === 'published' ? 'bg-green-500/20 text-green-400 border-0' : ''}>{p.status}</Badge></td>
+                <td className="p-4 text-sm">{p.price === 0 ? 'Free' : `₹${p.price}`}{p.discount_price ? <span className="text-xs text-fire ml-1">(-₹{p.price - p.discount_price})</span> : null}</td>
+                <td className="p-4"><Badge variant={p.status === 'published' ? 'default' : 'outline'} className={p.status === 'published' ? 'bg-green-500/20 text-green-700 border-0' : ''}>{p.status}</Badge></td>
                 <td className="p-4 text-sm">{p.featured ? '⭐' : '—'}</td>
                 <td className="p-4 text-right space-x-2">
-                  <Button variant="ghost" size="sm"><Pencil className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(p.id)}><Pencil className="h-4 w-4" /></Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild><Button variant="ghost" size="sm" className="text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                     <AlertDialogContent className="bg-white border-border">
@@ -222,55 +222,153 @@ function AdminProjects({ onEdit }: { onEdit: () => void }) {
   );
 }
 
-function AdminAddProject({ onDone }: { onDone: () => void }) {
+function TagInput({ label, value, onChange, placeholder }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string }) {
+  const [input, setInput] = useState('');
+  const add = () => { const v = input.trim(); if (!v || value.includes(v)) return; onChange([...value, v]); setInput(''); };
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex flex-wrap gap-2 p-2 rounded-md bg-warm-bg border border-border min-h-[44px]">
+        {value.map((t) => (
+          <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-fire/10 text-fire text-xs font-semibold">
+            {t}<button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:text-destructive">×</button>
+          </span>
+        ))}
+        <input value={input} onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }}
+          onBlur={add} placeholder={placeholder}
+          className="flex-1 min-w-[140px] bg-transparent outline-none text-sm" />
+      </div>
+    </div>
+  );
+}
+
+function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDone: () => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [form, setForm] = useState({
-    title: '', short_desc: '', full_desc: '', price: 0, category: '',
-    tech_stack: '', thumbnail_url: '', video_url: '', preview_url: '',
-    source_code_url: '', featured: false, status: 'draft' as string,
+  const isEdit = !!editingId;
+
+  const { data: existing } = useQuery({
+    queryKey: ['project-edit', editingId],
+    queryFn: async () => editingId ? (await supabase.from('projects').select('*').eq('id', editingId).maybeSingle()).data : null,
+    enabled: !!editingId,
+  });
+
+  const [form, setForm] = useState<any>({
+    title: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
+    category: [] as string[], tech_stack: [] as string[],
+    thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '',
+    source_code_url: '', featured: false, status: 'draft',
   });
   const [loading, setLoading] = useState(false);
+  const [thumbProgress, setThumbProgress] = useState(0);
+  const [zipName, setZipName] = useState<string | null>(null);
+
+  // Hydrate when editing
+  useEffect(() => {
+    if (existing) setForm({
+      title: existing.title || '', short_desc: existing.short_desc || '', full_desc: existing.full_desc || '',
+      price: existing.price || 0, discount_price: existing.discount_price || 0, version: existing.version || 'v1.0',
+      category: existing.category || [], tech_stack: existing.tech_stack || [],
+      thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
+      video_url: existing.video_url || '', preview_url: existing.preview_url || '',
+      source_code_url: existing.source_code_url || '', featured: !!existing.featured, status: existing.status || 'draft',
+    });
+  }, [existing]);
+
+  const projectId = editingId || 'new';
+
+  const uploadThumb = async (file: File) => {
+    setThumbProgress(10);
+    const ext = file.name.split('.').pop();
+    const path = `${projectId}/thumb-${Date.now()}.${ext}`;
+    setThumbProgress(40);
+    const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
+    if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); setThumbProgress(0); return; }
+    setThumbProgress(80);
+    const { data: pub } = supabase.storage.from('project-assets').getPublicUrl(path);
+    setForm((f: any) => ({ ...f, thumbnail_url: pub.publicUrl }));
+    setThumbProgress(100); setTimeout(() => setThumbProgress(0), 800);
+  };
+
+  const uploadScreenshots = async (files: FileList) => {
+    const urls: string[] = [];
+    for (const file of Array.from(files)) {
+      const path = `${projectId}/screenshots/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
+      if (!error) {
+        const { data: pub } = supabase.storage.from('project-assets').getPublicUrl(path);
+        urls.push(pub.publicUrl);
+      }
+    }
+    setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
+  };
+
+  const uploadZip = async (file: File) => {
+    if (!file.name.endsWith('.zip')) { toast({ title: 'Only .zip files allowed', variant: 'destructive' }); return; }
+    const path = `${projectId}/source.zip`;
+    const { error } = await supabase.storage.from('source-code').upload(path, file, { upsert: true });
+    if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); return; }
+    setZipName(`${file.name} (${Math.round(file.size / 1024)} KB)`);
+    toast({ title: '✅ Source ZIP uploaded' });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.from('projects').insert({
-        title: form.title,
-        short_desc: form.short_desc,
-        full_desc: form.full_desc,
-        price: form.price,
-        category: form.category.split(',').map((s) => s.trim()).filter(Boolean),
-        tech_stack: form.tech_stack.split(',').map((s) => s.trim()).filter(Boolean),
-        thumbnail_url: form.thumbnail_url || null,
-        video_url: form.video_url || null,
-        preview_url: form.preview_url || null,
+      const payload = {
+        title: form.title, short_desc: form.short_desc, full_desc: form.full_desc,
+        price: form.price, discount_price: form.discount_price || null, version: form.version,
+        category: form.category, tech_stack: form.tech_stack,
+        thumbnail_url: form.thumbnail_url || null, screenshots: form.screenshots,
+        video_url: form.video_url || null, preview_url: form.preview_url || null,
         source_code_url: form.source_code_url || null,
-        featured: form.featured,
-        status: form.status,
-      });
+        featured: form.featured, status: form.status,
+      };
+      const { error } = isEdit
+        ? await supabase.from('projects').update(payload).eq('id', editingId!)
+        : await supabase.from('projects').insert(payload);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast({ title: 'Project created!' });
+      toast({ title: isEdit ? 'Project updated!' : 'Project created!' });
       onDone();
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
+  const shortLen = form.short_desc.length;
+
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h1 className="font-display text-2xl font-bold">Add New Project</h1>
+    <div className="space-y-6 max-w-3xl">
+      <h1 className="font-display text-2xl font-bold">{isEdit ? 'Edit Project' : 'Add New Project'}</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-border shadow-card p-6 space-y-5">
         <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Short Description *</Label><Textarea value={form.short_desc} onChange={(e) => setForm({ ...form, short_desc: e.target.value })} required className="bg-warm-bg border-border" rows={2} /></div>
-        <div className="space-y-2"><Label>Full Description (HTML)</Label><Textarea value={form.full_desc} onChange={(e) => setForm({ ...form, full_desc: e.target.value })} className="bg-warm-bg border-border" rows={6} /></div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2"><Label>Price (₹) — 0 for Free</Label><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: parseInt(e.target.value) || 0 })} className="bg-warm-bg border-border" /></div>
+
+        <div className="space-y-2 relative">
+          <Label>Short Description *</Label>
+          <Textarea value={form.short_desc} onChange={(e) => setForm({ ...form, short_desc: e.target.value })} required className="bg-warm-bg border-border" rows={2} />
+          <span className={`absolute right-2 bottom-2 text-xs ${shortLen > 160 ? 'text-destructive' : 'text-muted-foreground'}`}>{shortLen}/160</span>
+        </div>
+
+        <div className="space-y-2"><Label>Full Description (Markdown / HTML)</Label><Textarea value={form.full_desc} onChange={(e) => setForm({ ...form, full_desc: e.target.value })} className="bg-warm-bg border-border" rows={6} /></div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label>Price (₹)</Label>
+            <div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+              <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: parseInt(e.target.value) || 0 })} className="bg-warm-bg border-border pl-7" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Discount Price</Label>
+            <div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+              <Input type="number" value={form.discount_price} onChange={(e) => setForm({ ...form, discount_price: parseInt(e.target.value) || 0 })} className="bg-warm-bg border-border pl-7" />
+            </div>
+          </div>
+          <div className="space-y-2"><Label>Version</Label><Input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="v1.0" className="bg-warm-bg border-border" /></div>
           <div className="space-y-2">
             <Label>Status</Label>
             <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
@@ -279,18 +377,84 @@ function AdminAddProject({ onDone }: { onDone: () => void }) {
             </Select>
           </div>
         </div>
-        <div className="space-y-2"><Label>Categories (comma-separated)</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="React, Next.js, E-Commerce" className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Tech Stack (comma-separated)</Label><Input value={form.tech_stack} onChange={(e) => setForm({ ...form, tech_stack: e.target.value })} placeholder="React, TypeScript, Tailwind" className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Thumbnail URL</Label><Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} placeholder="https://..." className="bg-warm-bg border-border" /></div>
+
+        <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" />
+        <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" />
+
+        {/* Thumbnail upload */}
+        <div className="space-y-2">
+          <Label>Thumbnail Image</Label>
+          {form.thumbnail_url ? (
+            <div className="relative inline-block">
+              <img src={form.thumbnail_url} alt="thumb" className="w-48 h-32 object-cover rounded-lg border border-border" />
+              <button type="button" onClick={() => setForm({ ...form, thumbnail_url: '' })} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-white text-xs">×</button>
+            </div>
+          ) : (
+            <label className="block border-2 border-dashed border-fire/30 rounded-xl p-8 text-center cursor-pointer hover:border-fire/60 transition-colors">
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && uploadThumb(e.target.files[0])} />
+              <p className="text-sm text-muted-foreground">📷 Click to upload thumbnail</p>
+              {thumbProgress > 0 && <div className="mt-3 h-2 bg-border rounded-full overflow-hidden"><div className="h-full gradient-fire-strong transition-all" style={{ width: `${thumbProgress}%` }} /></div>}
+            </label>
+          )}
+          <Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} placeholder="Or paste image URL" className="bg-warm-bg border-border" />
+        </div>
+
+        {/* Screenshots */}
+        <div className="space-y-2">
+          <Label>Screenshots</Label>
+          <label className="block border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:border-fire/40">
+            <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && uploadScreenshots(e.target.files)} />
+            <p className="text-sm text-muted-foreground">Click to upload one or more screenshots</p>
+          </label>
+          {form.screenshots.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              {form.screenshots.map((s: string, i: number) => (
+                <div key={s} className="relative">
+                  <img src={s} alt="" className="w-20 h-20 object-cover rounded border border-border" />
+                  <button type="button" onClick={() => setForm({ ...form, screenshots: form.screenshots.filter((_: any, idx: number) => idx !== i) })} className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-white text-xs">×</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="space-y-2"><Label>Video URL</Label><Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="YouTube or MP4 URL" className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Live Preview URL</Label><Input value={form.preview_url} onChange={(e) => setForm({ ...form, preview_url: e.target.value })} placeholder="https://your-project.vercel.app" className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Source Code URL</Label><Input value={form.source_code_url} onChange={(e) => setForm({ ...form, source_code_url: e.target.value })} placeholder="ZIP file URL" className="bg-warm-bg border-border" /></div>
+        <div className="space-y-2"><Label>Live Preview URL</Label><Input value={form.preview_url} onChange={(e) => setForm({ ...form, preview_url: e.target.value })} placeholder="https://…" className="bg-warm-bg border-border" /></div>
+
+        {/* Source code */}
+        <div className="space-y-2">
+          <Label>Source Code (.zip) — uploads to private bucket</Label>
+          <label className="block border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:border-fire/40">
+            <input type="file" accept=".zip" className="hidden" onChange={(e) => e.target.files?.[0] && uploadZip(e.target.files[0])} />
+            <p className="text-sm text-muted-foreground">{zipName ? `✅ ${zipName}` : 'Click to upload source.zip'}</p>
+          </label>
+          <Input value={form.source_code_url} onChange={(e) => setForm({ ...form, source_code_url: e.target.value })} placeholder="Or paste external download link" className="bg-warm-bg border-border" />
+        </div>
+
         <div className="flex items-center gap-3">
-          <Switch checked={form.featured} onCheckedChange={(v) => setForm({ ...form, featured: v })} />
+          <Switch checked={form.featured} onCheckedChange={(v) => setForm({ ...form, featured: v })} className="data-[state=checked]:bg-fire" />
           <Label>Featured Project</Label>
         </div>
+
+        {/* Live preview card */}
+        <div className="rounded-xl border border-border bg-warm-bg/40 p-4">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">Live preview</p>
+          <div className="bg-white rounded-xl overflow-hidden shadow-card max-w-xs">
+            {form.thumbnail_url && <img src={form.thumbnail_url} alt="" className="aspect-video object-cover w-full" />}
+            <div className="p-4">
+              <h4 className="font-display font-bold text-ink">{form.title || 'Untitled project'}</h4>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{form.short_desc || 'Short description preview…'}</p>
+              <div className="flex flex-wrap gap-1 mt-2">{form.tech_stack.slice(0, 4).map((t: string) => <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-fire/10 text-fire">{t}</span>)}</div>
+              <div className="mt-3 flex items-center gap-2">
+                <span className="font-display font-bold text-fire">{form.price === 0 ? 'Free' : `₹${form.discount_price || form.price}`}</span>
+                {form.discount_price && form.discount_price < form.price && <span className="text-xs line-through text-muted-foreground">₹{form.price}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex gap-3">
-          <Button type="submit" disabled={loading} className="bg-gradient-to-r gradient-fire-strong text-white">{loading ? 'Creating...' : 'Create Project'}</Button>
+          <Button type="submit" disabled={loading} className="gradient-fire-strong text-white">{loading ? 'Saving…' : isEdit ? 'Update Project' : 'Create Project'}</Button>
           <Button type="button" variant="outline" onClick={onDone}>Cancel</Button>
         </div>
       </form>
