@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Quote, Star } from 'lucide-react';
+import AvatarGroup from './AvatarGroup';
 
 const testimonials = [
   { name: 'Arjun Sharma', role: 'Startup Founder', company: 'TechLaunch IN',
@@ -21,14 +22,15 @@ export default function TestimonialsSection() {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
-    <section ref={ref} className="bg-gray-50 py-20">
+    <section ref={ref} className="bg-gradient-to-b from-orange-50/40 via-white to-white py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
-          <h2 className="font-display text-3xl md:text-4xl font-extrabold text-gray-900 inline-block relative">
-            What Builders Say
-            <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-1 w-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full" />
+          <p className="text-xs font-semibold tracking-[0.3em] text-fire uppercase mb-3">Testimonials</p>
+          <h2 className="font-display text-3xl md:text-5xl font-extrabold text-gray-900 inline-block relative">
+            Loved by <span className="gradient-text">builders</span> worldwide
+            <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-1 w-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full" />
           </h2>
-          <p className="text-gray-500 mt-5">Trusted by 200+ developers across India</p>
+          <div className="flex justify-center mt-8"><AvatarGroup /></div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

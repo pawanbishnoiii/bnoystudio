@@ -1,12 +1,10 @@
-import Marquee from 'react-fast-marquee';
-
 const techItems = [
   { name: 'React', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg' },
-  { name: 'Next.js', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg', invert: true },
+  { name: 'Next.js', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg' },
   { name: 'TypeScript', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg' },
   { name: 'Tailwind CSS', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg' },
   { name: 'Supabase', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg' },
-  { name: 'Vercel', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg', invert: true },
+  { name: 'Vercel', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg' },
   { name: 'PostgreSQL', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg' },
   { name: 'JavaScript', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg' },
   { name: 'Node.js', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg' },
@@ -18,37 +16,38 @@ const techItems = [
 ];
 
 export default function TechMarquee() {
+  const items = [...techItems, ...techItems];
   return (
-    <section className="relative py-8 overflow-hidden bg-gradient-to-br from-[#fff7f1] via-[#fff1e6] to-[#ffe4d2] border-y border-fire/10">
-      {/* Creative blurred orbs */}
+    <section className="relative py-10 overflow-hidden bg-gradient-to-br from-[#fff7f1] via-[#fff1e6] to-[#ffe4d2] border-y border-fire/10">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-fire/30 blur-3xl" />
         <div className="absolute -bottom-24 right-0 w-80 h-80 rounded-full bg-sun/30 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-40 rounded-full bg-pink-300/20 blur-3xl" />
       </div>
 
       <div className="relative">
-        <p className="text-center text-xs font-semibold tracking-[0.3em] text-fire/80 uppercase mb-4">
+        <p className="text-center text-xs font-semibold tracking-[0.3em] text-fire/80 uppercase mb-5">
           Built with industry-leading tech
         </p>
-        <Marquee speed={40} gradient gradientColor="#fff1e6" gradientWidth={80} pauseOnHover loop={0} autoFill>
-          {techItems.map((tech, i) => (
-            <div
-              key={i}
-              className="group flex items-center gap-3 mx-3 px-5 py-3 rounded-2xl bg-white/70 border border-white shadow-[0_8px_30px_-12px_rgba(255,87,34,0.25)] backdrop-blur-md hover:bg-white hover:-translate-y-0.5 transition-all duration-300 cursor-default select-none"
-            >
-              <img
-                src={tech.img}
-                width={24} height={24}
-                alt={tech.name}
-                loading="lazy"
-                style={tech.invert ? { filter: 'invert(0.1)' } : undefined}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-              />
-              <span className="text-ink font-bold text-sm whitespace-nowrap group-hover:text-fire transition-colors">{tech.name}</span>
-            </div>
-          ))}
-        </Marquee>
+
+        <div className="tech-marquee group relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="tech-marquee-track flex w-max gap-4 group-hover:[animation-play-state:paused]">
+            {items.map((tech, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/80 border border-white shadow-[0_8px_30px_-12px_rgba(255,87,34,0.25)] backdrop-blur-md hover:bg-white hover:-translate-y-0.5 transition-all duration-300 cursor-default select-none whitespace-nowrap"
+              >
+                <img
+                  src={tech.img}
+                  width={24} height={24}
+                  alt={tech.name}
+                  loading="lazy"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                />
+                <span className="text-ink font-bold text-sm group-hover:text-fire transition-colors">{tech.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
