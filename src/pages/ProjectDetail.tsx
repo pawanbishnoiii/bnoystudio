@@ -214,9 +214,9 @@ export default function ProjectDetail() {
 
             {related && related.length > 0 && (
               <div>
-                <h3 className="font-display font-bold text-lg mb-4 text-ink">Related projects</h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {related.slice(0, 3).map((p: any, i) => (
+                <h3 className="font-display font-bold text-lg mb-4 text-ink">You might also like</h3>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {related.slice(0, 2).map((p: any, i) => (
                     <ProjectCard key={p.id} project={p} index={i} onPreview={setPreviewUrl} />
                   ))}
                 </div>
