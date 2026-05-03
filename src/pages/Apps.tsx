@@ -69,25 +69,10 @@ export default function AppsPage() {
     }
   };
 
+  // APK / app binaries are always free to download. Source code (web projects) is what users buy.
   const handleGet = async (app: any) => {
     if (!user) { setShowAuthModal(true, `Sign in to download ${app.name}`); return; }
-    if (app.price === 0 || ownedIds.has(app.id)) { downloadApp(app); return; }
-
-    openPayment({
-      amount: app.price,
-      name: app.name,
-      description: `Purchase: ${app.name}`,
-      prefill: { email: user.email || '', name: user.user_metadata?.name || '' },
-      onSuccess: async (paymentId) => {
-        await supabase.from('purchases').insert({
-          user_id: user.id, project_id: app.id, amount: app.price, razorpay_payment_id: paymentId,
-        });
-        toast({ title: 'Payment successful! Downloading…' });
-        qc.invalidateQueries({ queryKey: ['app-purchases'] });
-        downloadApp(app);
-      },
-      onFailure: () => toast({ title: 'Payment cancelled', variant: 'destructive' }),
-    });
+    downloadApp(app);
   };
 
   return (
@@ -179,18 +164,12 @@ export default function AppsPage() {
                     <Button onClick={() => setShowAuthModal(true)} variant="outline" className="w-full border-fire text-fire hover:bg-fire/5">
                       <Lock className="h-4 w-4 mr-2" /> Login to Download
                     </Button>
-                  ) : app.price === 0 || owned ? (
-                    <Button onClick={() => downloadApp(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
-                      <Download className="h-4 w-4 mr-2" /> Download {app.price === 0 ? 'Free' : ''}
-                    </Button>
                   ) : (
-                    <Button onClick={() => handleGet(app)} className="w-full gradient-fire-strong text-white">
-                      Buy ₹{app.price} & Download
+                    <Button onClick={() => handleGet(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                      <Download className="h-4 w-4 mr-2" /> Download Free
                     </Button>
                   )}
-                  <p className="text-xs text-center text-fire font-semibold">
-                    {app.price === 0 ? 'FREE' : `₹${app.price}`}
-                  </p>
+                  <p className="text-xs text-center text-green-600 font-semibold">FREE • No payment required</p>
                 </div>
 
                 {app.changelog && (
