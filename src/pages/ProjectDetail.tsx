@@ -11,7 +11,7 @@ import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import PreviewModal from '@/components/PreviewModal';
 import Footer from '@/components/Footer';
-import ProjectCard from '@/components/ProjectCard';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
