@@ -35,6 +35,7 @@ export default function Index() {
       <AuthModal />
       <HeroSection />
       <TechMarquee />
+      <IllustrationStrip />
       <FeatureCards />
       <StatsSection />
       <FeaturedProducts limit={6} />
