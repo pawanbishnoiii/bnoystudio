@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
+import AdminApps from '@/components/admin/AdminApps';
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
