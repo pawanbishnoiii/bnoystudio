@@ -12,6 +12,7 @@ import CTABanner from '@/components/CTABanner';
 import Footer from '@/components/Footer';
 import FeatureCards from '@/components/FeatureCards';
 import TechMarquee from '@/components/TechMarquee';
+import IllustrationStrip from '@/components/IllustrationStrip';
 import SocialProofTicker from '@/components/SocialProofTicker';
 import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
