@@ -182,8 +182,8 @@ export default function ProjectDetail() {
             )}
 
             {project.video_url && (
-              <div className="aspect-video rounded-2xl overflow-hidden border border-border">
-                <iframe src={project.video_url} className="w-full h-full" allowFullScreen title="Project Video" />
+              <div className="aspect-video rounded-2xl overflow-hidden border border-border bg-black">
+                <iframe src={toEmbed(project.video_url)} className="w-full h-full" allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" title="Project Video" />
               </div>
             )}
 
