@@ -27,6 +27,16 @@ const techColors: Record<string, string> = {
 };
 const techClass = (t: string) => techColors[t.toLowerCase().replace(/\s/g, '')] || techColors[t.toLowerCase()] || 'border-border text-muted-foreground';
 
+function toEmbed(url: string): string {
+  if (!url) return url;
+  // youtu.be/ID or youtube.com/watch?v=ID
+  const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return url;
+}
+
 export default function ProjectDetail() {
   const { id } = useParams();
   const { user, setShowAuthModal } = useAuthStore();
