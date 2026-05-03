@@ -47,47 +47,46 @@ export default function FeaturedProducts({ limit, showFilters = true }: Featured
   const displayed = limit ? filtered?.slice(0, limit) : filtered;
 
   const handleBuy = async (project: any) => {
-    if (!user) { setShowAuthModal(true); return; }
+    if (!user) {
+      setShowAuthModal(true, project.price === 0
+        ? 'Sign in to download this free project.'
+        : `Sign in to buy "${project.title}".`);
+      return;
+    }
     if (project.price === 0) {
-      // Free project - record purchase and allow download
-      const { error } = await supabase.from('purchases').insert({
-        user_id: user.id,
-        project_id: project.id,
-        amount: 0,
-      });
+      const { error } = await supabase.from('purchases').insert({ user_id: user.id, project_id: project.id, amount: 0 });
       if (error && !error.message.includes('duplicate')) {
         toast({ title: 'Error', description: error.message, variant: 'destructive' });
         return;
       }
-      toast({ title: 'Project Added!', description: 'Check your dashboard to download the source code.' });
+      toast({ title: 'Project unlocked!', description: 'Open your dashboard to download the source code.' });
       return;
     }
-    // Paid - show Razorpay (placeholder for now)
     toast({
-      title: 'Payment Gateway',
-      description: 'Razorpay integration will be activated once API keys are configured.',
+      title: 'Payment gateway coming soon',
+      description: 'Razorpay integration will activate once API keys are configured.',
     });
   };
 
   return (
-    <section ref={ref} className="py-24">
+    <section ref={ref} className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Featured <span className="gradient-text">Projects</span>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} className="text-center mb-10">
+          <h2 className="font-display text-3xl md:text-5xl font-extrabold text-ink">
+            Featured <span className="gradient-text">projects</span>
           </h2>
-          <p className="text-muted-foreground">Handcrafted, production-ready web projects</p>
+          <p className="text-muted-foreground mt-3">Handcrafted, production-ready web projects.</p>
         </motion.div>
 
         {showFilters && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }} className="flex flex-wrap justify-center gap-2 mb-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }} className="flex flex-wrap justify-center gap-2 mb-10">
             {categories.map((cat) => (
               <Button
                 key={cat}
                 variant={category === cat ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setCategory(cat)}
-                className={category === cat ? 'bg-gradient-to-r from-primary to-accent text-primary-foreground border-0' : 'border-border'}
+                className={category === cat ? 'gradient-fire-strong text-white border-0' : 'border-border bg-white text-ink hover:text-fire'}
               >
                 {cat}
               </Button>
