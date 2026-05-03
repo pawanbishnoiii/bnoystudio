@@ -1,160 +1,123 @@
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* DevMarket — Fire + White + Orange theme */
 @layer base {
   :root {
-    --background: 222 47% 7%;
-    --foreground: 210 40% 96%;
-    --card: 222 47% 10%;
-    --card-foreground: 210 40% 96%;
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 239 84% 67%;
+    --background: 0 0% 100%;          /* Pure white */
+    --background-warm: 30 100% 97%;   /* #FFF8F0 warm wash */
+    --foreground: 240 24% 14%;        /* #1A1A2E charcoal */
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 24% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 24% 14%;
+
+    --primary: 14 100% 57%;           /* #FF5722 fiery orange */
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 30% 16%;
-    --secondary-foreground: 210 40% 96%;
-    --muted: 222 30% 14%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 187 92% 53%;
-    --accent-foreground: 222 47% 7%;
-    --destructive: 0 84% 60%;
+    --secondary: 30 100% 97%;
+    --secondary-foreground: 240 24% 14%;
+    --muted: 30 50% 95%;
+    --muted-foreground: 240 8% 40%;
+    --accent: 45 100% 51%;            /* #FFC107 yellow */
+    --accent-foreground: 240 24% 14%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 239 84% 67%;
-    --radius: 0.75rem;
-    --sidebar-background: 222 47% 8%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 239 84% 67%;
+    --border: 24 60% 90%;
+    --input: 24 60% 92%;
+    --ring: 14 100% 57%;
+    --radius: 1rem;
+
+    /* Brand-specific */
+    --orange-deep: 14 80% 50%;        /* #E64A19 */
+    --gradient-fire: linear-gradient(135deg, hsl(14 100% 57%), hsl(45 100% 51%));
+    --gradient-fire-strong: linear-gradient(135deg, hsl(14 100% 57%), hsl(14 80% 50%) 50%, hsl(45 100% 51%));
+    --shadow-glow: 0 10px 40px -10px hsl(14 100% 57% / 0.45);
+    --shadow-card: 0 4px 24px -8px hsl(14 80% 50% / 0.15);
+    --shadow-card-hover: 0 14px 40px -12px hsl(14 80% 50% / 0.35);
+
+    --sidebar-background: 30 100% 97%;
+    --sidebar-foreground: 240 24% 14%;
+    --sidebar-primary: 14 100% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 30% 14%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 239 84% 67%;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(187 92% 53%));
-    --gradient-card: linear-gradient(135deg, hsl(222 30% 14% / 0.8), hsl(222 47% 10% / 0.6));
-    --glass-bg: hsl(222 30% 14% / 0.4);
-    --glass-border: hsl(222 30% 30% / 0.3);
-    --neon-glow: 0 0 20px hsl(239 84% 67% / 0.3), 0 0 60px hsl(239 84% 67% / 0.1);
-    --cyan-glow: 0 0 20px hsl(187 92% 53% / 0.3), 0 0 60px hsl(187 92% 53% / 0.1);
+    --sidebar-accent: 30 80% 92%;
+    --sidebar-accent-foreground: 240 24% 14%;
+    --sidebar-border: 24 60% 88%;
+    --sidebar-ring: 14 100% 57%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "ss01", "cv01";
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
-  }
+  h1, h2, h3, h4, h5, h6 { @apply font-display; letter-spacing: -0.02em; }
 }
 
 @layer utilities {
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
+  .gradient-fire {
+    background-image: var(--gradient-fire);
   }
-  .glass-strong {
-    background: hsl(222 30% 14% / 0.7);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--glass-border);
+  .gradient-fire-strong {
+    background-image: var(--gradient-fire-strong);
   }
   .gradient-text {
-    background: var(--gradient-primary);
+    background: var(--gradient-fire-strong);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .gradient-border {
-    position: relative;
-    background: hsl(var(--card));
-    border-radius: var(--radius);
+  .glow-fire { box-shadow: var(--shadow-glow); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-card-hover { box-shadow: var(--shadow-card-hover); }
+
+  .warm-bg { background-color: hsl(var(--background-warm)); }
+
+  .glass {
+    background: hsl(0 0% 100% / 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border));
   }
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: var(--gradient-primary);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+  .glass-strong {
+    background: hsl(0 0% 100% / 0.9);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border));
   }
-  .animated-gradient-border {
-    position: relative;
-    background: hsl(var(--card));
-    border-radius: var(--radius);
-  }
-  .animated-gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: conic-gradient(from var(--angle, 0deg), hsl(239 84% 67%), hsl(187 92% 53%), hsl(239 84% 67%));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: rotate-gradient 3s linear infinite;
-  }
-  @property --angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-  @keyframes rotate-gradient {
-    to { --angle: 360deg; }
-  }
-  .neon-glow {
-    box-shadow: var(--neon-glow);
-  }
-  .cyan-glow {
-    box-shadow: var(--cyan-glow);
-  }
-  .mesh-gradient {
+
+  .hero-mesh {
     background:
-      radial-gradient(ellipse at 20% 50%, hsl(239 84% 67% / 0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, hsl(187 92% 53% / 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, hsl(280 80% 60% / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 50% at 15% 20%, hsl(14 100% 57% / 0.18), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 90% 30%, hsl(45 100% 51% / 0.20), transparent 60%),
+      radial-gradient(ellipse 55% 45% at 70% 90%, hsl(14 80% 50% / 0.12), transparent 60%),
       hsl(var(--background));
   }
+
+  .card-hover {
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: hsl(14 100% 57% / 0.5);
+  }
+
+  @keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .animate-float { animation: float-y 4s ease-in-out infinite; }
+  .animate-float-delayed { animation: float-y 4s ease-in-out 1s infinite; }
 }
 
-/* Custom cursor */
-.custom-cursor {
-  cursor: none;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: hsl(var(--background-warm)); }
+::-webkit-scrollbar-thumb { background: hsl(14 100% 57% / 0.4); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(14 100% 57% / 0.7); }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: hsl(var(--background));
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary));
-}
-
-/* Selection */
-::selection {
-  background: hsl(239 84% 67% / 0.3);
-  color: hsl(var(--foreground));
-}
+::selection { background: hsl(14 100% 57% / 0.25); color: hsl(var(--foreground)); }
