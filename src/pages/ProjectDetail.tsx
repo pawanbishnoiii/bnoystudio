@@ -6,6 +6,7 @@ import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
+import { useRazorpay } from '@/hooks/useRazorpay';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import PreviewModal from '@/components/PreviewModal';
@@ -30,6 +31,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const { user, setShowAuthModal } = useAuthStore();
   const { toast } = useToast();
+  const { openPayment } = useRazorpay();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
@@ -82,7 +84,24 @@ export default function ProjectDetail() {
       toast({ title: 'Unlocked!', description: 'You can now download the source code.' });
       return;
     }
-    toast({ title: 'Payment gateway coming soon', description: 'Razorpay will activate once API keys are added.' });
+    openPayment({
+      amount: project!.price,
+      name: project!.title,
+      description: `Purchase: ${project!.title}`,
+      prefill: { email: user.email || '', name: user.user_metadata?.name || '' },
+      onSuccess: async (paymentId) => {
+        const { error } = await supabase.from('purchases').insert({
+          user_id: user.id, project_id: project!.id, amount: project!.price, razorpay_payment_id: paymentId,
+        });
+        if (error) {
+          toast({ title: 'Could not save purchase', description: error.message, variant: 'destructive' });
+          return;
+        }
+        await refetchPurchase();
+        toast({ title: 'Payment successful!', description: 'Download unlocked.' });
+      },
+      onFailure: () => toast({ title: 'Payment cancelled or failed', variant: 'destructive' }),
+    });
   };
 
   const handleDownload = async () => {
