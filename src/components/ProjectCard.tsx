@@ -65,7 +65,7 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
 
         <div className="flex flex-wrap gap-1.5 mb-4">
           {project.tech_stack?.slice(0, 3).map((tag) => (
-            <span key={tag} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-warm-bg border border-border text-ink/70 warm-bg">{tag}</span>
+            <span key={tag} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted border border-border text-ink/70">{tag}</span>
           ))}
         </div>
 
