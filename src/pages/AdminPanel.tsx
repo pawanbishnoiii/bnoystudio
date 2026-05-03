@@ -37,10 +37,13 @@ const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
 export default function AdminPanel() {
   const { user, isAdmin } = useAuthStore();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   if (!user || !isAdmin) return <Navigate to="/" replace />;
+
+  const goAdd = (id: string | null = null) => { setEditingId(id); setActiveTab('add'); };
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,7 +54,7 @@ export default function AdminPanel() {
             {sidebarItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => { setActiveTab(item.id); if (item.id !== 'add') setEditingId(null); }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all ${
                   activeTab === item.id
                     ? 'gradient-fire-strong text-white font-semibold shadow-card'
@@ -75,10 +78,10 @@ export default function AdminPanel() {
         </div>
 
         <main className="flex-1 md:ml-64 p-6 pb-24 md:pb-6">
-          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div key={activeTab + (editingId || '')} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             {activeTab === 'dashboard' && <AdminDashboard />}
-            {activeTab === 'projects' && <AdminProjects onEdit={() => setActiveTab('add')} />}
-            {activeTab === 'add' && <AdminAddProject onDone={() => setActiveTab('projects')} />}
+            {activeTab === 'projects' && <AdminProjects onEdit={goAdd} onAdd={() => goAdd(null)} />}
+            {activeTab === 'add' && <AdminAddProject editingId={editingId} onDone={() => { setEditingId(null); setActiveTab('projects'); }} />}
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
