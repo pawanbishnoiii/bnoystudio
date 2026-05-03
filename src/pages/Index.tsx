@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import HeroSection from '@/components/HeroSection';
@@ -10,26 +8,20 @@ import FeaturedProducts from '@/components/FeaturedProducts';
 import HowItWorks from '@/components/HowItWorks';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import FAQSection from '@/components/FAQSection';
-import NewsletterSection from '@/components/NewsletterSection';
+import CTABanner from '@/components/CTABanner';
 import Footer from '@/components/Footer';
+import { motion } from 'framer-motion';
 
 export default function Index() {
-  const { setUser, setSession } = useAuthStore();
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-    });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, [setUser, setSession]);
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
+  }, []);
 
   return (
-    <div className="min-h-screen">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-background">
       <Navbar />
       <AuthModal />
       <HeroSection />
@@ -39,8 +31,8 @@ export default function Index() {
       <HowItWorks />
       <TestimonialsSection />
       <FAQSection />
-      <NewsletterSection />
+      <CTABanner />
       <Footer />
-    </div>
+    </motion.div>
   );
 }

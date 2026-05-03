@@ -6,21 +6,23 @@ interface AuthState {
   session: Session | null;
   isAdmin: boolean;
   showAuthModal: boolean;
+  authIntent: string | null; // optional contextual message ("Sign in to buy this project")
   setUser: (user: User | null) => void;
   setSession: (session: Session | null) => void;
-  setShowAuthModal: (show: boolean) => void;
+  setIsAdmin: (v: boolean) => void;
+  setShowAuthModal: (show: boolean, intent?: string | null) => void;
   logout: () => void;
 }
-
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@devmarket.in';
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   session: null,
   isAdmin: false,
   showAuthModal: false,
-  setUser: (user) => set({ user, isAdmin: user?.email === ADMIN_EMAIL }),
+  authIntent: null,
+  setUser: (user) => set({ user }),
   setSession: (session) => set({ session }),
-  setShowAuthModal: (show) => set({ showAuthModal: show }),
+  setIsAdmin: (v) => set({ isAdmin: v }),
+  setShowAuthModal: (show, intent = null) => set({ showAuthModal: show, authIntent: intent }),
   logout: () => set({ user: null, session: null, isAdmin: false }),
 }));

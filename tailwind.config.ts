@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["'Clash Display'", "sans-serif"],
-        body: ["'Satoshi'", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
+        body: ["'DM Sans'", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -38,9 +38,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        navy: { DEFAULT: "#0A0F1E", light: "#111827" },
-        indigo: { DEFAULT: "#6366F1", light: "#818CF8", dark: "#4F46E5" },
-        cyan: { DEFAULT: "#22D3EE", light: "#67E8F9", dark: "#06B6D4" },
+        fire: { DEFAULT: "#FF5722", deep: "#E64A19", light: "#FF8A65" },
+        sun: { DEFAULT: "#FFC107", light: "#FFD54F" },
+        ink: { DEFAULT: "#1A1A2E" },
       },
       borderRadius: {
         lg: "var(--radius)",
