@@ -35,6 +35,7 @@ export default function Navbar() {
   const links = [
     { label: 'Home', href: '/' },
     { label: 'Marketplace', href: '/marketplace' },
+    { label: 'Apps', href: '/apps' },
     { label: 'How it works', href: '/#how' },
     { label: 'FAQ', href: '/#faq' },
   ];
