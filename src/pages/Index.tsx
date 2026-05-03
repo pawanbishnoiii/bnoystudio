@@ -15,7 +15,6 @@ import TechMarquee from '@/components/TechMarquee';
 import SocialProofTicker from '@/components/SocialProofTicker';
 import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
-import WhatsAppButton from '@/components/WhatsAppButton';
 import { useGSAPAnimations, useMagneticButtons } from '@/hooks/useGSAPAnimations';
 import { motion } from 'framer-motion';
 
@@ -45,7 +44,6 @@ export default function Index() {
       <CTABanner />
       <Footer />
       <BackToTop />
-      <WhatsAppButton />
     </motion.div>
   );
 }

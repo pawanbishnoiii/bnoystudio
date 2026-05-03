@@ -99,16 +99,20 @@ export default function HeroSection() {
               </div>
             </motion.div>
             {/* Floating accent cards */}
-            <motion.div className="parallax-card absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-card-hover border border-border w-44" data-speed="0.5"
+            <motion.div className="parallax-card absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-card-hover border border-border w-44 rotate-[5deg]" data-speed="0.5"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-              <div className="text-xs text-muted-foreground">Latest sale</div>
+              <div className="text-xs text-muted-foreground">✅ Production Ready</div>
               <div className="font-display font-bold text-ink mt-1">PulseChat AI</div>
               <div className="text-fire font-bold text-sm">₹2,499</div>
+            </motion.div>
+            <motion.div className="absolute top-1/2 -left-8 bg-white px-3 py-1.5 rounded-full shadow-lg text-xs font-semibold text-ink -rotate-3"
+              animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 3 }}>
+              ⚡ Instant Deploy
             </motion.div>
             <motion.div className="parallax-card absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-card-hover border border-border w-44" data-speed="0.7"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}>
               <div className="flex items-center gap-2"><Star className="h-4 w-4 text-sun fill-sun" /><span className="font-bold text-sm text-ink">4.9 / 5</span></div>
-              <div className="text-xs text-muted-foreground mt-1">200+ buyers love it</div>
+              <div className="text-xs text-muted-foreground mt-1">🔒 Secure code · 200+ buyers</div>
             </motion.div>
           </div>
         </div>

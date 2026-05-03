@@ -4,7 +4,6 @@ import AuthModal from '@/components/AuthModal';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
-import WhatsAppButton from '@/components/WhatsAppButton';
 
 export default function Marketplace() {
   return (
@@ -22,7 +21,6 @@ export default function Marketplace() {
       <FeaturedProducts showFilters />
       <Footer />
       <BackToTop />
-      <WhatsAppButton />
     </motion.div>
   );
 }

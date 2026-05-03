@@ -115,6 +115,19 @@
   .animate-float-delayed { animation: float-y 4s ease-in-out 1s infinite; }
 }
 
+@keyframes wa-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+@keyframes blink-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes code-grow {
+  from { width: 0; }
+  to { width: var(--w, 100%); }
+}
+
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #FF5722; border-radius: 3px; }

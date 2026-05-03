@@ -1,18 +1,28 @@
 import Marquee from 'react-fast-marquee';
 
 const techs = [
-  '⚡ React','🎨 Next.js','💎 TypeScript','🌊 Tailwind CSS',
-  '🔥 Supabase','💳 Razorpay','🚀 Vercel','🛡️ PostgreSQL',
+  { name: 'React', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg' },
+  { name: 'Next.js', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg', invert: true },
+  { name: 'TypeScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg' },
+  { name: 'Tailwind CSS', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg' },
+  { name: 'Supabase', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg' },
+  { name: 'Vercel', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg', invert: true },
+  { name: 'PostgreSQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg' },
+  { name: 'JavaScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg' },
+  { name: 'Node.js', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg' },
+  { name: 'Stripe', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/stripe/stripe-original.svg' },
 ];
 
 export default function TechMarquee() {
   return (
-    <section className="bg-[#1A1A2E] py-5">
-      <Marquee speed={50} gradient={false} pauseOnHover>
-        {[...techs, ...techs, ...techs].map((t, i) => (
-          <span key={i} className="mx-4 px-4 py-2 rounded-full bg-white/10 text-white font-medium text-sm border border-white/10">
-            {t}
-          </span>
+    <section className="bg-[#0F0F0F] py-5 border-y border-white/10">
+      <Marquee speed={50} gradient={false} pauseOnHover loop={0}>
+        {[...techs, ...techs].map((t, i) => (
+          <div key={i} className="flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 px-4 py-2 rounded-full mx-3 hover:bg-white/20 transition-all">
+            <img src={t.src} width={22} height={22} alt={t.name} loading="lazy"
+              style={t.invert ? { filter: 'invert(1)' } : undefined} />
+            <span className="text-white font-medium text-sm whitespace-nowrap">{t.name}</span>
+          </div>
         ))}
       </Marquee>
     </section>
