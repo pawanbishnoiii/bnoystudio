@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Package, PlusCircle, ShoppingBag, Users2, BarChart3,
-  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2
+  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2, Smartphone
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
@@ -21,11 +21,13 @@ import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
+import AdminApps from '@/components/admin/AdminApps';
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: Package },
   { id: 'add', label: 'Add Project', icon: PlusCircle },
+  { id: 'apps', label: 'Apps', icon: Smartphone },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
   { id: 'users', label: 'Users', icon: Users2 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -82,6 +84,7 @@ export default function AdminPanel() {
             {activeTab === 'dashboard' && <AdminDashboard />}
             {activeTab === 'projects' && <AdminProjects onEdit={goAdd} onAdd={() => goAdd(null)} />}
             {activeTab === 'add' && <AdminAddProject editingId={editingId} onDone={() => { setEditingId(null); setActiveTab('projects'); }} />}
+            {activeTab === 'apps' && <AdminApps />}
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}

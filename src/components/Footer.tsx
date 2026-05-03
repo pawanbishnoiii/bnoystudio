@@ -3,16 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { Github, Twitter, Linkedin, Mail, Instagram, Youtube, ShoppingBag, Phone, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
-function WhatsAppFloating({ number }: { number: string }) {
+function WhatsAppButton({ number }: { number: string }) {
   const num = (number || '+919999999999').replace(/[^\d]/g, '');
   return (
-    <a href={`https://wa.me/${num}`} target="_blank" rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-xl transition-all duration-300 hover:scale-105 font-medium text-sm">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="white" style={{ animation: 'wa-pulse 2s infinite' }} aria-hidden="true">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.859L.057 23.428a.75.75 0 00.919.937l5.655-1.48A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.847 0-3.575-.484-5.076-1.33l-.361-.209-3.742.979.998-3.648-.235-.374A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+    <a
+      href={`https://wa.me/${num}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg mt-2"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.859L.057 23.428a.75.75 0 00.919.937l5.655-1.48A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.847 0-3.575-.484-5.076-1.33l-.361-.209-3.742.979.998-3.648-.235-.374A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
       </svg>
-      <span className="hidden sm:inline">Chat with us</span>
+      Chat on WhatsApp
     </a>
   );
 }
@@ -50,8 +53,8 @@ export default function Footer() {
             <h4 className="font-display font-bold mb-3 text-ink">Products</h4>
             <div className="space-y-2">
               <Link to="/marketplace" className="block text-sm text-muted-foreground hover:text-fire">All Projects</Link>
+              <Link to="/apps" className="block text-sm text-muted-foreground hover:text-fire">Mobile Apps</Link>
               <Link to="/marketplace" className="block text-sm text-muted-foreground hover:text-fire">Free Templates</Link>
-              <Link to="/marketplace" className="block text-sm text-muted-foreground hover:text-fire">SaaS Starters</Link>
               <Link to="/refund" className="block text-sm text-muted-foreground hover:text-fire">Refund Policy</Link>
             </div>
           </div>
@@ -66,12 +69,13 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-bold mb-3 text-ink">Get in touch</h4>
+            <h4 className="font-semibold mb-3 text-gray-700">Get in Touch</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-fire" />{s?.support_email || 'help@devmarket.in'}</p>
               <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-fire" />{s?.phone || '+91 99999 99999'}</p>
               <p className="flex items-start gap-2"><MapPin className="h-4 w-4 text-fire mt-0.5" />{s?.address || 'Bengaluru, India'}</p>
             </div>
+            <WhatsAppButton number={s?.whatsapp_number || '+919999999999'} />
             <div className="flex flex-wrap gap-2 mt-4">
               {socials.map((soc, i) => (
                 <a key={i} href={soc.url!} target="_blank" rel="noopener noreferrer"
@@ -86,7 +90,6 @@ export default function Footer() {
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} DevMarket. All rights reserved.</p>
         </div>
       </div>
-      <WhatsAppFloating number={s?.whatsapp_number || '+919999999999'} />
     </footer>
   );
 }

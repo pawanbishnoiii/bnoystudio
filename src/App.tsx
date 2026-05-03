@@ -10,6 +10,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import RefundPolicy from "./pages/RefundPolicy";
+import Apps from "./pages/Apps";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/refund" element={<RefundPolicy />} />
+        <Route path="/apps" element={<Apps />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

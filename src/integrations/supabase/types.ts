@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      apps: {
+        Row: {
+          apk_url: string | null
+          changelog: string | null
+          created_at: string | null
+          description: string | null
+          download_count: number | null
+          file_size: string | null
+          icon_url: string | null
+          id: string
+          is_latest: boolean | null
+          name: string
+          platform: string | null
+          price: number | null
+          screenshots_urls: string[] | null
+          status: string | null
+          version: string | null
+        }
+        Insert: {
+          apk_url?: string | null
+          changelog?: string | null
+          created_at?: string | null
+          description?: string | null
+          download_count?: number | null
+          file_size?: string | null
+          icon_url?: string | null
+          id?: string
+          is_latest?: boolean | null
+          name: string
+          platform?: string | null
+          price?: number | null
+          screenshots_urls?: string[] | null
+          status?: string | null
+          version?: string | null
+        }
+        Update: {
+          apk_url?: string | null
+          changelog?: string | null
+          created_at?: string | null
+          description?: string | null
+          download_count?: number | null
+          file_size?: string | null
+          icon_url?: string | null
+          id?: string
+          is_latest?: boolean | null
+          name?: string
+          platform?: string | null
+          price?: number | null
+          screenshots_urls?: string[] | null
+          status?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,6 +103,7 @@ export type Database = {
           preview_url: string | null
           price: number
           screenshots: string[]
+          screenshots_urls: string[] | null
           short_desc: string
           source_code_url: string | null
           status: string
@@ -68,6 +123,7 @@ export type Database = {
           preview_url?: string | null
           price?: number
           screenshots?: string[]
+          screenshots_urls?: string[] | null
           short_desc?: string
           source_code_url?: string | null
           status?: string
@@ -87,6 +143,7 @@ export type Database = {
           preview_url?: string | null
           price?: number
           screenshots?: string[]
+          screenshots_urls?: string[] | null
           short_desc?: string
           source_code_url?: string | null
           status?: string
@@ -105,6 +162,7 @@ export type Database = {
           id: string
           project_id: string
           razorpay_payment_id: string | null
+          status: string | null
           user_id: string
         }
         Insert: {
@@ -113,6 +171,7 @@ export type Database = {
           id?: string
           project_id: string
           razorpay_payment_id?: string | null
+          status?: string | null
           user_id: string
         }
         Update: {
@@ -121,6 +180,7 @@ export type Database = {
           id?: string
           project_id?: string
           razorpay_payment_id?: string | null
+          status?: string | null
           user_id?: string
         }
         Relationships: [

@@ -1,38 +1,40 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
 import CountUp from 'react-countup';
-import { Package, Users, Star, ShieldCheck } from 'lucide-react';
+import { useInView } from 'react-intersection-observer';
+import { motion } from 'framer-motion';
 
 const stats = [
-  { icon: Package, end: 50, suffix: '+', label: 'Projects Available' },
-  { icon: Users, end: 200, suffix: '+', label: 'Happy Buyers' },
-  { icon: Star, end: 4.9, decimals: 1, suffix: '★', label: 'Average Rating' },
-  { icon: ShieldCheck, end: 100, suffix: '%', label: 'Secure Payments' },
+  { value: 50, suffix: '+', label: 'Projects Available', icon: '📦' },
+  { value: 200, suffix: '+', label: 'Happy Builders', icon: '👨‍💻' },
+  { value: 4.9, suffix: '★', label: 'Average Rating', decimals: 1, icon: '⭐' },
+  { value: 100, suffix: '%', label: 'Secure Payments', icon: '🔒' },
 ];
 
 export default function StatsSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-50px' });
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
+
   return (
-    <section ref={ref} className="warm-bg py-16">
-      <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: i * 0.1, duration: 0.5 }}
-            className="bg-white rounded-2xl p-6 border border-border shadow-card text-center"
-          >
-            <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl gradient-fire text-white mb-3">
-              <s.icon className="h-5 w-5" />
-            </div>
-            <p className="font-display text-3xl font-extrabold text-ink">
-              {inView && <CountUp end={s.end} duration={1.6} decimals={s.decimals || 0} />}{s.suffix}
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">{s.label}</p>
-          </motion.div>
-        ))}
+    <section ref={ref} className="w-full py-14 bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-white/30">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: i * 0.15, duration: 0.5 }}
+              className="text-center px-4"
+            >
+              <div className="text-3xl mb-2">{s.icon}</div>
+              <div className="text-4xl md:text-5xl font-black tracking-tight tabular-nums">
+                {inView ? (
+                  <CountUp end={s.value} duration={2.2} decimals={s.decimals || 0} />
+                ) : '0'}
+                <span className="ml-1">{s.suffix}</span>
+              </div>
+              <div className="text-sm md:text-base text-white/90 font-medium mt-1">{s.label}</div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
