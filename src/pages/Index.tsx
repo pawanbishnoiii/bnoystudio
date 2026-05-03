@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import HeroSection from '@/components/HeroSection';
 import MarqueeTicker from '@/components/MarqueeTicker';
-import StatsSection from '@/components/StatsSection';
+
 import FeaturedProducts from '@/components/FeaturedProducts';
 import HowItWorks from '@/components/HowItWorks';
 import TestimonialsSection from '@/components/TestimonialsSection';
