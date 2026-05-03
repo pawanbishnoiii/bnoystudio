@@ -134,3 +134,13 @@
 ::-webkit-scrollbar-thumb:hover { background: #E64A19; }
 
 ::selection { background: hsl(14 100% 57% / 0.25); color: hsl(var(--foreground)); }
+
+/* TechMarquee infinite scroll */
+@keyframes tech-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.tech-marquee-track {
+  animation: tech-marquee-scroll 35s linear infinite;
+  will-change: transform;
+}
