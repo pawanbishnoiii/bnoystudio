@@ -10,9 +10,9 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import FAQSection from '@/components/FAQSection';
 import CTABanner from '@/components/CTABanner';
 import Footer from '@/components/Footer';
-import FeatureCards from '@/components/FeatureCards';
 import TechMarquee from '@/components/TechMarquee';
 import IllustrationStrip from '@/components/IllustrationStrip';
+import ZoomParallax from '@/components/ZoomParallax';
 import SocialProofTicker from '@/components/SocialProofTicker';
 import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
@@ -36,9 +36,8 @@ export default function Index() {
       <HeroSection />
       <TechMarquee />
       <IllustrationStrip />
-      <FeatureCards />
-      <StatsSection />
       <FeaturedProducts limit={6} />
+      <ZoomParallax />
       <HowItWorks />
       <TestimonialsSection />
       <FAQSection />
