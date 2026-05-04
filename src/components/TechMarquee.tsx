@@ -16,7 +16,7 @@ const techItems = [
 ];
 
 export default function TechMarquee() {
-  const items = [...techItems, ...techItems];
+  const items = [...techItems, ...techItems, ...techItems];
   return (
     <section className="relative py-10 overflow-hidden bg-gradient-to-br from-[#fff7f1] via-[#fff1e6] to-[#ffe4d2] border-y border-fire/10">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -29,12 +29,12 @@ export default function TechMarquee() {
           Built with industry-leading tech
         </p>
 
-        <div className="tech-marquee group relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className="tech-marquee-track flex w-max gap-4 group-hover:[animation-play-state:paused]">
+        <div className="group relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="tech-marquee-track flex gap-4 w-max group-hover:[animation-play-state:paused]">
             {items.map((tech, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/80 border border-white shadow-[0_8px_30px_-12px_rgba(255,87,34,0.25)] backdrop-blur-md hover:bg-white hover:-translate-y-0.5 transition-all duration-300 cursor-default select-none whitespace-nowrap"
+                className="flex-shrink-0 flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/80 border border-white shadow-[0_8px_30px_-12px_rgba(255,87,34,0.25)] backdrop-blur-md hover:bg-white hover:-translate-y-0.5 transition-all duration-300 cursor-default select-none whitespace-nowrap"
               >
                 <img
                   src={tech.img}
@@ -43,7 +43,7 @@ export default function TechMarquee() {
                   loading="lazy"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                 />
-                <span className="text-ink font-bold text-sm group-hover:text-fire transition-colors">{tech.name}</span>
+                <span className="text-ink font-bold text-sm">{tech.name}</span>
               </div>
             ))}
           </div>
