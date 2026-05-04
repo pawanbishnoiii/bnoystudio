@@ -68,6 +68,30 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -92,14 +116,64 @@ export type Database = {
         }
         Relationships: []
       }
+      project_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          project_id: string
+          rating: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          project_id: string
+          rating?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          rating?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_likes: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           category: string[]
+          changelog: Json | null
           created_at: string
           discount_price: number | null
           featured: boolean
           full_desc: string
           id: string
+          likes_count: number | null
           preview_url: string | null
           price: number
           screenshots: string[]
@@ -112,14 +186,17 @@ export type Database = {
           title: string
           version: string | null
           video_url: string | null
+          views_count: number | null
         }
         Insert: {
           category?: string[]
+          changelog?: Json | null
           created_at?: string
           discount_price?: number | null
           featured?: boolean
           full_desc?: string
           id?: string
+          likes_count?: number | null
           preview_url?: string | null
           price?: number
           screenshots?: string[]
@@ -132,14 +209,17 @@ export type Database = {
           title: string
           version?: string | null
           video_url?: string | null
+          views_count?: number | null
         }
         Update: {
           category?: string[]
+          changelog?: Json | null
           created_at?: string
           discount_price?: number | null
           featured?: boolean
           full_desc?: string
           id?: string
+          likes_count?: number | null
           preview_url?: string | null
           price?: number
           screenshots?: string[]
@@ -152,6 +232,7 @@ export type Database = {
           title?: string
           version?: string | null
           video_url?: string | null
+          views_count?: number | null
         }
         Relationships: []
       }
@@ -299,6 +380,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_project_views: {
+        Args: { _project_id: string }
+        Returns: undefined
       }
     }
     Enums: {

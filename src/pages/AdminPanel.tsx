@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Package, PlusCircle, ShoppingBag, Users2, BarChart3,
-  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2, Smartphone
+  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2, Smartphone, Tags
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
@@ -22,12 +22,15 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import AdminApps from '@/components/admin/AdminApps';
+import AdminCategories from '@/components/admin/AdminCategories';
+import { TECH_SUGGESTIONS, techIcon } from '@/lib/techIcons';
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'projects', label: 'Projects', icon: Package },
   { id: 'add', label: 'Add Project', icon: PlusCircle },
   { id: 'apps', label: 'Apps', icon: Smartphone },
+  { id: 'categories', label: 'Categories', icon: Tags },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
   { id: 'users', label: 'Users', icon: Users2 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -85,6 +88,7 @@ export default function AdminPanel() {
             {activeTab === 'projects' && <AdminProjects onEdit={goAdd} onAdd={() => goAdd(null)} />}
             {activeTab === 'add' && <AdminAddProject editingId={editingId} onDone={() => { setEditingId(null); setActiveTab('projects'); }} />}
             {activeTab === 'apps' && <AdminApps />}
+            {activeTab === 'categories' && <AdminCategories />}
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
@@ -225,23 +229,40 @@ function AdminProjects({ onEdit, onAdd }: { onEdit: (id: string) => void; onAdd:
   );
 }
 
-function TagInput({ label, value, onChange, placeholder }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string }) {
+function TagInput({ label, value, onChange, placeholder, suggestions, withIcons }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string; suggestions?: string[]; withIcons?: boolean }) {
   const [input, setInput] = useState('');
-  const add = () => { const v = input.trim(); if (!v || value.includes(v)) return; onChange([...value, v]); setInput(''); };
+  const add = (raw?: string) => { const v = (raw ?? input).trim(); if (!v || value.includes(v)) return; onChange([...value, v]); setInput(''); };
+  const filteredSug = (suggestions || []).filter(s => !value.includes(s) && (!input || s.toLowerCase().includes(input.toLowerCase()))).slice(0, 8);
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
       <div className="flex flex-wrap gap-2 p-2 rounded-md bg-warm-bg border border-border min-h-[44px]">
-        {value.map((t) => (
-          <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-fire/10 text-fire text-xs font-semibold">
-            {t}<button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:text-destructive">×</button>
-          </span>
-        ))}
+        {value.map((t) => {
+          const ic = withIcons ? techIcon(t) : undefined;
+          return (
+            <span key={t} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-fire/10 text-fire text-xs font-semibold">
+              {ic && <img src={ic} alt="" className="w-3.5 h-3.5" />}
+              {t}<button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:text-destructive">×</button>
+            </span>
+          );
+        })}
         <input value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }}
-          onBlur={add} placeholder={placeholder}
+          onBlur={() => add()} placeholder={placeholder}
           className="flex-1 min-w-[140px] bg-transparent outline-none text-sm" />
       </div>
+      {filteredSug.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {filteredSug.map(s => {
+            const ic = withIcons ? techIcon(s) : undefined;
+            return (
+              <button key={s} type="button" onClick={() => add(s)} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-border bg-white text-xs text-ink/70 hover:text-fire hover:border-fire/30 transition">
+                {ic && <img src={ic} alt="" className="w-3.5 h-3.5" />}+ {s}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -262,10 +283,16 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     category: [] as string[], tech_stack: [] as string[],
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '',
     source_code_url: '', featured: false, status: 'draft',
+    changelog: '[]', views_count: 0,
   });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
   const [zipName, setZipName] = useState<string | null>(null);
+
+  const { data: catSuggestions } = useQuery({
+    queryKey: ['cat-suggestions'],
+    queryFn: async () => (await supabase.from('categories').select('name')).data?.map((c: any) => c.name) || [],
+  });
 
   // Hydrate when editing
   useEffect(() => {
@@ -276,6 +303,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
       video_url: existing.video_url || '', preview_url: existing.preview_url || '',
       source_code_url: existing.source_code_url || '', featured: !!existing.featured, status: existing.status || 'draft',
+      changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
+      views_count: (existing as any).views_count || 0,
     });
   }, [existing]);
 
@@ -320,6 +349,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     e.preventDefault();
     setLoading(true);
     try {
+      let parsedChangelog: any = [];
+      try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
       const payload = {
         title: form.title, short_desc: form.short_desc, full_desc: form.full_desc,
         price: form.price, discount_price: form.discount_price || null, version: form.version,
@@ -328,6 +359,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         video_url: form.video_url || null, preview_url: form.preview_url || null,
         source_code_url: form.source_code_url || null,
         featured: form.featured, status: form.status,
+        changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
@@ -381,8 +413,20 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           </div>
         </div>
 
-        <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" />
-        <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" />
+        <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" suggestions={catSuggestions || []} />
+        <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" suggestions={TECH_SUGGESTIONS} withIcons />
+
+        <div className="space-y-2">
+          <Label>Changelog (JSON array)</Label>
+          <Textarea value={form.changelog} onChange={(e) => setForm({ ...form, changelog: e.target.value })} rows={6} className="bg-warm-bg border-border font-mono text-xs"
+            placeholder={`[\n  { "version": "v1.1", "date": "2026-05-01", "notes": "Added X..." }\n]`} />
+        </div>
+
+        <div className="space-y-2 max-w-xs">
+          <Label>Views count (manual override)</Label>
+          <Input type="number" value={form.views_count} onChange={(e) => setForm({ ...form, views_count: e.target.value })} className="bg-warm-bg border-border" />
+        </div>
+
 
         {/* Thumbnail upload */}
         <div className="space-y-2">
