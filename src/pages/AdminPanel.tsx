@@ -229,23 +229,40 @@ function AdminProjects({ onEdit, onAdd }: { onEdit: (id: string) => void; onAdd:
   );
 }
 
-function TagInput({ label, value, onChange, placeholder }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string }) {
+function TagInput({ label, value, onChange, placeholder, suggestions, withIcons }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string; suggestions?: string[]; withIcons?: boolean }) {
   const [input, setInput] = useState('');
-  const add = () => { const v = input.trim(); if (!v || value.includes(v)) return; onChange([...value, v]); setInput(''); };
+  const add = (raw?: string) => { const v = (raw ?? input).trim(); if (!v || value.includes(v)) return; onChange([...value, v]); setInput(''); };
+  const filteredSug = (suggestions || []).filter(s => !value.includes(s) && (!input || s.toLowerCase().includes(input.toLowerCase()))).slice(0, 8);
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
       <div className="flex flex-wrap gap-2 p-2 rounded-md bg-warm-bg border border-border min-h-[44px]">
-        {value.map((t) => (
-          <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-fire/10 text-fire text-xs font-semibold">
-            {t}<button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:text-destructive">×</button>
-          </span>
-        ))}
+        {value.map((t) => {
+          const ic = withIcons ? techIcon(t) : undefined;
+          return (
+            <span key={t} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-fire/10 text-fire text-xs font-semibold">
+              {ic && <img src={ic} alt="" className="w-3.5 h-3.5" />}
+              {t}<button type="button" onClick={() => onChange(value.filter((x) => x !== t))} className="hover:text-destructive">×</button>
+            </span>
+          );
+        })}
         <input value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }}
-          onBlur={add} placeholder={placeholder}
+          onBlur={() => add()} placeholder={placeholder}
           className="flex-1 min-w-[140px] bg-transparent outline-none text-sm" />
       </div>
+      {filteredSug.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {filteredSug.map(s => {
+            const ic = withIcons ? techIcon(s) : undefined;
+            return (
+              <button key={s} type="button" onClick={() => add(s)} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-border bg-white text-xs text-ink/70 hover:text-fire hover:border-fire/30 transition">
+                {ic && <img src={ic} alt="" className="w-3.5 h-3.5" />}+ {s}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
