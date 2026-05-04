@@ -349,6 +349,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     e.preventDefault();
     setLoading(true);
     try {
+      let parsedChangelog: any = [];
+      try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
       const payload = {
         title: form.title, short_desc: form.short_desc, full_desc: form.full_desc,
         price: form.price, discount_price: form.discount_price || null, version: form.version,
@@ -357,6 +359,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         video_url: form.video_url || null, preview_url: form.preview_url || null,
         source_code_url: form.source_code_url || null,
         featured: form.featured, status: form.status,
+        changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
