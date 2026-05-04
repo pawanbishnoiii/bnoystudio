@@ -9,6 +9,7 @@ interface ProjectCardProps {
   project: {
     id: string; title: string; short_desc: string; price: number;
     thumbnail_url: string | null; tech_stack: string[]; category: string[]; preview_url: string | null;
+    views_count?: number; likes_count?: number;
   };
   onPreview?: (url: string) => void;
   onBuy?: (project: any) => void;
@@ -18,7 +19,7 @@ interface ProjectCardProps {
 export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: ProjectCardProps) {
   const { user, setShowAuthModal } = useAuthStore();
   const isFree = project.price === 0;
-  const views = 800 + Math.floor((project.id?.charCodeAt(0) || 50) * 18);
+  const views = project.views_count ?? 0;
 
   const handleBuy = () => {
     if (!user) {
