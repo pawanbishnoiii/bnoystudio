@@ -413,8 +413,20 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           </div>
         </div>
 
-        <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" />
-        <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" />
+        <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" suggestions={catSuggestions || []} />
+        <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" suggestions={TECH_SUGGESTIONS} withIcons />
+
+        <div className="space-y-2">
+          <Label>Changelog (JSON array)</Label>
+          <Textarea value={form.changelog} onChange={(e) => setForm({ ...form, changelog: e.target.value })} rows={6} className="bg-warm-bg border-border font-mono text-xs"
+            placeholder={`[\n  { "version": "v1.1", "date": "2026-05-01", "notes": "Added X..." }\n]`} />
+        </div>
+
+        <div className="space-y-2 max-w-xs">
+          <Label>Views count (manual override)</Label>
+          <Input type="number" value={form.views_count} onChange={(e) => setForm({ ...form, views_count: e.target.value })} className="bg-warm-bg border-border" />
+        </div>
+
 
         {/* Thumbnail upload */}
         <div className="space-y-2">
