@@ -137,10 +137,10 @@
 
 /* TechMarquee infinite scroll */
 @keyframes tech-marquee-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-33.3333%,0,0); }
 }
 .tech-marquee-track {
-  animation: tech-marquee-scroll 35s linear infinite;
+  animation: tech-marquee-scroll 40s linear infinite;
   will-change: transform;
 }
