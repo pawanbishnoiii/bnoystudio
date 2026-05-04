@@ -283,10 +283,16 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     category: [] as string[], tech_stack: [] as string[],
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '',
     source_code_url: '', featured: false, status: 'draft',
+    changelog: '[]', views_count: 0,
   });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
   const [zipName, setZipName] = useState<string | null>(null);
+
+  const { data: catSuggestions } = useQuery({
+    queryKey: ['cat-suggestions'],
+    queryFn: async () => (await supabase.from('categories').select('name')).data?.map((c: any) => c.name) || [],
+  });
 
   // Hydrate when editing
   useEffect(() => {
@@ -297,6 +303,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
       video_url: existing.video_url || '', preview_url: existing.preview_url || '',
       source_code_url: existing.source_code_url || '', featured: !!existing.featured, status: existing.status || 'draft',
+      changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
+      views_count: (existing as any).views_count || 0,
     });
   }, [existing]);
 
