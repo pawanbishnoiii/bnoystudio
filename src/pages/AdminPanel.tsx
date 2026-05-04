@@ -88,6 +88,7 @@ export default function AdminPanel() {
             {activeTab === 'projects' && <AdminProjects onEdit={goAdd} onAdd={() => goAdd(null)} />}
             {activeTab === 'add' && <AdminAddProject editingId={editingId} onDone={() => { setEditingId(null); setActiveTab('projects'); }} />}
             {activeTab === 'apps' && <AdminApps />}
+            {activeTab === 'categories' && <AdminCategories />}
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
