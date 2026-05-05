@@ -231,8 +231,15 @@ function AppForm({ editingId, onDone }: { editingId: string | null; onDone: () =
           <Label>App File (.apk / .exe / .dmg / .deb / .AppImage / .ipa) — max 500MB</Label>
           <label className="block border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:border-fire/40">
             <input type="file" accept=".apk,.exe,.dmg,.deb,.AppImage,.ipa" className="hidden" onChange={(e) => e.target.files?.[0] && uploadApk(e.target.files[0])} />
-            <p className="text-sm text-muted-foreground">{form.apk_url ? `✅ Uploaded (${form.file_size})` : 'Click to upload app file'}</p>
-            {apkProgress > 0 && <div className="mt-3 h-2 bg-border rounded-full overflow-hidden"><div className="h-full gradient-fire-strong" style={{ width: `${apkProgress}%` }} /></div>}
+            <p className="text-sm text-muted-foreground">{form.apk_url ? `✅ Uploaded (${form.file_size})` : '📦 Click to upload app binary (.apk / .exe / .dmg…)'}</p>
+            {apkProgress > 0 && (
+              <div className="mt-3 space-y-1">
+                <div className="h-2 bg-border rounded-full overflow-hidden">
+                  <div className="h-full gradient-fire-strong transition-all" style={{ width: `${apkProgress}%` }} />
+                </div>
+                <p className="text-xs text-fire font-semibold">{apkProgress < 100 ? `Uploading… ${apkProgress}%` : '✅ Uploaded!'}</p>
+              </div>
+            )}
           </label>
           <Input value={form.apk_url} onChange={(e) => setForm({ ...form, apk_url: e.target.value })} placeholder="Or paste external URL" className="bg-warm-bg border-border" />
         </div>
