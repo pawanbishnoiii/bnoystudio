@@ -69,10 +69,33 @@ export default function AppsPage() {
     }
   };
 
-  // APK / app binaries are always free to download. Source code (web projects) is what users buy.
+  // Free apps download instantly. Paid apps require a purchase.
   const handleGet = async (app: any) => {
     if (!user) { setShowAuthModal(true, `Sign in to download ${app.name}`); return; }
-    downloadApp(app);
+    const isFree = !app.price || app.price === 0;
+    if (isFree || ownedIds.has(app.id)) {
+      downloadApp(app);
+      return;
+    }
+    openPayment({
+      amount: app.price,
+      name: app.name,
+      description: `Purchase: ${app.name}`,
+      prefill: { email: user.email || '', name: user.user_metadata?.name || '' },
+      onSuccess: async (paymentId) => {
+        const { error } = await supabase.from('purchases').insert({
+          user_id: user.id, project_id: app.id, amount: app.price, razorpay_payment_id: paymentId,
+        });
+        if (error) {
+          toast({ title: 'Could not save purchase', description: error.message, variant: 'destructive' });
+          return;
+        }
+        qc.invalidateQueries({ queryKey: ['app-purchases', user.id] });
+        toast({ title: 'Payment successful — downloading…' });
+        downloadApp(app);
+      },
+      onFailure: () => toast({ title: 'Payment cancelled', variant: 'destructive' }),
+    });
   };
 
   return (
@@ -160,16 +183,32 @@ export default function AppsPage() {
                 </div>
 
                 <div className="mt-auto space-y-2">
-                  {!user ? (
-                    <Button onClick={() => setShowAuthModal(true)} variant="outline" className="w-full border-fire text-fire hover:bg-fire/5">
-                      <Lock className="h-4 w-4 mr-2" /> Login to Download
-                    </Button>
-                  ) : (
-                    <Button onClick={() => handleGet(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
-                      <Download className="h-4 w-4 mr-2" /> Download Free
-                    </Button>
-                  )}
-                  <p className="text-xs text-center text-green-600 font-semibold">FREE • No payment required</p>
+                  {(() => {
+                    const isFree = !app.price || app.price === 0;
+                    const owned = ownedIds.has(app.id);
+                    if (!user) {
+                      return (
+                        <Button onClick={() => setShowAuthModal(true)} variant="outline" className="w-full border-fire text-fire hover:bg-fire/5">
+                          <Lock className="h-4 w-4 mr-2" /> Login to {isFree ? 'Download' : 'Buy'}
+                        </Button>
+                      );
+                    }
+                    if (isFree || owned) {
+                      return (
+                        <Button onClick={() => handleGet(app)} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                          <Download className="h-4 w-4 mr-2" /> {owned && !isFree ? 'Download (owned)' : 'Download Free'}
+                        </Button>
+                      );
+                    }
+                    return (
+                      <Button onClick={() => handleGet(app)} className="w-full gradient-fire-strong text-white">
+                        Buy ₹{app.price.toLocaleString('en-IN')}
+                      </Button>
+                    );
+                  })()}
+                  <p className="text-xs text-center text-muted-foreground">
+                    {!app.price || app.price === 0 ? 'FREE • No payment required' : ownedIds.has(app.id) ? 'You own this app' : 'Secure Razorpay payment'}
+                  </p>
                 </div>
 
                 {app.changelog && (
