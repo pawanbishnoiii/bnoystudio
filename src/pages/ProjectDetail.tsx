@@ -442,6 +442,24 @@ export default function ProjectDetail() {
               <p className="text-xs text-muted-foreground mt-3">✨ 30-day support included</p>
             </motion.div>
 
+            {isAdmin && ((project as any).lov_email || (project as any).project_url) && (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-3">Admin only · internal links</p>
+                <div className="space-y-2">
+                  {(project as any).lov_email && (
+                    <a href={`mailto:${(project as any).lov_email}`} className="flex items-center gap-2 text-sm text-ink hover:text-fire break-all">
+                      <Mail className="h-4 w-4 text-fire shrink-0" /> {(project as any).lov_email}
+                    </a>
+                  )}
+                  {(project as any).project_url && (
+                    <a href={(project as any).project_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-ink hover:text-fire break-all">
+                      <LinkIcon className="h-4 w-4 text-fire shrink-0" /> {(project as any).project_url}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
             {related && related.length > 0 && (
               <div className="bg-white rounded-2xl p-5 border border-border shadow-card">
                 <h3 className="font-display font-bold text-base mb-3 text-ink">You might also like</h3>
