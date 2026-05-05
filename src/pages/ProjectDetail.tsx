@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History } from 'lucide-react';
+import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History, Mail, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
@@ -32,7 +32,7 @@ interface ChangelogEntry { version: string; date?: string; notes: string; }
 
 export default function ProjectDetail() {
   const { id } = useParams();
-  const { user, setShowAuthModal } = useAuthStore();
+  const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const { toast } = useToast();
   const { openPayment } = useRazorpay();
   const qc = useQueryClient();
@@ -441,6 +441,24 @@ export default function ProjectDetail() {
               </div>
               <p className="text-xs text-muted-foreground mt-3">✨ 30-day support included</p>
             </motion.div>
+
+            {isAdmin && ((project as any).lov_email || (project as any).project_url) && (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-3">Admin only · internal links</p>
+                <div className="space-y-2">
+                  {(project as any).lov_email && (
+                    <a href={`mailto:${(project as any).lov_email}`} className="flex items-center gap-2 text-sm text-ink hover:text-fire break-all">
+                      <Mail className="h-4 w-4 text-fire shrink-0" /> {(project as any).lov_email}
+                    </a>
+                  )}
+                  {(project as any).project_url && (
+                    <a href={(project as any).project_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-ink hover:text-fire break-all">
+                      <LinkIcon className="h-4 w-4 text-fire shrink-0" /> {(project as any).project_url}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
 
             {related && related.length > 0 && (
               <div className="bg-white rounded-2xl p-5 border border-border shadow-card">

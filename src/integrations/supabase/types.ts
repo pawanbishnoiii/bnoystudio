@@ -174,8 +174,10 @@ export type Database = {
           full_desc: string
           id: string
           likes_count: number | null
+          lov_email: string | null
           preview_url: string | null
           price: number
+          project_url: string | null
           screenshots: string[]
           screenshots_urls: string[] | null
           short_desc: string
@@ -197,8 +199,10 @@ export type Database = {
           full_desc?: string
           id?: string
           likes_count?: number | null
+          lov_email?: string | null
           preview_url?: string | null
           price?: number
+          project_url?: string | null
           screenshots?: string[]
           screenshots_urls?: string[] | null
           short_desc?: string
@@ -220,8 +224,10 @@ export type Database = {
           full_desc?: string
           id?: string
           likes_count?: number | null
+          lov_email?: string | null
           preview_url?: string | null
           price?: number
+          project_url?: string | null
           screenshots?: string[]
           screenshots_urls?: string[] | null
           short_desc?: string

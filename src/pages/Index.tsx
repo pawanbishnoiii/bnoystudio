@@ -11,8 +11,7 @@ import FAQSection from '@/components/FAQSection';
 import CTABanner from '@/components/CTABanner';
 import Footer from '@/components/Footer';
 import TechMarquee from '@/components/TechMarquee';
-import IllustrationStrip from '@/components/IllustrationStrip';
-import ZoomParallax from '@/components/ZoomParallax';
+import ProjectShowcase from '@/components/ProjectShowcase';
 import SocialProofTicker from '@/components/SocialProofTicker';
 import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
@@ -35,9 +34,8 @@ export default function Index() {
       <AuthModal />
       <HeroSection />
       <TechMarquee />
-      <IllustrationStrip />
+      <ProjectShowcase />
       <FeaturedProducts limit={6} />
-      <ZoomParallax />
       <HowItWorks />
       <TestimonialsSection />
       <FAQSection />
