@@ -421,8 +421,47 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         <TagInput label="Categories" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="Type and press Enter" suggestions={catSuggestions || []} />
         <TagInput label="Tech Stack" value={form.tech_stack} onChange={(v) => setForm({ ...form, tech_stack: v })} placeholder="React, TypeScript…" suggestions={TECH_SUGGESTIONS} withIcons />
 
+        {/* Admin-only links shown on the Project page */}
+        <div className="grid md:grid-cols-2 gap-4 rounded-xl border border-amber-200 bg-amber-50/40 p-4">
+          <div className="md:col-span-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700">Admin-only links · visible only to admins on the Project page</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Lovable Email</Label>
+            <Input value={form.lov_email} onChange={(e) => setForm({ ...form, lov_email: e.target.value })} placeholder="lov-account@example.com" className="bg-white border-border" />
+          </div>
+          <div className="space-y-2">
+            <Label>Project URL</Label>
+            <Input value={form.project_url} onChange={(e) => setForm({ ...form, project_url: e.target.value })} placeholder="https://lovable.dev/projects/…" className="bg-white border-border" />
+          </div>
+        </div>
+
+        {/* Changelog + version-bump shortcut */}
         <div className="space-y-2">
-          <Label>Changelog (JSON array)</Label>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <Label>Changelog (JSON array)</Label>
+            <Button type="button" variant="outline" size="sm" onClick={() => setBumpOpen(o => !o)}>
+              {bumpOpen ? 'Close' : '＋ Add new version'}
+            </Button>
+          </div>
+          {bumpOpen && (
+            <div className="rounded-xl border border-fire/20 bg-fire/5 p-4 grid md:grid-cols-3 gap-3">
+              <Input placeholder="v1.2" value={bumpForm.version} onChange={e => setBumpForm({ ...bumpForm, version: e.target.value })} className="bg-white border-border" />
+              <Input type="date" value={bumpForm.date} onChange={e => setBumpForm({ ...bumpForm, date: e.target.value })} className="bg-white border-border" />
+              <div />
+              <Textarea placeholder="What's new in this version…" value={bumpForm.notes} onChange={e => setBumpForm({ ...bumpForm, notes: e.target.value })} rows={3} className="md:col-span-3 bg-white border-border" />
+              <Button type="button" className="gradient-fire-strong text-white md:col-span-3" onClick={() => {
+                if (!bumpForm.version || !bumpForm.notes) { toast({ title: 'Version and notes required', variant: 'destructive' }); return; }
+                let arr: any[] = [];
+                try { arr = form.changelog ? JSON.parse(form.changelog) : []; } catch { arr = []; }
+                arr = [{ version: bumpForm.version, date: bumpForm.date, notes: bumpForm.notes }, ...arr.filter((x: any) => x.version !== bumpForm.version)];
+                setForm({ ...form, changelog: JSON.stringify(arr, null, 2), version: bumpForm.version });
+                setBumpForm({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
+                setBumpOpen(false);
+                toast({ title: `Version ${bumpForm.version} added — also tip: upload fresh screenshots below.` });
+              }}>Save version & sync</Button>
+            </div>
+          )}
           <Textarea value={form.changelog} onChange={(e) => setForm({ ...form, changelog: e.target.value })} rows={6} className="bg-warm-bg border-border font-mono text-xs"
             placeholder={`[\n  { "version": "v1.1", "date": "2026-05-01", "notes": "Added X..." }\n]`} />
         </div>
