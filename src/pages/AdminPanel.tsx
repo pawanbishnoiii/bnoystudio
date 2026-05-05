@@ -284,7 +284,10 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '',
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
+    lov_email: '', project_url: '',
   });
+  const [bumpOpen, setBumpOpen] = useState(false);
+  const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
   const [zipName, setZipName] = useState<string | null>(null);
@@ -305,6 +308,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       source_code_url: existing.source_code_url || '', featured: !!existing.featured, status: existing.status || 'draft',
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
+      lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
     });
   }, [existing]);
 
@@ -360,6 +364,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         source_code_url: form.source_code_url || null,
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
+        lov_email: form.lov_email || null, project_url: form.project_url || null,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
