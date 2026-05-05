@@ -122,7 +122,15 @@ export default function ProjectDetail() {
 
   const activeChange = changelog.find(c => c.version === selectedVersion) || changelog[0];
 
-  const images = project ? [project.thumbnail_url, ...(project.screenshots || [])].filter(Boolean) : [];
+  // If a changelog entry contains its own screenshots, those override the project-wide ones for that version.
+  const versionScreenshots = (activeChange as any)?.screenshots as string[] | undefined;
+  const baseImages = project ? [project.thumbnail_url, ...(project.screenshots || [])].filter(Boolean) : [];
+  const images = versionScreenshots && versionScreenshots.length > 0
+    ? [project?.thumbnail_url, ...versionScreenshots].filter(Boolean) as string[]
+    : baseImages;
+
+  // Reset active image whenever the gallery source changes
+  useEffect(() => { setActiveImg(0); }, [selectedVersion]);
 
   const handleBuy = async () => {
     if (!user) {
@@ -411,9 +419,9 @@ export default function ProjectDetail() {
               </div>
 
               <div className="space-y-3 mb-6">
-                {project.preview_url && (
+                {project.preview_url && ((project as any).preview_enabled !== false || isAdmin) && (
                   <Button variant="outline" className="w-full border-border" onClick={() => setPreviewUrl(project.preview_url)}>
-                    <Eye className="h-4 w-4 mr-2" /> Live preview
+                    <Eye className="h-4 w-4 mr-2" /> Live preview {(project as any).preview_enabled === false && <span className="ml-2 text-[10px] uppercase tracking-wider text-amber-600">(admin)</span>}
                   </Button>
                 )}
                 {!user ? (
