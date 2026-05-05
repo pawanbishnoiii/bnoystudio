@@ -175,6 +175,7 @@ export type Database = {
           id: string
           likes_count: number | null
           lov_email: string | null
+          preview_enabled: boolean
           preview_url: string | null
           price: number
           project_url: string | null
@@ -200,6 +201,7 @@ export type Database = {
           id?: string
           likes_count?: number | null
           lov_email?: string | null
+          preview_enabled?: boolean
           preview_url?: string | null
           price?: number
           project_url?: string | null
@@ -225,6 +227,7 @@ export type Database = {
           id?: string
           likes_count?: number | null
           lov_email?: string | null
+          preview_enabled?: boolean
           preview_url?: string | null
           price?: number
           project_url?: string | null
