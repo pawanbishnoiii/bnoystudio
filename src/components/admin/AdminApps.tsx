@@ -131,13 +131,18 @@ function AppForm({ editingId, onDone }: { editingId: string | null; onDone: () =
 
   const uploadApk = async (file: File) => {
     if (file.size > 500 * 1024 * 1024) { toast({ title: 'File too large (max 500MB)', variant: 'destructive' }); return; }
-    setApkProgress(20);
+    setApkProgress(5);
+    // Simulate progress while supabase JS uploads (no native progress events)
+    const sizeMb = file.size / (1024 * 1024);
+    const step = Math.max(2, Math.min(8, Math.round(60 / Math.max(1, sizeMb / 5))));
+    const interval = setInterval(() => setApkProgress(p => (p < 90 ? p + step : p)), 400);
     const ext = file.name.split('.').pop();
     const path = `${appId}/app.${ext}`;
     const { error } = await supabase.storage.from('app-files').upload(path, file, { upsert: true });
+    clearInterval(interval);
     if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); setApkProgress(0); return; }
-    setForm((f: any) => ({ ...f, apk_url: path, file_size: `${(file.size / (1024 * 1024)).toFixed(1)} MB` }));
-    setApkProgress(100); setTimeout(() => setApkProgress(0), 600);
+    setForm((f: any) => ({ ...f, apk_url: path, file_size: `${sizeMb.toFixed(1)} MB` }));
+    setApkProgress(100); setTimeout(() => setApkProgress(0), 1200);
     toast({ title: `✅ ${file.name} uploaded` });
   };
 
