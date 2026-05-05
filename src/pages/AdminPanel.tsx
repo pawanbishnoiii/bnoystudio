@@ -392,7 +392,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         price: form.price, discount_price: form.discount_price || null, version: form.version,
         category: form.category, tech_stack: form.tech_stack,
         thumbnail_url: form.thumbnail_url || null, screenshots: form.screenshots,
-        video_url: form.video_url || null, preview_url: form.preview_url || null,
+        video_url: form.video_url || null, preview_url: form.preview_url || null, preview_enabled: !!form.preview_enabled,
         source_code_url: form.source_code_url || null,
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
