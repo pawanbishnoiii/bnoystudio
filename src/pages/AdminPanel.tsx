@@ -529,6 +529,19 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
             <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && uploadScreenshots(e.target.files)} />
             <p className="text-sm text-muted-foreground">Click to upload one or more screenshots</p>
           </label>
+          {shotProgress.length > 0 && (
+            <div className="space-y-2">
+              {shotProgress.map((p, i) => (
+                <div key={i} className="rounded-lg border border-border bg-warm-bg/40 p-2">
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="truncate text-ink/70">{p.name}</span>
+                    <span className={p.done ? 'text-green-600 font-bold' : 'text-fire font-bold'}>{p.done ? '✅ Done' : `${p.pct}%`}</span>
+                  </div>
+                  <div className="h-1.5 bg-border rounded-full overflow-hidden"><div className="h-full gradient-fire-strong transition-all" style={{ width: `${p.pct}%` }} /></div>
+                </div>
+              ))}
+            </div>
+          )}
           {form.screenshots.length > 0 && (
             <div className="grid grid-cols-4 gap-2 mt-2">
               {form.screenshots.map((s: string, i: number) => (
@@ -542,7 +555,14 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         </div>
 
         <div className="space-y-2"><Label>Video URL</Label><Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="YouTube or MP4 URL" className="bg-warm-bg border-border" /></div>
-        <div className="space-y-2"><Label>Live Preview URL</Label><Input value={form.preview_url} onChange={(e) => setForm({ ...form, preview_url: e.target.value })} placeholder="https://…" className="bg-warm-bg border-border" /></div>
+        <div className="space-y-2">
+          <Label>Live Preview URL</Label>
+          <Input value={form.preview_url} onChange={(e) => setForm({ ...form, preview_url: e.target.value })} placeholder="https://…" className="bg-warm-bg border-border" />
+          <div className="flex items-center gap-3 pt-1">
+            <Switch checked={!!form.preview_enabled} onCheckedChange={(v) => setForm({ ...form, preview_enabled: v })} className="data-[state=checked]:bg-fire" />
+            <Label className="text-xs text-muted-foreground font-normal">Show "Live Preview" button to public {!form.preview_enabled && <span className="text-amber-600 font-semibold">· hidden (admins only)</span>}</Label>
+          </div>
+        </div>
 
         {/* Source code */}
         <div className="space-y-2">
