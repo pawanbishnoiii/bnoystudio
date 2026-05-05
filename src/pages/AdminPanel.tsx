@@ -281,7 +281,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   const [form, setForm] = useState<any>({
     title: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
     category: [] as string[], tech_stack: [] as string[],
-    thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '',
+    thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '', preview_enabled: true,
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
     lov_email: '', project_url: '',
@@ -290,6 +290,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
+  const [shotProgress, setShotProgress] = useState<{ name: string; pct: number; done?: boolean }[]>([]);
   const [zipName, setZipName] = useState<string | null>(null);
 
   const { data: catSuggestions } = useQuery({
@@ -305,6 +306,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       category: existing.category || [], tech_stack: existing.tech_stack || [],
       thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
       video_url: existing.video_url || '', preview_url: existing.preview_url || '',
+      preview_enabled: (existing as any).preview_enabled !== false,
       source_code_url: existing.source_code_url || '', featured: !!existing.featured, status: existing.status || 'draft',
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
@@ -314,30 +316,60 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
 
   const projectId = editingId || 'new';
 
+  // Upload using signed URL + XHR for true progress reporting
+  const uploadWithProgress = (bucket: string, path: string, file: File, onPct: (pct: number) => void) =>
+    new Promise<string>(async (resolve, reject) => {
+      const { data: signed, error: signErr } = await supabase.storage.from(bucket).createSignedUploadUrl(path);
+      if (signErr || !signed) return reject(signErr || new Error('Could not get signed URL'));
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', signed.signedUrl);
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+      xhr.setRequestHeader('x-upsert', 'true');
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable) onPct(Math.round((e.loaded / e.total) * 100)); };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
+          resolve(pub.publicUrl);
+        } else reject(new Error(`Upload failed (${xhr.status})`));
+      };
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.send(file);
+    });
+
   const uploadThumb = async (file: File) => {
-    setThumbProgress(10);
+    setThumbProgress(1);
     const ext = file.name.split('.').pop();
     const path = `${projectId}/thumb-${Date.now()}.${ext}`;
-    setThumbProgress(40);
-    const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
-    if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); setThumbProgress(0); return; }
-    setThumbProgress(80);
-    const { data: pub } = supabase.storage.from('project-assets').getPublicUrl(path);
-    setForm((f: any) => ({ ...f, thumbnail_url: pub.publicUrl }));
-    setThumbProgress(100); setTimeout(() => setThumbProgress(0), 800);
+    try {
+      const url = await uploadWithProgress('project-assets', path, file, setThumbProgress);
+      setForm((f: any) => ({ ...f, thumbnail_url: url }));
+      setThumbProgress(100);
+      setTimeout(() => setThumbProgress(0), 1200);
+    } catch (e: any) {
+      toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
+      setThumbProgress(0);
+    }
   };
 
   const uploadScreenshots = async (files: FileList) => {
+    const list = Array.from(files);
+    setShotProgress(list.map((f) => ({ name: f.name, pct: 0 })));
     const urls: string[] = [];
-    for (const file of Array.from(files)) {
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
       const path = `${projectId}/screenshots/${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
-      if (!error) {
-        const { data: pub } = supabase.storage.from('project-assets').getPublicUrl(path);
-        urls.push(pub.publicUrl);
+      try {
+        const url = await uploadWithProgress('project-assets', path, file, (pct) => {
+          setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct } : p)));
+        });
+        urls.push(url);
+        setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct: 100, done: true } : p)));
+      } catch (e: any) {
+        toast({ title: `Failed: ${file.name}`, description: e.message, variant: 'destructive' });
       }
     }
     setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
+    setTimeout(() => setShotProgress([]), 2000);
   };
 
   const uploadZip = async (file: File) => {
