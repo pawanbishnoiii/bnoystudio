@@ -1,69 +1,40 @@
 import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { Quote, Star } from 'lucide-react';
-import AvatarGroup from './AvatarGroup';
+import { TestimonialsColumn, type TestimonialItem } from '@/components/ui/testimonials-columns-1';
 
-const testimonials = [
-  { name: 'Arjun Sharma', role: 'Startup Founder', company: 'TechLaunch IN',
-    quote: 'Bought the SaaS dashboard — saved 3 weeks dev time. Production-grade TypeScript code, clean architecture.' },
-  { name: 'Priya Mehta', role: 'Freelance Dev', company: 'Self-employed',
-    quote: 'E-commerce starter is incredible. Razorpay already integrated, responsive on all devices. Worth every rupee.' },
-  { name: 'Rahul Verma', role: 'CTO', company: 'BuildFast',
-    quote: 'Team used 3 templates this quarter. Clean code, excellent Tailwind structure, deploy in minutes.' },
-  { name: 'Sneha Patel', role: 'UI/UX Designer', company: 'PixelCraft',
-    quote: 'Beautiful UI + working backend in minutes. As a designer who codes, these are exactly what I need.' },
-  { name: 'Karan Joshi', role: 'Indie Developer', company: 'IndieHacker',
-    quote: 'Portfolio template landed me 2 new clients. Simple, animated, modern — exactly what clients want.' },
-  { name: 'Divya Nair', role: 'Product Manager', company: 'ScaleUp',
-    quote: "DevMarket has the cleanest marketplace UI I've seen. Preview before buying is a game-changer." },
+const testimonials: TestimonialItem[] = [
+  { text: "Bought the SaaS dashboard — saved 3 weeks dev time. Production-grade TypeScript, clean architecture.", image: "https://randomuser.me/api/portraits/men/32.jpg", name: "Arjun Sharma", role: "Founder · TechLaunch IN" },
+  { text: "E-commerce starter is incredible. Razorpay already integrated, responsive on every device. Worth every rupee.", image: "https://randomuser.me/api/portraits/women/44.jpg", name: "Priya Mehta", role: "Freelance Developer" },
+  { text: "Team used 3 templates this quarter. Clean code, excellent Tailwind structure, deploy in minutes.", image: "https://randomuser.me/api/portraits/men/45.jpg", name: "Rahul Verma", role: "CTO · BuildFast" },
+  { text: "Beautiful UI + working backend in minutes. As a designer who codes, these are exactly what I need.", image: "https://randomuser.me/api/portraits/women/68.jpg", name: "Sneha Patel", role: "UI/UX Designer" },
+  { text: "Portfolio template landed me 2 new clients. Simple, animated, modern — exactly what clients want.", image: "https://randomuser.me/api/portraits/men/76.jpg", name: "Karan Joshi", role: "Indie Developer" },
+  { text: "Cleanest marketplace UI I've seen. Preview before buying is a game-changer.", image: "https://randomuser.me/api/portraits/women/65.jpg", name: "Divya Nair", role: "Product Manager" },
+  { text: "Razorpay + Supabase wired up perfectly. Shipped my MVP the same weekend.", image: "https://randomuser.me/api/portraits/men/23.jpg", name: "Vikram Iyer", role: "Indie Hacker · Bengaluru" },
+  { text: "The code structure is genuinely senior-engineer quality. Easy to extend, no spaghetti.", image: "https://randomuser.me/api/portraits/women/12.jpg", name: "Anika Reddy", role: "Senior Engineer · Hyderabad" },
+  { text: "Tried 5 marketplaces, this one actually delivers. Source code clean, support responsive.", image: "https://randomuser.me/api/portraits/men/85.jpg", name: "Mohit Singh", role: "Agency Owner · Delhi" },
 ];
 
+const firstColumn = testimonials.slice(0, 3);
+const secondColumn = testimonials.slice(3, 6);
+const thirdColumn = testimonials.slice(6, 9);
+
 export default function TestimonialsSection() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-
   return (
-    <section ref={ref} className="bg-gradient-to-b from-orange-50/40 via-white to-white py-20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-14">
-          <p className="text-xs font-semibold tracking-[0.3em] text-fire uppercase mb-3">Testimonials</p>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold text-gray-900 inline-block relative">
-            Loved by <span className="gradient-text">builders</span> worldwide
-            <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-1 w-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full" />
+    <section className="bg-gradient-to-b from-orange-50/40 via-white to-white py-20 relative">
+      <div className="container mx-auto px-4 z-10 flex flex-col items-center justify-center max-w-7xl">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-fire/20 bg-fire/5">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-fire">Testimonials</span>
+          </div>
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold text-ink mt-5 leading-tight">
+            What our <span className="gradient-text">builders</span> say
           </h2>
-          <div className="flex justify-center mt-8"><AvatarGroup /></div>
-        </div>
+          <p className="text-muted-foreground mt-3 max-w-lg">Hand-picked reviews from Indian developers, founders & agencies shipping with DevMarket.</p>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-orange-200 transition-all duration-300 hover:-translate-y-1 flex flex-col"
-            >
-              <Quote className="h-8 w-8 text-orange-500/70 mb-3" />
-              <div className="flex gap-0.5 mb-3">
-                {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 fill-orange-500 text-orange-500" />)}
-              </div>
-              <p className="text-gray-600 italic text-sm leading-relaxed mb-4 flex-1">"{t.quote}"</p>
-              <div className="border-t border-gray-100 pt-4 flex items-center gap-3">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=FF5722&color=fff&size=48&bold=true`}
-                  alt={t.name}
-                  className="w-11 h-11 rounded-full ring-2 ring-orange-400 ring-offset-2"
-                  loading="lazy"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-gray-900">{t.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">{t.role}</span>
-                    <span className="text-xs text-gray-400 truncate">{t.company}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[640px] overflow-hidden">
+          <TestimonialsColumn testimonials={firstColumn} duration={18} />
+          <TestimonialsColumn testimonials={secondColumn} duration={22} className="hidden md:block" />
+          <TestimonialsColumn testimonials={thirdColumn} duration={20} className="hidden lg:block" />
         </div>
       </div>
     </section>
