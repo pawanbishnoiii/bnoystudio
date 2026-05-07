@@ -390,8 +390,12 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     try {
       let parsedChangelog: any = [];
       try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
+      const slugAuto = (form.slug || form.title || '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
       const payload = {
-        title: form.title, short_desc: form.short_desc, full_desc: form.full_desc,
+        title: form.title, slug: slugAuto || null,
+        short_desc: form.short_desc, full_desc: form.full_desc,
         price: form.price, discount_price: form.discount_price || null, version: form.version,
         category: form.category, tech_stack: form.tech_stack,
         thumbnail_url: form.thumbnail_url || null, screenshots: form.screenshots,
@@ -400,6 +404,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
+        demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
