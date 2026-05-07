@@ -224,10 +224,20 @@ export const ScannerCardStream = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden bg-gradient-to-b from-ink via-ink to-ink/95"
+      className="relative w-full overflow-hidden bg-gradient-to-b from-ink via-ink to-ink/95 outline-none focus-visible:ring-2 focus-visible:ring-fire/60"
       style={{ height }}
+      role="region"
+      aria-label="Live marketplace scanner — drag or use arrow keys to scrub through projects. Press space to pause."
+      tabIndex={0}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+      onKeyDown={(e) => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setIsPaused((p) => !p); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); stateRef.current.position -= 60; stateRef.current.direction = -1; }
+        if (e.key === 'ArrowRight') { e.preventDefault(); stateRef.current.position += 60; stateRef.current.direction = 1; }
+      }}
     >
       {/* radial glow */}
       <div className="absolute inset-0 pointer-events-none" style={{
