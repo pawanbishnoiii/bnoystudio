@@ -31,7 +31,9 @@ function toEmbed(url: string): string {
 interface ChangelogEntry { version: string; date?: string; notes: string; }
 
 export default function ProjectDetail() {
-  const { id } = useParams();
+  const params = useParams();
+  const idOrSlug = params.id || params.slug;
+  const isUuid = !!idOrSlug && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const { toast } = useToast();
   const { openPayment } = useRazorpay();
@@ -44,13 +46,19 @@ export default function ProjectDetail() {
   const [rating, setRating] = useState(5);
 
   const { data: project, isLoading } = useQuery({
-    queryKey: ['project', id],
+    queryKey: ['project', idOrSlug],
     queryFn: async () => {
-      const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+      if (!idOrSlug) return null;
+      const q = supabase.from('projects').select('*');
+      const { data, error } = isUuid
+        ? await q.eq('id', idOrSlug).single()
+        : await q.eq('slug', idOrSlug).single();
       if (error) throw error;
       return data;
     },
+    enabled: !!idOrSlug,
   });
+  const id = project?.id;
 
   // Track view once
   useEffect(() => {
