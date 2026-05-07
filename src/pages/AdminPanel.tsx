@@ -482,6 +482,22 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           </div>
         </div>
 
+        {/* Demo admin login (shown to purchasers + admins) */}
+        <div className="grid md:grid-cols-2 gap-4 rounded-xl border border-fire/20 bg-fire/5 p-4">
+          <div className="md:col-span-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-fire">Demo admin login · shown to buyers on the Project page</p>
+            <p className="text-xs text-muted-foreground mt-1">Optional credentials buyers can use to sign into the demo's admin panel.</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Demo admin email</Label>
+            <Input value={form.demo_admin_email} onChange={(e) => setForm({ ...form, demo_admin_email: e.target.value })} placeholder="admin@demo.com" className="bg-white border-border" />
+          </div>
+          <div className="space-y-2">
+            <Label>Demo admin password</Label>
+            <Input value={form.demo_admin_password} onChange={(e) => setForm({ ...form, demo_admin_password: e.target.value })} placeholder="demo1234" className="bg-white border-border font-mono" />
+          </div>
+        </div>
+
         {/* Changelog + version-bump shortcut */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 flex-wrap">
