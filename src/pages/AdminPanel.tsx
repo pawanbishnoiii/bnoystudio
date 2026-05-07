@@ -425,7 +425,13 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     <div className="space-y-6 max-w-3xl">
       <h1 className="font-display text-2xl font-bold">{isEdit ? 'Edit Project' : 'Add New Project'}</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-border shadow-card p-6 space-y-5">
-        <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
+          <div className="space-y-2">
+            <Label>URL slug <span className="text-muted-foreground font-normal">(used as /p/your-slug)</span></Label>
+            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className="bg-warm-bg border-border font-mono text-sm" />
+          </div>
+        </div>
 
         <div className="space-y-2 relative">
           <Label>Short Description *</Label>
