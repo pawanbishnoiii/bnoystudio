@@ -71,10 +71,13 @@ export const ScannerCardStream = ({
   const CARD_WIDTH = 280;
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const cardLine = cardLineRef.current;
     const container = containerRef.current;
     const scannerCanvas = scannerCanvasRef.current;
     if (!cardLine || !container || !scannerCanvas) return;
+    const ctx2d = scannerCanvas.getContext('2d');
+    if (!ctx2d) return;
 
     cards.forEach((c) => originalAscii.current.set(c.id, c.ascii));
     let raf = 0;
