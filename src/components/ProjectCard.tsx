@@ -9,7 +9,7 @@ interface ProjectCardProps {
   project: {
     id: string; title: string; short_desc: string; price: number;
     thumbnail_url: string | null; tech_stack: string[]; category: string[]; preview_url: string | null;
-    views_count?: number; likes_count?: number;
+    views_count?: number; likes_count?: number; slug?: string | null;
   };
   onPreview?: (url: string) => void;
   onBuy?: (project: any) => void;
