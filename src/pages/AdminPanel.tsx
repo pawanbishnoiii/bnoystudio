@@ -279,12 +279,13 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   });
 
   const [form, setForm] = useState<any>({
-    title: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
+    title: '', slug: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
     category: [] as string[], tech_stack: [] as string[],
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '', preview_enabled: true,
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
     lov_email: '', project_url: '',
+    demo_admin_email: '', demo_admin_password: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
