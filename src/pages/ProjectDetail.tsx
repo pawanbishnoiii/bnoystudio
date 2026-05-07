@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History, Mail, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History, Mail, Link as LinkIcon, KeyRound, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
