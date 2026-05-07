@@ -518,3 +518,15 @@ export default function ProjectDetail() {
     </motion.div>
   );
 }
+
+function CredRow({ label, value, onCopy }: { label: string; value: string; onCopy: (v: string) => void }) {
+  return (
+    <div className="flex items-center gap-2 bg-warm-bg/60 border border-border rounded-lg px-3 py-2">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-16 shrink-0">{label}</span>
+      <code className="text-sm text-ink font-mono truncate flex-1">{value}</code>
+      <button onClick={() => onCopy(value)} className="p-1.5 rounded hover:bg-fire/10 text-fire" aria-label={`Copy ${label}`}>
+        <Copy className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
