@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { Link } from 'react-router-dom';
+import CpuArchitecture from '@/components/ui/cpu-architecture';
 
 export default function HeroSection() {
   const { isAdmin, setShowAuthModal } = useAuthStore();
