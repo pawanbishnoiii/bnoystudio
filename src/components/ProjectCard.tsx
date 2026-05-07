@@ -9,7 +9,7 @@ interface ProjectCardProps {
   project: {
     id: string; title: string; short_desc: string; price: number;
     thumbnail_url: string | null; tech_stack: string[]; category: string[]; preview_url: string | null;
-    views_count?: number; likes_count?: number;
+    views_count?: number; likes_count?: number; slug?: string | null;
   };
   onPreview?: (url: string) => void;
   onBuy?: (project: any) => void;
@@ -38,7 +38,7 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
       whileHover={{ scale: 1.02 }}
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
-      <Link to={`/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
+      <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
         {project.thumbnail_url ? (
           <img src={project.thumbnail_url} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
@@ -54,7 +54,7 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
       </Link>
 
       <div className="p-5 flex-1 flex flex-col">
-        <Link to={`/project/${project.id}`}>
+        <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`}>
           <h3 className="font-display text-base font-bold text-ink hover:text-fire transition-colors">{project.title}</h3>
         </Link>
         <p className="text-[13px] text-muted-foreground line-clamp-2 mt-1 mb-3 flex-1">{project.short_desc}</p>

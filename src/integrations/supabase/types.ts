@@ -169,6 +169,8 @@ export type Database = {
           category: string[]
           changelog: Json | null
           created_at: string
+          demo_admin_email: string | null
+          demo_admin_password: string | null
           discount_price: number | null
           featured: boolean
           full_desc: string
@@ -182,6 +184,7 @@ export type Database = {
           screenshots: string[]
           screenshots_urls: string[] | null
           short_desc: string
+          slug: string | null
           source_code_url: string | null
           status: string
           tech_stack: string[]
@@ -195,6 +198,8 @@ export type Database = {
           category?: string[]
           changelog?: Json | null
           created_at?: string
+          demo_admin_email?: string | null
+          demo_admin_password?: string | null
           discount_price?: number | null
           featured?: boolean
           full_desc?: string
@@ -208,6 +213,7 @@ export type Database = {
           screenshots?: string[]
           screenshots_urls?: string[] | null
           short_desc?: string
+          slug?: string | null
           source_code_url?: string | null
           status?: string
           tech_stack?: string[]
@@ -221,6 +227,8 @@ export type Database = {
           category?: string[]
           changelog?: Json | null
           created_at?: string
+          demo_admin_email?: string | null
+          demo_admin_password?: string | null
           discount_price?: number | null
           featured?: boolean
           full_desc?: string
@@ -234,6 +242,7 @@ export type Database = {
           screenshots?: string[]
           screenshots_urls?: string[] | null
           short_desc?: string
+          slug?: string | null
           source_code_url?: string | null
           status?: string
           tech_stack?: string[]

@@ -279,12 +279,13 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   });
 
   const [form, setForm] = useState<any>({
-    title: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
+    title: '', slug: '', short_desc: '', full_desc: '', price: 0, discount_price: 0, version: 'v1.0',
     category: [] as string[], tech_stack: [] as string[],
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '', preview_enabled: true,
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
     lov_email: '', project_url: '',
+    demo_admin_email: '', demo_admin_password: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
@@ -301,7 +302,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   // Hydrate when editing
   useEffect(() => {
     if (existing) setForm({
-      title: existing.title || '', short_desc: existing.short_desc || '', full_desc: existing.full_desc || '',
+      title: existing.title || '', slug: (existing as any).slug || '',
+      short_desc: existing.short_desc || '', full_desc: existing.full_desc || '',
       price: existing.price || 0, discount_price: existing.discount_price || 0, version: existing.version || 'v1.0',
       category: existing.category || [], tech_stack: existing.tech_stack || [],
       thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
@@ -311,6 +313,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
+      demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
     });
   }, [existing]);
 
@@ -387,8 +390,12 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     try {
       let parsedChangelog: any = [];
       try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
+      const slugAuto = (form.slug || form.title || '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
       const payload = {
-        title: form.title, short_desc: form.short_desc, full_desc: form.full_desc,
+        title: form.title, slug: slugAuto || null,
+        short_desc: form.short_desc, full_desc: form.full_desc,
         price: form.price, discount_price: form.discount_price || null, version: form.version,
         category: form.category, tech_stack: form.tech_stack,
         thumbnail_url: form.thumbnail_url || null, screenshots: form.screenshots,
@@ -397,6 +404,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
+        demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
@@ -417,7 +425,13 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     <div className="space-y-6 max-w-3xl">
       <h1 className="font-display text-2xl font-bold">{isEdit ? 'Edit Project' : 'Add New Project'}</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-border shadow-card p-6 space-y-5">
-        <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
+          <div className="space-y-2">
+            <Label>URL slug <span className="text-muted-foreground font-normal">(used as /p/your-slug)</span></Label>
+            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className="bg-warm-bg border-border font-mono text-sm" />
+          </div>
+        </div>
 
         <div className="space-y-2 relative">
           <Label>Short Description *</Label>
@@ -465,6 +479,22 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           <div className="space-y-2">
             <Label>Project URL</Label>
             <Input value={form.project_url} onChange={(e) => setForm({ ...form, project_url: e.target.value })} placeholder="https://lovable.dev/projects/…" className="bg-white border-border" />
+          </div>
+        </div>
+
+        {/* Demo admin login (shown to purchasers + admins) */}
+        <div className="grid md:grid-cols-2 gap-4 rounded-xl border border-fire/20 bg-fire/5 p-4">
+          <div className="md:col-span-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-fire">Demo admin login · shown to buyers on the Project page</p>
+            <p className="text-xs text-muted-foreground mt-1">Optional credentials buyers can use to sign into the demo's admin panel.</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Demo admin email</Label>
+            <Input value={form.demo_admin_email} onChange={(e) => setForm({ ...form, demo_admin_email: e.target.value })} placeholder="admin@demo.com" className="bg-white border-border" />
+          </div>
+          <div className="space-y-2">
+            <Label>Demo admin password</Label>
+            <Input value={form.demo_admin_password} onChange={(e) => setForm({ ...form, demo_admin_password: e.target.value })} placeholder="demo1234" className="bg-white border-border font-mono" />
           </div>
         </div>
 

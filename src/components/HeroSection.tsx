@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { Link } from 'react-router-dom';
+import CpuArchitecture from '@/components/ui/cpu-architecture';
 
 export default function HeroSection() {
   const { isAdmin, setShowAuthModal } = useAuthStore();
@@ -66,39 +67,25 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Animated code editor illustration */}
+          {/* Right column — CPU + floating cards */}
           <div className="relative h-[440px] hidden lg:block">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="parallax-card absolute inset-0 rounded-2xl bg-[#1A1A2E] shadow-card-hover overflow-hidden glow-fire"
+              className="parallax-card absolute inset-0 rounded-2xl bg-[#0F0F1E] shadow-card-hover overflow-hidden glow-fire"
               data-speed="0.15"
             >
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-[#0F0F1E] border-b border-white/10">
+              <div className="flex items-center gap-2 px-4 py-3 bg-black/60 border-b border-white/10">
                 <span className="w-3 h-3 rounded-full bg-red-500" />
                 <span className="w-3 h-3 rounded-full bg-yellow-500" />
                 <span className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="ml-3 text-xs text-white/50 font-mono">App.tsx</span>
+                <span className="ml-3 text-xs text-white/50 font-mono flex items-center gap-1.5"><Zap className="h-3 w-3 text-fire" /> devmarket.engine</span>
               </div>
-              {/* Code lines */}
-              <div className="p-6 font-mono text-sm space-y-2">
-                {[
-                  { c: 'text-fire', w: '70%', t: 'import { Marketplace } from "devmarket"' },
-                  { c: 'text-sun', w: '50%', t: 'export default function App() {' },
-                  { c: 'text-white/80', w: '85%', t: '  return <Marketplace items={projects} />' },
-                  { c: 'text-fire', w: '40%', t: '}' },
-                  { c: 'text-white/60', w: '65%', t: '// Ready to deploy 🚀' },
-                ].map((l, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <span className="text-white/30 text-xs w-4">{i + 1}</span>
-                    <motion.div initial={{ width: 0 }} animate={{ width: l.w }} transition={{ delay: 0.5 + i * 0.2, duration: 0.6 }}
-                      className={`overflow-hidden whitespace-nowrap ${l.c}`}>{l.t}</motion.div>
-                  </div>
-                ))}
+              <div className="absolute inset-0 top-10 flex items-center justify-center p-6">
+                <CpuArchitecture text="DEV" className="text-fire/70 max-w-[420px]" />
               </div>
             </motion.div>
-            {/* Floating accent cards */}
+
             <motion.div className="parallax-card absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-card-hover border border-border w-44 rotate-[5deg]" data-speed="0.5"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
               <div className="text-xs text-muted-foreground">✅ Production Ready</div>

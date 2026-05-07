@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History, Mail, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Eye, ShoppingCart, Download, Lock, ShieldCheck, Code2, Star, Heart, MessageCircle, Send, History, Mail, Link as LinkIcon, KeyRound, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
@@ -31,7 +31,9 @@ function toEmbed(url: string): string {
 interface ChangelogEntry { version: string; date?: string; notes: string; }
 
 export default function ProjectDetail() {
-  const { id } = useParams();
+  const params = useParams();
+  const idOrSlug = params.id || params.slug;
+  const isUuid = !!idOrSlug && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const { toast } = useToast();
   const { openPayment } = useRazorpay();
@@ -44,13 +46,19 @@ export default function ProjectDetail() {
   const [rating, setRating] = useState(5);
 
   const { data: project, isLoading } = useQuery({
-    queryKey: ['project', id],
+    queryKey: ['project', idOrSlug],
     queryFn: async () => {
-      const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+      if (!idOrSlug) return null;
+      const q = supabase.from('projects').select('*');
+      const { data, error } = isUuid
+        ? await q.eq('id', idOrSlug).single()
+        : await q.eq('slug', idOrSlug).single();
       if (error) throw error;
       return data;
     },
+    enabled: !!idOrSlug,
   });
+  const id = project?.id;
 
   // Track view once
   useEffect(() => {
@@ -450,6 +458,24 @@ export default function ProjectDetail() {
               <p className="text-xs text-muted-foreground mt-3">✨ 30-day support included</p>
             </motion.div>
 
+            {/* Demo admin login (visible to purchasers + admins) */}
+            {(purchased || isAdmin) && ((project as any).demo_admin_email || (project as any).demo_admin_password) && (
+              <div className="bg-white border border-border rounded-2xl p-5 shadow-card">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-fire mb-3 flex items-center gap-2">
+                  <KeyRound className="h-3.5 w-3.5" /> Demo admin login
+                </p>
+                <p className="text-xs text-muted-foreground mb-3">Use these credentials on the live preview to explore the admin panel.</p>
+                <div className="space-y-2">
+                  {(project as any).demo_admin_email && (
+                    <CredRow label="Email" value={(project as any).demo_admin_email} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Email copied' }); }} />
+                  )}
+                  {(project as any).demo_admin_password && (
+                    <CredRow label="Password" value={(project as any).demo_admin_password} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Password copied' }); }} />
+                  )}
+                </div>
+              </div>
+            )}
+
             {isAdmin && ((project as any).lov_email || (project as any).project_url) && (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-3">Admin only · internal links</p>
@@ -473,7 +499,7 @@ export default function ProjectDetail() {
                 <h3 className="font-display font-bold text-base mb-3 text-ink">You might also like</h3>
                 <div className="space-y-3">
                   {related.slice(0, 3).map((p: any) => (
-                    <Link key={p.id} to={`/project/${p.id}`} className="flex gap-3 group hover:bg-orange-50/50 rounded-lg p-2 -m-2 transition">
+                    <Link key={p.id} to={p.slug ? `/p/${p.slug}` : `/project/${p.id}`} className="flex gap-3 group hover:bg-orange-50/50 rounded-lg p-2 -m-2 transition">
                       <img src={p.thumbnail_url || '/placeholder.svg'} alt={p.title} className="w-20 h-14 rounded-md object-cover border border-border shrink-0" />
                       <div className="min-w-0">
                         <p className="font-semibold text-sm text-ink truncate group-hover:text-fire">{p.title}</p>
@@ -490,5 +516,17 @@ export default function ProjectDetail() {
       <PreviewModal url={previewUrl} onClose={() => setPreviewUrl(null)} />
       <Footer />
     </motion.div>
+  );
+}
+
+function CredRow({ label, value, onCopy }: { label: string; value: string; onCopy: (v: string) => void }) {
+  return (
+    <div className="flex items-center gap-2 bg-warm-bg/60 border border-border rounded-lg px-3 py-2">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-16 shrink-0">{label}</span>
+      <code className="text-sm text-ink font-mono truncate flex-1">{value}</code>
+      <button onClick={() => onCopy(value)} className="p-1.5 rounded hover:bg-fire/10 text-fire" aria-label={`Copy ${label}`}>
+        <Copy className="h-3.5 w-3.5" />
+      </button>
+    </div>
   );
 }

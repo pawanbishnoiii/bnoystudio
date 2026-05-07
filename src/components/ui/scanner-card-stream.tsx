@@ -71,14 +71,17 @@ export const ScannerCardStream = ({
   const CARD_WIDTH = 280;
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const cardLine = cardLineRef.current;
     const container = containerRef.current;
     const scannerCanvas = scannerCanvasRef.current;
     if (!cardLine || !container || !scannerCanvas) return;
+    const ctx2d = scannerCanvas.getContext('2d');
+    if (!ctx2d) return;
 
     cards.forEach((c) => originalAscii.current.set(c.id, c.ascii));
     let raf = 0;
-    const ctx = scannerCanvas.getContext('2d')!;
+    const ctx = ctx2d;
     const setSize = () => {
       scannerCanvas.width = container.offsetWidth;
       scannerCanvas.height = height;
@@ -221,10 +224,20 @@ export const ScannerCardStream = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden bg-gradient-to-b from-ink via-ink to-ink/95"
+      className="relative w-full overflow-hidden bg-gradient-to-b from-ink via-ink to-ink/95 outline-none focus-visible:ring-2 focus-visible:ring-fire/60"
       style={{ height }}
+      role="region"
+      aria-label="Live marketplace scanner — drag or use arrow keys to scrub through projects. Press space to pause."
+      tabIndex={0}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+      onKeyDown={(e) => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setIsPaused((p) => !p); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); stateRef.current.position -= 60; stateRef.current.direction = -1; }
+        if (e.key === 'ArrowRight') { e.preventDefault(); stateRef.current.position += 60; stateRef.current.direction = 1; }
+      }}
     >
       {/* radial glow */}
       <div className="absolute inset-0 pointer-events-none" style={{
