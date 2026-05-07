@@ -302,7 +302,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   // Hydrate when editing
   useEffect(() => {
     if (existing) setForm({
-      title: existing.title || '', short_desc: existing.short_desc || '', full_desc: existing.full_desc || '',
+      title: existing.title || '', slug: (existing as any).slug || '',
+      short_desc: existing.short_desc || '', full_desc: existing.full_desc || '',
       price: existing.price || 0, discount_price: existing.discount_price || 0, version: existing.version || 'v1.0',
       category: existing.category || [], tech_stack: existing.tech_stack || [],
       thumbnail_url: existing.thumbnail_url || '', screenshots: existing.screenshots || [],
@@ -312,6 +313,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
+      demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
     });
   }, [existing]);
 
