@@ -23,6 +23,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/p/:slug" element={<ProjectDetail />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/refund" element={<RefundPolicy />} />
