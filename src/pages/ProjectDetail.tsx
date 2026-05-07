@@ -458,6 +458,24 @@ export default function ProjectDetail() {
               <p className="text-xs text-muted-foreground mt-3">✨ 30-day support included</p>
             </motion.div>
 
+            {/* Demo admin login (visible to purchasers + admins) */}
+            {(purchased || isAdmin) && ((project as any).demo_admin_email || (project as any).demo_admin_password) && (
+              <div className="bg-white border border-border rounded-2xl p-5 shadow-card">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-fire mb-3 flex items-center gap-2">
+                  <KeyRound className="h-3.5 w-3.5" /> Demo admin login
+                </p>
+                <p className="text-xs text-muted-foreground mb-3">Use these credentials on the live preview to explore the admin panel.</p>
+                <div className="space-y-2">
+                  {(project as any).demo_admin_email && (
+                    <CredRow label="Email" value={(project as any).demo_admin_email} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Email copied' }); }} />
+                  )}
+                  {(project as any).demo_admin_password && (
+                    <CredRow label="Password" value={(project as any).demo_admin_password} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Password copied' }); }} />
+                  )}
+                </div>
+              </div>
+            )}
+
             {isAdmin && ((project as any).lov_email || (project as any).project_url) && (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-3">Admin only · internal links</p>
