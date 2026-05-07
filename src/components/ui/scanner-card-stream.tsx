@@ -81,7 +81,7 @@ export const ScannerCardStream = ({
 
     cards.forEach((c) => originalAscii.current.set(c.id, c.ascii));
     let raf = 0;
-    const ctx = scannerCanvas.getContext('2d')!;
+    const ctx = ctx2d;
     const setSize = () => {
       scannerCanvas.width = container.offsetWidth;
       scannerCanvas.height = height;
