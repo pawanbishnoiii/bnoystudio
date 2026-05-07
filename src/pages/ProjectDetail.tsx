@@ -499,7 +499,7 @@ export default function ProjectDetail() {
                 <h3 className="font-display font-bold text-base mb-3 text-ink">You might also like</h3>
                 <div className="space-y-3">
                   {related.slice(0, 3).map((p: any) => (
-                    <Link key={p.id} to={`/project/${p.id}`} className="flex gap-3 group hover:bg-orange-50/50 rounded-lg p-2 -m-2 transition">
+                    <Link key={p.id} to={p.slug ? `/p/${p.slug}` : `/project/${p.id}`} className="flex gap-3 group hover:bg-orange-50/50 rounded-lg p-2 -m-2 transition">
                       <img src={p.thumbnail_url || '/placeholder.svg'} alt={p.title} className="w-20 h-14 rounded-md object-cover border border-border shrink-0" />
                       <div className="min-w-0">
                         <p className="font-semibold text-sm text-ink truncate group-hover:text-fire">{p.title}</p>
