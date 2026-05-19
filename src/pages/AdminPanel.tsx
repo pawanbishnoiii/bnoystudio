@@ -314,6 +314,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
       demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
+      preview_watermark: (existing as any).preview_watermark || '',
     });
   }, [existing]);
 
