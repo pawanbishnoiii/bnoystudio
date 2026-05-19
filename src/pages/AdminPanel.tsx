@@ -40,12 +40,24 @@ const sidebarItems = [
 const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
 
 export default function AdminPanel() {
-  const { user, isAdmin } = useAuthStore();
+  const { user, isAdmin, authReady } = useAuthStore();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingId, setEditingId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Wait for auth bootstrap before deciding — avoids the "auto-logout" flash where
+  // the redirect fires before useAuthBootstrap has loaded the session + admin role.
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <div className="h-8 w-8 rounded-full border-2 border-fire border-t-transparent animate-spin" />
+          <p className="text-sm">Loading admin…</p>
+        </div>
+      </div>
+    );
+  }
   if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   const goAdd = (id: string | null = null) => { setEditingId(id); setActiveTab('add'); };
