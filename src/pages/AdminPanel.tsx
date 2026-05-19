@@ -350,12 +350,20 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
 
   const projectId = editingId || 'new';
 
-  // Upload using signed URL + XHR for true progress reporting
-  const uploadWithProgress = (bucket: string, path: string, file: File, onPct: (pct: number) => void) =>
+  // Upload using signed URL + XHR for true progress reporting.
+  // Returns the xhr so callers can cancel the in-flight request.
+  const uploadWithProgress = (
+    bucket: string,
+    path: string,
+    file: File,
+    onPct: (pct: number) => void,
+    onXhr?: (xhr: XMLHttpRequest) => void,
+  ) =>
     new Promise<string>(async (resolve, reject) => {
       const { data: signed, error: signErr } = await supabase.storage.from(bucket).createSignedUploadUrl(path);
       if (signErr || !signed) return reject(signErr || new Error('Could not get signed URL'));
       const xhr = new XMLHttpRequest();
+      onXhr?.(xhr);
       xhr.open('PUT', signed.signedUrl);
       xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
       xhr.setRequestHeader('x-upsert', 'true');
@@ -367,6 +375,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         } else reject(new Error(`Upload failed (${xhr.status})`));
       };
       xhr.onerror = () => reject(new Error('Network error'));
+      xhr.onabort = () => reject(Object.assign(new Error('Cancelled'), { aborted: true }));
       xhr.send(file);
     });
 
@@ -375,7 +384,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     const ext = file.name.split('.').pop();
     const path = `${projectId}/thumb-${Date.now()}.${ext}`;
     try {
-      const url = await uploadWithProgress('project-assets', path, file, setThumbProgress);
+      // Public bucket so the image is directly accessible everywhere on the site.
+      const url = await uploadWithProgress('project-images', path, file, setThumbProgress);
       setForm((f: any) => ({ ...f, thumbnail_url: url }));
       setThumbProgress(100);
       setTimeout(() => setThumbProgress(0), 1200);
@@ -385,26 +395,50 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     }
   };
 
-  const uploadScreenshots = async (files: FileList) => {
-    const list = Array.from(files);
-    setShotProgress(list.map((f) => ({ name: f.name, pct: 0 })));
-    const urls: string[] = [];
-    for (let i = 0; i < list.length; i++) {
-      const file = list[i];
-      const path = `${projectId}/screenshots/${Date.now()}-${file.name}`;
-      try {
-        const url = await uploadWithProgress('project-assets', path, file, (pct) => {
-          setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct } : p)));
-        });
-        urls.push(url);
-        setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct: 100, done: true } : p)));
-      } catch (e: any) {
-        toast({ title: `Failed: ${file.name}`, description: e.message, variant: 'destructive' });
+  const runShotUpload = async (item: ShotItem) => {
+    if (!item.file) return;
+    setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'uploading', pct: 1, error: undefined } : x)));
+    const path = `${projectId}/screenshots/${Date.now()}-${item.file.name}`;
+    try {
+      const url = await uploadWithProgress(
+        'project-images', path, item.file,
+        (pct) => setShots((s) => s.map((x) => (x.id === item.id ? { ...x, pct } : x))),
+        (xhr) => setShots((s) => s.map((x) => (x.id === item.id ? { ...x, xhr } : x))),
+      );
+      setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'done', pct: 100, url, xhr: undefined } : x)));
+      setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, url] }));
+    } catch (e: any) {
+      if (e?.aborted) {
+        setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'cancelled', xhr: undefined } : x)));
+      } else {
+        setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'error', error: e.message || 'Upload failed', xhr: undefined } : x)));
       }
     }
-    setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
-    setTimeout(() => setShotProgress([]), 2000);
   };
+
+  const uploadScreenshots = async (files: FileList) => {
+    const items: ShotItem[] = Array.from(files).map((file) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: file.name, pct: 0, status: 'queued', file,
+    }));
+    setShots((prev) => [...prev, ...items]);
+    for (const it of items) await runShotUpload(it);
+  };
+
+  const cancelShot = (id: string) => {
+    setShots((s) => {
+      const item = s.find((x) => x.id === id);
+      item?.xhr?.abort();
+      return s.map((x) => (x.id === id ? { ...x, status: 'cancelled' } : x));
+    });
+  };
+  const retryShot = (id: string) => {
+    const item = shots.find((x) => x.id === id);
+    if (item) runShotUpload(item);
+  };
+  const removeShot = (id: string) => setShots((s) => s.filter((x) => x.id !== id));
+
+
 
   const uploadZip = async (file: File) => {
     if (!file.name.endsWith('.zip')) { toast({ title: 'Only .zip files allowed', variant: 'destructive' }); return; }
