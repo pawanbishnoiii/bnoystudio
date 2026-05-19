@@ -65,9 +65,7 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-muted-foreground hidden md:inline">{size.label}</span>
               <Button variant="ghost" size="sm" onClick={() => { setLoading(true); setReloadKey(k => k + 1); }}><RefreshCw className="h-4 w-4" /></Button>
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm"><ExternalLink className="h-4 w-4" /></Button>
-              </a>
+              {/* External-open link hidden so visitors cannot easily grab the source URL */}
               <Button variant="ghost" size="sm" onClick={onClose}><X className="h-4 w-4" /></Button>
             </div>
           </div>
