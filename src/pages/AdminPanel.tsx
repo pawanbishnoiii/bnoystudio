@@ -406,6 +406,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
         demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
+        preview_watermark: form.preview_watermark || null,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
