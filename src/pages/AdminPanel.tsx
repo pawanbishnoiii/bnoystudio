@@ -285,7 +285,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
     lov_email: '', project_url: '',
-    demo_admin_email: '', demo_admin_password: '',
+    demo_admin_email: '', demo_admin_password: '', preview_watermark: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
