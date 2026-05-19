@@ -83,6 +83,16 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
               )}
               <iframe key={reloadKey} src={url} className="w-full h-full border-0" onLoad={() => setLoading(false)}
                 title="Project Preview" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+              {watermark && (
+                <>
+                  <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none flex items-center justify-center py-2 px-3 bg-gradient-to-b from-ink/90 to-transparent">
+                    <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-white/90 drop-shadow">{watermark}</span>
+                  </div>
+                  <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center overflow-hidden">
+                    <span className="text-fire/10 text-[80px] md:text-[140px] font-display font-extrabold uppercase tracking-widest rotate-[-25deg] select-none">{watermark}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
