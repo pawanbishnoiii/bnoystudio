@@ -17,7 +17,7 @@ const SIZES: Record<Device, { w: number; h: number; label: string }> = {
   mobile: { w: 390, h: 844, label: '390×844' },
 };
 
-export default function PreviewModal({ url, onClose }: PreviewModalProps) {
+export default function PreviewModal({ url, onClose, watermark, title }: PreviewModalProps) {
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState<Device>('desktop');
   const [reloadKey, setReloadKey] = useState(0);
