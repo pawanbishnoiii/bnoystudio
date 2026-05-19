@@ -190,7 +190,7 @@ export const ScannerCardStream = ({
     const animate = (t: number) => {
       const dt = (t - stateRef.current.lastTime) / 1000;
       stateRef.current.lastTime = t;
-      if (!isPaused && !stateRef.current.isDragging) {
+      if (!isPaused && !prefersReducedMotion && !stateRef.current.isDragging) {
         if (stateRef.current.velocity > initialSpeed) stateRef.current.velocity *= friction;
         else stateRef.current.velocity = initialSpeed;
         stateRef.current.position += stateRef.current.velocity * stateRef.current.direction * dt;
