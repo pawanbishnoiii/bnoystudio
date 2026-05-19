@@ -625,15 +625,36 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
             <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && uploadScreenshots(e.target.files)} />
             <p className="text-sm text-muted-foreground">Click to upload one or more screenshots</p>
           </label>
-          {shotProgress.length > 0 && (
+          {shots.length > 0 && (
             <div className="space-y-2">
-              {shotProgress.map((p, i) => (
-                <div key={i} className="rounded-lg border border-border bg-warm-bg/40 p-2">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="truncate text-ink/70">{p.name}</span>
-                    <span className={p.done ? 'text-green-600 font-bold' : 'text-fire font-bold'}>{p.done ? '✅ Done' : `${p.pct}%`}</span>
+              {shots.map((p) => (
+                <div key={p.id} className="rounded-lg border border-border bg-warm-bg/40 p-2.5">
+                  <div className="flex items-center justify-between gap-2 text-xs mb-1.5">
+                    <span className="truncate text-ink/80 font-medium">{p.name}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {p.status === 'uploading' && <span className="text-fire font-bold tabular-nums">{p.pct}%</span>}
+                      {p.status === 'done' && <span className="text-green-600 font-bold">✅ Done</span>}
+                      {p.status === 'error' && <span className="text-destructive font-bold">⚠ Error</span>}
+                      {p.status === 'cancelled' && <span className="text-muted-foreground font-bold">Cancelled</span>}
+                      {p.status === 'queued' && <span className="text-muted-foreground">Queued…</span>}
+                      {p.status === 'uploading' && (
+                        <button type="button" onClick={() => cancelShot(p.id)} className="px-2 py-0.5 rounded bg-destructive/10 text-destructive hover:bg-destructive/20 text-[11px] font-semibold">Cancel</button>
+                      )}
+                      {(p.status === 'error' || p.status === 'cancelled') && (
+                        <>
+                          <button type="button" onClick={() => retryShot(p.id)} className="px-2 py-0.5 rounded bg-fire/10 text-fire hover:bg-fire/20 text-[11px] font-semibold">Retry</button>
+                          <button type="button" onClick={() => removeShot(p.id)} className="px-2 py-0.5 rounded bg-muted text-muted-foreground hover:bg-muted/70 text-[11px]">Dismiss</button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-border rounded-full overflow-hidden"><div className="h-full gradient-fire-strong transition-all" style={{ width: `${p.pct}%` }} /></div>
+                  <div className="h-1.5 bg-border rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${p.status === 'error' ? 'bg-destructive' : p.status === 'cancelled' ? 'bg-muted-foreground/50' : 'gradient-fire-strong'}`}
+                      style={{ width: `${p.pct}%` }}
+                    />
+                  </div>
+                  {p.error && <p className="text-[11px] text-destructive mt-1">{p.error}</p>}
                 </div>
               ))}
             </div>
