@@ -350,6 +350,20 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
 
   const projectId = editingId || 'new';
 
+  // Live slug uniqueness + format validation (debounced)
+  const previewSlug = slugify(form.slug || form.title);
+  useEffect(() => {
+    if (!previewSlug) { setSlugStatus('idle'); return; }
+    if (!/^[a-z0-9-]+$/.test(previewSlug) || previewSlug.length < 3) { setSlugStatus('invalid'); return; }
+    setSlugStatus('checking');
+    const handle = setTimeout(async () => {
+      const q = supabase.from('projects').select('id').eq('slug', previewSlug);
+      const { data } = isEdit ? await q.neq('id', editingId!).maybeSingle() : await q.maybeSingle();
+      setSlugStatus(data ? 'taken' : 'ok');
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [previewSlug, isEdit, editingId]);
+
   // Upload using signed URL + XHR for true progress reporting.
   // Returns the xhr so callers can cancel the in-flight request.
   const uploadWithProgress = (
