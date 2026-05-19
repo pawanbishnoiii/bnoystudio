@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, ShoppingCart, Lock } from 'lucide-react';
+import { Eye, ShoppingCart, Lock, ImageOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/authStore';
@@ -11,6 +12,10 @@ interface ProjectCardProps {
     thumbnail_url: string | null; tech_stack: string[]; category: string[]; preview_url: string | null;
     views_count?: number; likes_count?: number; slug?: string | null;
   };
+  onPreview?: (url: string) => void;
+  onBuy?: (project: any) => void;
+  index?: number;
+}
   onPreview?: (url: string) => void;
   onBuy?: (project: any) => void;
   index?: number;
