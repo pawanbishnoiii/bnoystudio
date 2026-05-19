@@ -45,7 +45,7 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
                 <div className="w-3 h-3 rounded-full bg-sun" />
                 <div className="w-3 h-3 rounded-full bg-green-500" />
               </div>
-              <span className="text-xs text-muted-foreground truncate max-w-[200px] md:max-w-md">{url}</span>
+              <span className="text-xs font-semibold text-ink truncate max-w-[160px] md:max-w-md">{title || 'Live preview'}</span>
             </div>
 
             <div className="inline-flex items-center gap-1 p-1 bg-white border border-border rounded-full">
