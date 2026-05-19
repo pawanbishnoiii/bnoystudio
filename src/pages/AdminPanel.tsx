@@ -40,12 +40,24 @@ const sidebarItems = [
 const COLORS = ['#FF5722', '#FFC107', '#E64A19', '#FFD54F', '#FF8A65'];
 
 export default function AdminPanel() {
-  const { user, isAdmin } = useAuthStore();
+  const { user, isAdmin, authReady } = useAuthStore();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingId, setEditingId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Wait for auth bootstrap before deciding — avoids the "auto-logout" flash where
+  // the redirect fires before useAuthBootstrap has loaded the session + admin role.
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <div className="h-8 w-8 rounded-full border-2 border-fire border-t-transparent animate-spin" />
+          <p className="text-sm">Loading admin…</p>
+        </div>
+      </div>
+    );
+  }
   if (!user || !isAdmin) return <Navigate to="/" replace />;
 
   const goAdd = (id: string | null = null) => { setEditingId(id); setActiveTab('add'); };
@@ -267,6 +279,23 @@ function TagInput({ label, value, onChange, placeholder, suggestions, withIcons 
   );
 }
 
+function slugify(input: string) {
+  return (input || '')
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+type ShotItem = {
+  id: string;
+  name: string;
+  pct: number;
+  status: 'queued' | 'uploading' | 'done' | 'error' | 'cancelled';
+  error?: string;
+  file?: File;
+  url?: string;
+  xhr?: XMLHttpRequest;
+};
+
 function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDone: () => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -291,8 +320,9 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
-  const [shotProgress, setShotProgress] = useState<{ name: string; pct: number; done?: boolean }[]>([]);
+  const [shots, setShots] = useState<ShotItem[]>([]);
   const [zipName, setZipName] = useState<string | null>(null);
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'ok' | 'taken' | 'invalid'>('idle');
 
   const { data: catSuggestions } = useQuery({
     queryKey: ['cat-suggestions'],
@@ -320,12 +350,34 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
 
   const projectId = editingId || 'new';
 
-  // Upload using signed URL + XHR for true progress reporting
-  const uploadWithProgress = (bucket: string, path: string, file: File, onPct: (pct: number) => void) =>
+  // Live slug uniqueness + format validation (debounced)
+  const previewSlug = slugify(form.slug || form.title);
+  useEffect(() => {
+    if (!previewSlug) { setSlugStatus('idle'); return; }
+    if (!/^[a-z0-9-]+$/.test(previewSlug) || previewSlug.length < 3) { setSlugStatus('invalid'); return; }
+    setSlugStatus('checking');
+    const handle = setTimeout(async () => {
+      const q = supabase.from('projects').select('id').eq('slug', previewSlug);
+      const { data } = isEdit ? await q.neq('id', editingId!).maybeSingle() : await q.maybeSingle();
+      setSlugStatus(data ? 'taken' : 'ok');
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [previewSlug, isEdit, editingId]);
+
+  // Upload using signed URL + XHR for true progress reporting.
+  // Returns the xhr so callers can cancel the in-flight request.
+  const uploadWithProgress = (
+    bucket: string,
+    path: string,
+    file: File,
+    onPct: (pct: number) => void,
+    onXhr?: (xhr: XMLHttpRequest) => void,
+  ) =>
     new Promise<string>(async (resolve, reject) => {
       const { data: signed, error: signErr } = await supabase.storage.from(bucket).createSignedUploadUrl(path);
       if (signErr || !signed) return reject(signErr || new Error('Could not get signed URL'));
       const xhr = new XMLHttpRequest();
+      onXhr?.(xhr);
       xhr.open('PUT', signed.signedUrl);
       xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
       xhr.setRequestHeader('x-upsert', 'true');
@@ -337,6 +389,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         } else reject(new Error(`Upload failed (${xhr.status})`));
       };
       xhr.onerror = () => reject(new Error('Network error'));
+      xhr.onabort = () => reject(Object.assign(new Error('Cancelled'), { aborted: true }));
       xhr.send(file);
     });
 
@@ -345,7 +398,8 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     const ext = file.name.split('.').pop();
     const path = `${projectId}/thumb-${Date.now()}.${ext}`;
     try {
-      const url = await uploadWithProgress('project-assets', path, file, setThumbProgress);
+      // Public bucket so the image is directly accessible everywhere on the site.
+      const url = await uploadWithProgress('project-images', path, file, setThumbProgress);
       setForm((f: any) => ({ ...f, thumbnail_url: url }));
       setThumbProgress(100);
       setTimeout(() => setThumbProgress(0), 1200);
@@ -355,26 +409,50 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     }
   };
 
-  const uploadScreenshots = async (files: FileList) => {
-    const list = Array.from(files);
-    setShotProgress(list.map((f) => ({ name: f.name, pct: 0 })));
-    const urls: string[] = [];
-    for (let i = 0; i < list.length; i++) {
-      const file = list[i];
-      const path = `${projectId}/screenshots/${Date.now()}-${file.name}`;
-      try {
-        const url = await uploadWithProgress('project-assets', path, file, (pct) => {
-          setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct } : p)));
-        });
-        urls.push(url);
-        setShotProgress((prev) => prev.map((p, idx) => (idx === i ? { ...p, pct: 100, done: true } : p)));
-      } catch (e: any) {
-        toast({ title: `Failed: ${file.name}`, description: e.message, variant: 'destructive' });
+  const runShotUpload = async (item: ShotItem) => {
+    if (!item.file) return;
+    setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'uploading', pct: 1, error: undefined } : x)));
+    const path = `${projectId}/screenshots/${Date.now()}-${item.file.name}`;
+    try {
+      const url = await uploadWithProgress(
+        'project-images', path, item.file,
+        (pct) => setShots((s) => s.map((x) => (x.id === item.id ? { ...x, pct } : x))),
+        (xhr) => setShots((s) => s.map((x) => (x.id === item.id ? { ...x, xhr } : x))),
+      );
+      setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'done', pct: 100, url, xhr: undefined } : x)));
+      setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, url] }));
+    } catch (e: any) {
+      if (e?.aborted) {
+        setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'cancelled', xhr: undefined } : x)));
+      } else {
+        setShots((s) => s.map((x) => (x.id === item.id ? { ...x, status: 'error', error: e.message || 'Upload failed', xhr: undefined } : x)));
       }
     }
-    setForm((f: any) => ({ ...f, screenshots: [...f.screenshots, ...urls] }));
-    setTimeout(() => setShotProgress([]), 2000);
   };
+
+  const uploadScreenshots = async (files: FileList) => {
+    const items: ShotItem[] = Array.from(files).map((file) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: file.name, pct: 0, status: 'queued', file,
+    }));
+    setShots((prev) => [...prev, ...items]);
+    for (const it of items) await runShotUpload(it);
+  };
+
+  const cancelShot = (id: string) => {
+    setShots((s) => {
+      const item = s.find((x) => x.id === id);
+      item?.xhr?.abort();
+      return s.map((x) => (x.id === id ? { ...x, status: 'cancelled' } : x));
+    });
+  };
+  const retryShot = (id: string) => {
+    const item = shots.find((x) => x.id === id);
+    if (item) runShotUpload(item);
+  };
+  const removeShot = (id: string) => setShots((s) => s.filter((x) => x.id !== id));
+
+
 
   const uploadZip = async (file: File) => {
     if (!file.name.endsWith('.zip')) { toast({ title: 'Only .zip files allowed', variant: 'destructive' }); return; }
@@ -391,9 +469,10 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     try {
       let parsedChangelog: any = [];
       try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
-      const slugAuto = (form.slug || form.title || '')
-        .toLowerCase().trim()
-        .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      const slugAuto = slugify(form.slug || form.title);
+      if (slugAuto && (slugStatus === 'taken' || slugStatus === 'invalid')) {
+        throw new Error(slugStatus === 'taken' ? 'That slug is already in use — pick a different one.' : 'Slug must be at least 3 characters and only contain lowercase letters, numbers, hyphens.');
+      }
       const payload = {
         title: form.title, slug: slugAuto || null,
         short_desc: form.short_desc, full_desc: form.full_desc,
@@ -431,7 +510,17 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
           <div className="space-y-2">
             <Label>URL slug <span className="text-muted-foreground font-normal">(used as /p/your-slug)</span></Label>
-            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className="bg-warm-bg border-border font-mono text-sm" />
+            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className={`bg-warm-bg font-mono text-sm ${slugStatus === 'taken' || slugStatus === 'invalid' ? 'border-destructive' : slugStatus === 'ok' ? 'border-green-500' : 'border-border'}`} />
+            {previewSlug && (
+              <div className="text-[11px] flex items-center gap-2 flex-wrap">
+                <span className="text-muted-foreground">Preview:</span>
+                <code className="px-1.5 py-0.5 rounded bg-muted text-ink/80">/p/{previewSlug}</code>
+                {slugStatus === 'checking' && <span className="text-muted-foreground">Checking…</span>}
+                {slugStatus === 'ok' && <span className="text-green-600 font-semibold">✓ Available</span>}
+                {slugStatus === 'taken' && <span className="text-destructive font-semibold">⚠ Already in use</span>}
+                {slugStatus === 'invalid' && <span className="text-destructive font-semibold">⚠ Must be ≥3 chars · lowercase letters, numbers, hyphens</span>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -561,15 +650,36 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
             <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => e.target.files && uploadScreenshots(e.target.files)} />
             <p className="text-sm text-muted-foreground">Click to upload one or more screenshots</p>
           </label>
-          {shotProgress.length > 0 && (
+          {shots.length > 0 && (
             <div className="space-y-2">
-              {shotProgress.map((p, i) => (
-                <div key={i} className="rounded-lg border border-border bg-warm-bg/40 p-2">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="truncate text-ink/70">{p.name}</span>
-                    <span className={p.done ? 'text-green-600 font-bold' : 'text-fire font-bold'}>{p.done ? '✅ Done' : `${p.pct}%`}</span>
+              {shots.map((p) => (
+                <div key={p.id} className="rounded-lg border border-border bg-warm-bg/40 p-2.5">
+                  <div className="flex items-center justify-between gap-2 text-xs mb-1.5">
+                    <span className="truncate text-ink/80 font-medium">{p.name}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {p.status === 'uploading' && <span className="text-fire font-bold tabular-nums">{p.pct}%</span>}
+                      {p.status === 'done' && <span className="text-green-600 font-bold">✅ Done</span>}
+                      {p.status === 'error' && <span className="text-destructive font-bold">⚠ Error</span>}
+                      {p.status === 'cancelled' && <span className="text-muted-foreground font-bold">Cancelled</span>}
+                      {p.status === 'queued' && <span className="text-muted-foreground">Queued…</span>}
+                      {p.status === 'uploading' && (
+                        <button type="button" onClick={() => cancelShot(p.id)} className="px-2 py-0.5 rounded bg-destructive/10 text-destructive hover:bg-destructive/20 text-[11px] font-semibold">Cancel</button>
+                      )}
+                      {(p.status === 'error' || p.status === 'cancelled') && (
+                        <>
+                          <button type="button" onClick={() => retryShot(p.id)} className="px-2 py-0.5 rounded bg-fire/10 text-fire hover:bg-fire/20 text-[11px] font-semibold">Retry</button>
+                          <button type="button" onClick={() => removeShot(p.id)} className="px-2 py-0.5 rounded bg-muted text-muted-foreground hover:bg-muted/70 text-[11px]">Dismiss</button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-border rounded-full overflow-hidden"><div className="h-full gradient-fire-strong transition-all" style={{ width: `${p.pct}%` }} /></div>
+                  <div className="h-1.5 bg-border rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${p.status === 'error' ? 'bg-destructive' : p.status === 'cancelled' ? 'bg-muted-foreground/50' : 'gradient-fire-strong'}`}
+                      style={{ width: `${p.pct}%` }}
+                    />
+                  </div>
+                  {p.error && <p className="text-[11px] text-destructive mt-1">{p.error}</p>}
                 </div>
               ))}
             </div>

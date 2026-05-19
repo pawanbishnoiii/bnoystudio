@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useState, useRef, useMemo } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 
-const categories = ['All', 'Free', 'Paid', 'React', 'Next.js', 'E-Commerce', 'Portfolio', 'Dashboard'];
+const BUILT_IN = ['All', 'Free', 'Paid', 'React', 'Next.js', 'E-Commerce', 'Portfolio', 'Dashboard'];
 
 interface FeaturedProductsProps {
   limit?: number;
@@ -28,16 +28,31 @@ export default function FeaturedProducts({ limit, showFilters = true }: Featured
     queryKey: ['projects'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('status', 'published')
+        .from('projects').select('*').eq('status', 'published')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
-  const filtered = projects?.filter((p) => {
+  // Admin-managed categories table
+  const { data: dbCats } = useQuery({
+    queryKey: ['categories-list'],
+    queryFn: async () => (await supabase.from('categories').select('name').order('name')).data?.map((c: any) => c.name) || [],
+  });
+
+  // Merge built-in + admin-defined + categories actually used by projects (deduped, ordered)
+  const categories = useMemo(() => {
+    const usedCats = new Set<string>();
+    (projects || []).forEach((p: any) => {
+      (p.category || []).forEach((c: string) => usedCats.add(c));
+      (p.tech_stack || []).forEach((c: string) => usedCats.add(c));
+    });
+    const extras = [...(dbCats || []), ...Array.from(usedCats)].filter(c => !BUILT_IN.includes(c));
+    return [...BUILT_IN, ...Array.from(new Set(extras))];
+  }, [projects, dbCats]);
+
+  const filtered = (projects || []).filter((p: any) => {
     if (category === 'All') return true;
     if (category === 'Free') return p.price === 0;
     if (category === 'Paid') return p.price > 0;
@@ -62,10 +77,7 @@ export default function FeaturedProducts({ limit, showFilters = true }: Featured
       toast({ title: 'Project unlocked!', description: 'Open your dashboard to download the source code.' });
       return;
     }
-    toast({
-      title: 'Payment gateway coming soon',
-      description: 'Razorpay integration will activate once API keys are configured.',
-    });
+    toast({ title: 'Payment gateway coming soon', description: 'Razorpay integration will activate once API keys are configured.' });
   };
 
   return (
@@ -79,49 +91,53 @@ export default function FeaturedProducts({ limit, showFilters = true }: Featured
         </motion.div>
 
         {showFilters && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }} className="flex flex-wrap justify-center gap-2 mb-10">
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                variant={category === cat ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCategory(cat)}
-                className={category === cat ? 'gradient-fire-strong text-white border-0' : 'border-border bg-white text-ink hover:text-fire'}
-              >
-                {cat}
-              </Button>
-            ))}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1 }}
+            className="flex flex-wrap justify-center gap-2 mb-10"
+          >
+            {categories.map((cat) => {
+              const active = category === cat;
+              return (
+                <Button
+                  key={cat}
+                  variant={active ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCategory(cat)}
+                  className={`relative transition-all ${active ? 'gradient-fire-strong text-white border-0 shadow-card' : 'border-border bg-white text-ink hover:text-fire hover:border-fire/40'}`}
+                >
+                  {cat}
+                </Button>
+              );
+            })}
           </motion.div>
         )}
 
         {isLoading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl overflow-hidden">
+              <div key={i} className="rounded-2xl overflow-hidden border border-border">
                 <Skeleton className="aspect-video" />
                 <div className="p-5 space-y-3">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-8 w-full" />
                 </div>
               </div>
             ))}
           </div>
         ) : displayed && displayed.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayed.map((project, i) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={i}
-                onPreview={setPreviewUrl}
-                onBuy={handleBuy}
-              />
-            ))}
-          </div>
+          <AnimatePresence mode="popLayout">
+            <motion.div key={category} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {displayed.map((project, i) => (
+                <ProjectCard key={project.id} project={project} index={i} onPreview={setPreviewUrl} onBuy={handleBuy} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-            <p className="text-muted-foreground text-lg">No projects found. Check back soon!</p>
+            <p className="text-muted-foreground text-lg">No projects in <span className="font-bold text-fire">{category}</span> yet.</p>
+            <Button variant="outline" className="mt-4" onClick={() => setCategory('All')}>Show all projects</Button>
           </motion.div>
         )}
       </div>

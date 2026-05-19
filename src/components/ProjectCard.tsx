@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, ShoppingCart, Lock } from 'lucide-react';
+import { Eye, ShoppingCart, Lock, ImageOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/authStore';
@@ -39,11 +40,8 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
       <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
-        {project.thumbnail_url ? (
-          <img src={project.thumbnail_url} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        ) : (
-          <div className="w-full h-full gradient-fire" />
-        )}
+        <ThumbWithFallback src={project.thumbnail_url} alt={project.title} />
+
         <div className="absolute top-3 right-3">
           {isFree ? (
             <Badge className="bg-green-500 text-white border-0">FREE</Badge>
@@ -81,5 +79,27 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function ThumbWithFallback({ src, alt }: { src: string | null; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+  if (!src || errored) {
+    return (
+      <div className="w-full h-full gradient-fire flex flex-col items-center justify-center text-white/80 gap-1">
+        <ImageOff className="h-6 w-6" />
+        <span className="text-[10px] font-bold uppercase tracking-widest">No preview</span>
+      </div>
+    );
+  }
+  return (
+    <>
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
+      <img src={src} alt={alt} loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setErrored(true)}
+        className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${loaded ? 'opacity-100' : 'opacity-0'}`} />
+    </>
   );
 }
