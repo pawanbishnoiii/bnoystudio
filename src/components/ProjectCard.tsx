@@ -40,11 +40,8 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
       <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
-        {project.thumbnail_url ? (
-          <img src={project.thumbnail_url} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        ) : (
-          <div className="w-full h-full gradient-fire" />
-        )}
+        <ThumbWithFallback src={project.thumbnail_url} alt={project.title} />
+
         <div className="absolute top-3 right-3">
           {isFree ? (
             <Badge className="bg-green-500 text-white border-0">FREE</Badge>
