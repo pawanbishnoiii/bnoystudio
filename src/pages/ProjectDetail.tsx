@@ -278,6 +278,39 @@ export default function ProjectDetail() {
             <div>
               <h2 className="font-display text-xl font-bold mb-3 text-ink">About this project</h2>
               <div className="prose prose-sm max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: project.full_desc || project.short_desc }} />
+
+              {/* Inline demo credentials + quick copy actions (purchasers + admin) */}
+              {(purchased || isAdmin) && (
+                <div className="mt-5 rounded-2xl border border-fire/20 bg-gradient-to-br from-orange-50 to-amber-50 p-5">
+                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-fire flex items-center gap-2">
+                      <KeyRound className="h-3.5 w-3.5" /> Demo admin login
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">Tap any field to copy</span>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {(project as any).demo_admin_email && (
+                      <CredRow label="Email" value={(project as any).demo_admin_email} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Email copied' }); }} />
+                    )}
+                    {(project as any).demo_admin_password && (
+                      <CredRow label="Password" value={(project as any).demo_admin_password} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Password copied' }); }} />
+                    )}
+                    {project.preview_url && (project as any).preview_enabled !== false && (
+                      <CredRow label="Admin URL" value={`${project.preview_url.replace(/\/$/, '')}/admin`} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Admin link copied' }); }} />
+                    )}
+                    <CredRow label="Project URL" value={`${window.location.origin}/p/${project.slug || project.id}`} onCopy={(v) => { navigator.clipboard.writeText(v); toast({ title: 'Project link copied' }); }} />
+                  </div>
+                  {!(project as any).demo_admin_email && !(project as any).demo_admin_password && (
+                    <p className="text-xs text-muted-foreground mt-3">No demo admin credentials are configured for this project.</p>
+                  )}
+                </div>
+              )}
+              {!user && (
+                <button onClick={() => setShowAuthModal(true, 'Sign in to view demo admin credentials.')} className="mt-4 w-full text-left rounded-xl border border-dashed border-fire/30 bg-fire/5 p-4 text-sm text-ink/80 hover:bg-fire/10 transition flex items-center gap-3">
+                  <Lock className="h-4 w-4 text-fire" />
+                  Sign in &amp; purchase to unlock demo admin login, copy links and full source.
+                </button>
+              )}
             </div>
 
             <div>
