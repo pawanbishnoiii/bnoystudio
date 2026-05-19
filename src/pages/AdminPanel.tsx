@@ -594,6 +594,10 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
             <Switch checked={!!form.preview_enabled} onCheckedChange={(v) => setForm({ ...form, preview_enabled: v })} className="data-[state=checked]:bg-fire" />
             <Label className="text-xs text-muted-foreground font-normal">Show "Live Preview" button to public {!form.preview_enabled && <span className="text-amber-600 font-semibold">· hidden (admins only)</span>}</Label>
           </div>
+          <div className="pt-2">
+            <Label className="text-xs">Preview Watermark <span className="text-muted-foreground font-normal">(shown on top of the preview iframe to protect source URL)</span></Label>
+            <Input value={form.preview_watermark} onChange={(e) => setForm({ ...form, preview_watermark: e.target.value })} placeholder="e.g. DevMarket Demo · Not for redistribution" className="bg-warm-bg border-border mt-1" />
+          </div>
         </div>
 
         {/* Source code */}
