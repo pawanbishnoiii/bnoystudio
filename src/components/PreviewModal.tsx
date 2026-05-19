@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 interface PreviewModalProps {
   url: string | null;
   onClose: () => void;
+  watermark?: string | null;
+  title?: string;
 }
 
 type Device = 'desktop' | 'tablet' | 'mobile';
