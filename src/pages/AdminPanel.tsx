@@ -279,6 +279,23 @@ function TagInput({ label, value, onChange, placeholder, suggestions, withIcons 
   );
 }
 
+function slugify(input: string) {
+  return (input || '')
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+type ShotItem = {
+  id: string;
+  name: string;
+  pct: number;
+  status: 'queued' | 'uploading' | 'done' | 'error' | 'cancelled';
+  error?: string;
+  file?: File;
+  url?: string;
+  xhr?: XMLHttpRequest;
+};
+
 function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDone: () => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -303,8 +320,9 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
   const [loading, setLoading] = useState(false);
   const [thumbProgress, setThumbProgress] = useState(0);
-  const [shotProgress, setShotProgress] = useState<{ name: string; pct: number; done?: boolean }[]>([]);
+  const [shots, setShots] = useState<ShotItem[]>([]);
   const [zipName, setZipName] = useState<string | null>(null);
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'ok' | 'taken' | 'invalid'>('idle');
 
   const { data: catSuggestions } = useQuery({
     queryKey: ['cat-suggestions'],
