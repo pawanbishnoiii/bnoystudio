@@ -509,7 +509,17 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="bg-warm-bg border-border" /></div>
           <div className="space-y-2">
             <Label>URL slug <span className="text-muted-foreground font-normal">(used as /p/your-slug)</span></Label>
-            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className="bg-warm-bg border-border font-mono text-sm" />
+            <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from title" className={`bg-warm-bg font-mono text-sm ${slugStatus === 'taken' || slugStatus === 'invalid' ? 'border-destructive' : slugStatus === 'ok' ? 'border-green-500' : 'border-border'}`} />
+            {previewSlug && (
+              <div className="text-[11px] flex items-center gap-2 flex-wrap">
+                <span className="text-muted-foreground">Preview:</span>
+                <code className="px-1.5 py-0.5 rounded bg-muted text-ink/80">/p/{previewSlug}</code>
+                {slugStatus === 'checking' && <span className="text-muted-foreground">Checking…</span>}
+                {slugStatus === 'ok' && <span className="text-green-600 font-semibold">✓ Available</span>}
+                {slugStatus === 'taken' && <span className="text-destructive font-semibold">⚠ Already in use</span>}
+                {slugStatus === 'invalid' && <span className="text-destructive font-semibold">⚠ Must be ≥3 chars · lowercase letters, numbers, hyphens</span>}
+              </div>
+            )}
           </div>
         </div>
 
