@@ -43,6 +43,15 @@ export const ScannerCardStream = ({
   scanEffect = 'scramble',
   height = 320,
 }: ScannerCardStreamProps) => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
   const [isPaused, setIsPaused] = useState(false);
 
   const cards = useMemo(() => {
@@ -181,7 +190,7 @@ export const ScannerCardStream = ({
     const animate = (t: number) => {
       const dt = (t - stateRef.current.lastTime) / 1000;
       stateRef.current.lastTime = t;
-      if (!isPaused && !stateRef.current.isDragging) {
+      if (!isPaused && !prefersReducedMotion && !stateRef.current.isDragging) {
         if (stateRef.current.velocity > initialSpeed) stateRef.current.velocity *= friction;
         else stateRef.current.velocity = initialSpeed;
         stateRef.current.position += stateRef.current.velocity * stateRef.current.direction * dt;

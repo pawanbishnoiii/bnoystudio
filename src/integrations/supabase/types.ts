@@ -179,6 +179,7 @@ export type Database = {
           lov_email: string | null
           preview_enabled: boolean
           preview_url: string | null
+          preview_watermark: string | null
           price: number
           project_url: string | null
           screenshots: string[]
@@ -208,6 +209,7 @@ export type Database = {
           lov_email?: string | null
           preview_enabled?: boolean
           preview_url?: string | null
+          preview_watermark?: string | null
           price?: number
           project_url?: string | null
           screenshots?: string[]
@@ -237,6 +239,7 @@ export type Database = {
           lov_email?: string | null
           preview_enabled?: boolean
           preview_url?: string | null
+          preview_watermark?: string | null
           price?: number
           project_url?: string | null
           screenshots?: string[]

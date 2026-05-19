@@ -285,7 +285,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
     lov_email: '', project_url: '',
-    demo_admin_email: '', demo_admin_password: '',
+    demo_admin_email: '', demo_admin_password: '', preview_watermark: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
   const [bumpForm, setBumpForm] = useState({ version: '', notes: '', date: new Date().toISOString().slice(0,10) });
@@ -314,6 +314,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
       demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
+      preview_watermark: (existing as any).preview_watermark || '',
     });
   }, [existing]);
 
@@ -405,6 +406,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
         demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
+        preview_watermark: form.preview_watermark || null,
       };
       const { error } = isEdit
         ? await supabase.from('projects').update(payload).eq('id', editingId!)
@@ -591,6 +593,10 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           <div className="flex items-center gap-3 pt-1">
             <Switch checked={!!form.preview_enabled} onCheckedChange={(v) => setForm({ ...form, preview_enabled: v })} className="data-[state=checked]:bg-fire" />
             <Label className="text-xs text-muted-foreground font-normal">Show "Live Preview" button to public {!form.preview_enabled && <span className="text-amber-600 font-semibold">· hidden (admins only)</span>}</Label>
+          </div>
+          <div className="pt-2">
+            <Label className="text-xs">Preview Watermark <span className="text-muted-foreground font-normal">(shown on top of the preview iframe to protect source URL)</span></Label>
+            <Input value={form.preview_watermark} onChange={(e) => setForm({ ...form, preview_watermark: e.target.value })} placeholder="e.g. DevMarket Demo · Not for redistribution" className="bg-warm-bg border-border mt-1" />
           </div>
         </div>
 

@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Loader2, Monitor, Tablet, Smartphone, RefreshCw } from 'lucide-react';
+import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface PreviewModalProps {
   url: string | null;
   onClose: () => void;
+  watermark?: string | null;
+  title?: string;
 }
 
 type Device = 'desktop' | 'tablet' | 'mobile';
@@ -15,7 +17,7 @@ const SIZES: Record<Device, { w: number; h: number; label: string }> = {
   mobile: { w: 390, h: 844, label: '390×844' },
 };
 
-export default function PreviewModal({ url, onClose }: PreviewModalProps) {
+export default function PreviewModal({ url, onClose, watermark, title }: PreviewModalProps) {
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState<Device>('desktop');
   const [reloadKey, setReloadKey] = useState(0);
@@ -43,7 +45,7 @@ export default function PreviewModal({ url, onClose }: PreviewModalProps) {
                 <div className="w-3 h-3 rounded-full bg-sun" />
                 <div className="w-3 h-3 rounded-full bg-green-500" />
               </div>
-              <span className="text-xs text-muted-foreground truncate max-w-[200px] md:max-w-md">{url}</span>
+              <span className="text-xs font-semibold text-ink truncate max-w-[160px] md:max-w-md">{title || 'Live preview'}</span>
             </div>
 
             <div className="inline-flex items-center gap-1 p-1 bg-white border border-border rounded-full">
@@ -63,9 +65,7 @@ export default function PreviewModal({ url, onClose }: PreviewModalProps) {
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-muted-foreground hidden md:inline">{size.label}</span>
               <Button variant="ghost" size="sm" onClick={() => { setLoading(true); setReloadKey(k => k + 1); }}><RefreshCw className="h-4 w-4" /></Button>
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm"><ExternalLink className="h-4 w-4" /></Button>
-              </a>
+              {/* External-open link hidden so visitors cannot easily grab the source URL */}
               <Button variant="ghost" size="sm" onClick={onClose}><X className="h-4 w-4" /></Button>
             </div>
           </div>
@@ -83,6 +83,16 @@ export default function PreviewModal({ url, onClose }: PreviewModalProps) {
               )}
               <iframe key={reloadKey} src={url} className="w-full h-full border-0" onLoad={() => setLoading(false)}
                 title="Project Preview" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+              {watermark && (
+                <>
+                  <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none flex items-center justify-center py-2 px-3 bg-gradient-to-b from-ink/90 to-transparent">
+                    <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-white/90 drop-shadow">{watermark}</span>
+                  </div>
+                  <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center overflow-hidden">
+                    <span className="text-fire/10 text-[80px] md:text-[140px] font-display font-extrabold uppercase tracking-widest rotate-[-25deg] select-none">{watermark}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
