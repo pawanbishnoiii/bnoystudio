@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Loader2, Monitor, Tablet, Smartphone, RefreshCw } from 'lucide-react';
+import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
