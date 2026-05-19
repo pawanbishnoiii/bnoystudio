@@ -528,7 +528,7 @@ export default function ProjectDetail() {
           </div>
         </div>
       </div>
-      <PreviewModal url={previewUrl} onClose={() => setPreviewUrl(null)} />
+      <PreviewModal url={previewUrl} onClose={() => setPreviewUrl(null)} watermark={(project as any).preview_watermark || 'DevMarket Preview'} title={project.title} />
       <Footer />
     </motion.div>
   );
