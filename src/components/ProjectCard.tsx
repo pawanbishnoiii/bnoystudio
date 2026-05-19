@@ -16,10 +16,6 @@ interface ProjectCardProps {
   onBuy?: (project: any) => void;
   index?: number;
 }
-  onPreview?: (url: string) => void;
-  onBuy?: (project: any) => void;
-  index?: number;
-}
 
 export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: ProjectCardProps) {
   const { user, setShowAuthModal } = useAuthStore();
