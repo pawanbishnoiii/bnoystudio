@@ -4,12 +4,17 @@ import { useAuthStore } from '@/store/authStore';
 
 /**
  * Sets up the global auth listener. Call once in App.
- * Also fetches the user's role from the user_roles table to determine admin status.
+ * - Marks `authReady` after the initial session lookup completes so guards
+ *   don't redirect users away during the brief async boot window.
+ * - Only updates the admin flag for clear, sticky auth events to prevent
+ *   accidental "auto logout" from token-refresh side effects.
  */
 export function useAuthBootstrap() {
-  const { setUser, setSession, setIsAdmin } = useAuthStore();
+  const { setUser, setSession, setIsAdmin, setAuthReady } = useAuthStore();
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchRole = async (userId: string | undefined) => {
       if (!userId) { setIsAdmin(false); return; }
       const { data } = await supabase
@@ -18,22 +23,27 @@ export function useAuthBootstrap() {
         .eq('user_id', userId)
         .eq('role', 'admin')
         .maybeSingle();
-      setIsAdmin(!!data);
+      if (!cancelled) setIsAdmin(!!data);
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Ignore noisy events that don't represent a real auth change
+      if (event === 'TOKEN_REFRESHED' && session) {
+        setSession(session);
+        return;
+      }
       setSession(session);
       setUser(session?.user ?? null);
-      // Defer to avoid deadlocks inside the callback
       setTimeout(() => fetchRole(session?.user?.id), 0);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
       setSession(session);
       setUser(session?.user ?? null);
-      fetchRole(session?.user?.id);
+      fetchRole(session?.user?.id).finally(() => setAuthReady(true));
     });
 
-    return () => subscription.unsubscribe();
-  }, [setUser, setSession, setIsAdmin]);
+    return () => { cancelled = true; subscription.unsubscribe(); };
+  }, [setUser, setSession, setIsAdmin, setAuthReady]);
 }
