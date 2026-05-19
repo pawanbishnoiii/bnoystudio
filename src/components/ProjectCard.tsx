@@ -81,3 +81,25 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
     </motion.div>
   );
 }
+
+function ThumbWithFallback({ src, alt }: { src: string | null; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+  if (!src || errored) {
+    return (
+      <div className="w-full h-full gradient-fire flex flex-col items-center justify-center text-white/80 gap-1">
+        <ImageOff className="h-6 w-6" />
+        <span className="text-[10px] font-bold uppercase tracking-widest">No preview</span>
+      </div>
+    );
+  }
+  return (
+    <>
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
+      <img src={src} alt={alt} loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setErrored(true)}
+        className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${loaded ? 'opacity-100' : 'opacity-0'}`} />
+    </>
+  );
+}
