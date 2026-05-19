@@ -469,9 +469,10 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     try {
       let parsedChangelog: any = [];
       try { parsedChangelog = form.changelog ? JSON.parse(form.changelog) : []; } catch { parsedChangelog = []; }
-      const slugAuto = (form.slug || form.title || '')
-        .toLowerCase().trim()
-        .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      const slugAuto = slugify(form.slug || form.title);
+      if (slugAuto && (slugStatus === 'taken' || slugStatus === 'invalid')) {
+        throw new Error(slugStatus === 'taken' ? 'That slug is already in use — pick a different one.' : 'Slug must be at least 3 characters and only contain lowercase letters, numbers, hyphens.');
+      }
       const payload = {
         title: form.title, slug: slugAuto || null,
         short_desc: form.short_desc, full_desc: form.full_desc,
