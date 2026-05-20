@@ -883,6 +883,7 @@ function AdminSettings() {
       social_github: form.social_github, social_twitter: form.social_twitter,
       social_linkedin: form.social_linkedin, social_instagram: form.social_instagram,
       social_youtube: form.social_youtube,
+      hero_video_url: form.hero_video_url, brand_name: form.brand_name, brand_tagline: form.brand_tagline,
     }).eq('id', settings!.id);
     if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
     else { toast({ title: 'Saved!' }); queryClient.invalidateQueries({ queryKey: ['site-settings'] }); }
@@ -893,7 +894,13 @@ function AdminSettings() {
     <div className="space-y-6 max-w-2xl">
       <h1 className="font-display text-2xl font-bold">Site Settings</h1>
       <div className="bg-white rounded-xl border border-border shadow-card p-6 space-y-4">
-        <h3 className="font-display font-bold">Contact</h3>
+        <h3 className="font-display font-bold">Branding</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2"><Label>Brand name</Label><Input {...f('brand_name')} placeholder="Bnoy Studios" /></div>
+          <div className="space-y-2"><Label>Brand tagline</Label><Input {...f('brand_tagline')} placeholder="Premium web & mobile projects" /></div>
+          <div className="space-y-2 col-span-2"><Label>Hero background video URL (mp4)</Label><Input {...f('hero_video_url')} placeholder="https://…/hero.mp4" /></div>
+        </div>
+        <h3 className="font-display font-bold pt-4">Contact</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2"><Label>WhatsApp number</Label><Input {...f('whatsapp_number')} placeholder="+919999999999" /></div>
           <div className="space-y-2"><Label>Support email</Label><Input {...f('support_email')} /></div>
