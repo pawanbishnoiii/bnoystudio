@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, LogOut, LayoutDashboard, ShoppingBag, Search, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Search, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
+import bnoyLogo from '@/assets/bnoy-logo.png';
+
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,10 +49,10 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-9 w-9 rounded-xl gradient-fire-strong flex items-center justify-center glow-fire">
-            <ShoppingBag className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-display text-xl font-extrabold text-ink">Dev<span className="gradient-text">Market</span></span>
+          <img src={bnoyLogo} alt="Bnoy Studios" width={36} height={36} className="h-9 w-9 object-contain" />
+          <span className="font-display text-xl font-extrabold text-ink tracking-tight">
+            Bnoy<span className="gradient-text">.Studios</span>
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">

@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 
-const BUILT_IN = ['All', 'Free', 'Paid', 'React', 'Next.js', 'E-Commerce', 'Portfolio', 'Dashboard'];
+const BUILT_IN = ['All', 'Free', 'Paid', 'React', 'Next.js', 'App', 'SaaS', 'E-Commerce', 'Portfolio', 'Dashboard'];
 
 interface FeaturedProductsProps {
   limit?: number;

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw, Maximize2, Minimize2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface PreviewModalProps {
@@ -21,6 +21,20 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState<Device>('desktop');
   const [reloadKey, setReloadKey] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onChange = () => setFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) await containerRef.current.requestFullscreen?.();
+    else await document.exitFullscreen?.();
+  };
 
   if (!url) return null;
   const size = SIZES[device];
@@ -33,11 +47,11 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
         onClick={onClose}
       >
         <motion.div
+          ref={containerRef}
           initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
           onClick={(e) => e.stopPropagation()}
           className="relative w-full max-w-[95vw] h-[90vh] bg-white rounded-2xl overflow-hidden border border-border shadow-card-hover flex flex-col"
         >
-          {/* Toolbar */}
           <div className="flex items-center justify-between gap-3 p-3 border-b border-border bg-warm-bg flex-wrap">
             <div className="flex items-center gap-2">
               <div className="flex gap-1.5 mr-2">
@@ -49,11 +63,7 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
             </div>
 
             <div className="inline-flex items-center gap-1 p-1 bg-white border border-border rounded-full">
-              {([
-                ['desktop', Monitor],
-                ['tablet', Tablet],
-                ['mobile', Smartphone],
-              ] as const).map(([key, Icon]) => (
+              {([['desktop', Monitor], ['tablet', Tablet], ['mobile', Smartphone]] as const).map(([key, Icon]) => (
                 <button key={key} onClick={() => setDevice(key)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${device === key ? 'gradient-fire-strong text-white shadow' : 'text-muted-foreground hover:text-ink'}`}>
                   <Icon className="h-3.5 w-3.5" />
@@ -62,19 +72,22 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-muted-foreground hidden md:inline">{size.label}</span>
-              <Button variant="ghost" size="sm" onClick={() => { setLoading(true); setReloadKey(k => k + 1); }}><RefreshCw className="h-4 w-4" /></Button>
-              {/* External-open link hidden so visitors cannot easily grab the source URL */}
-              <Button variant="ghost" size="sm" onClick={onClose}><X className="h-4 w-4" /></Button>
+            <div className="flex items-center gap-1">
+              <span className="text-[11px] text-muted-foreground hidden md:inline mr-1">{size.label}</span>
+              <Button variant="ghost" size="sm" onClick={() => { setLoading(true); setReloadKey(k => k + 1); }} aria-label="Reload"><RefreshCw className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="sm" onClick={toggleFullscreen} aria-label="Fullscreen">
+                {fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></Button>
             </div>
           </div>
 
-          {/* Frame */}
           <div className="flex-1 overflow-auto bg-[radial-gradient(circle,_hsl(24_60%_92%)_1px,_transparent_1px)] [background-size:18px_18px] flex items-center justify-center p-4">
             <div
               className="relative bg-white rounded-xl shadow-card-hover overflow-hidden border border-border transition-all duration-300"
-              style={{ width: Math.min(size.w, window.innerWidth - 80), height: Math.min(size.h, window.innerHeight - 200) }}
+              style={fullscreen
+                ? { width: '100%', height: '100%' }
+                : { width: Math.min(size.w, window.innerWidth - 80), height: Math.min(size.h, window.innerHeight - 200) }}
             >
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white z-10">

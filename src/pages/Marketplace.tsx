@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
@@ -15,6 +15,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 export default function Marketplace() {
   const [search, setSearch] = useState('');
@@ -80,14 +82,29 @@ export default function Marketplace() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
       <Navbar />
       <AuthModal />
-      <div className="pt-28 pb-6 warm-bg">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-ink">
-            The <span className="gradient-text">Marketplace</span>
-          </h1>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Browse every published project. Filter, search and buy in one click.</p>
+
+      {/* Cinematic hero with Lottie */}
+      <section className="relative pt-28 pb-12 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-[420px] h-[420px] rounded-full opacity-50 blur-3xl pointer-events-none"
+             style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
+        <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-8 items-center relative">
+          <div>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
+              <Sparkles className="h-3.5 w-3.5" /> Bnoy Marketplace
+            </span>
+            <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold text-ink leading-[1.02] tracking-tight">
+              Let some <span className="gradient-text">light in.</span>
+            </h1>
+            <p className="text-muted-foreground mt-4 max-w-lg text-base md:text-lg">
+              Browse every published project. Filter by stack, price or category — preview live, then buy with one click.
+            </p>
+          </div>
+          <div className="max-w-[420px] mx-auto w-full">
+            <DotLottieReact src="/lottie/let-some-light-in.json" loop autoplay />
+          </div>
         </div>
-      </div>
+      </section>
+
 
       {/* Search + Filters */}
       <section className="py-8 bg-white border-b border-border sticky top-16 z-30 backdrop-blur-md bg-white/90">
