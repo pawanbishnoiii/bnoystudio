@@ -298,6 +298,9 @@ export type Database = {
       site_settings: {
         Row: {
           address: string | null
+          brand_name: string | null
+          brand_tagline: string | null
+          hero_video_url: string | null
           id: string
           phone: string | null
           refund_policy: string | null
@@ -312,6 +315,9 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          brand_name?: string | null
+          brand_tagline?: string | null
+          hero_video_url?: string | null
           id?: string
           phone?: string | null
           refund_policy?: string | null
@@ -326,6 +332,9 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          brand_name?: string | null
+          brand_tagline?: string | null
+          hero_video_url?: string | null
           id?: string
           phone?: string | null
           refund_policy?: string | null
