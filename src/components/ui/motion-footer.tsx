@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useQuery } from '@tanstack/react-query';
 import { Github, Twitter, Linkedin, Instagram, Youtube, Mail, ArrowUpRight, Heart, ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import bnoyLogo from '@/assets/bnoy-logo.png';
+import bnoyLogoFallback from '@/assets/bnoy-logo.png';
 import { cn } from '@/lib/utils';
 
 if (typeof window !== 'undefined') {
@@ -132,7 +132,8 @@ export function CinematicFooter() {
   ];
 
   return (
-    <footer ref={wrapperRef} className="relative isolate overflow-hidden bg-ink text-white pt-24 pb-10">
+    <footer ref={wrapperRef} className="relative isolate overflow-hidden bg-ink text-white pt-24 pb-10 w-full">
+      {(() => { const bnoyLogo = (s as any)?.logo_url || bnoyLogoFallback; const brand = s?.brand_name || 'Bnoy Studios'; const [b1, ...rest] = brand.split(' '); const b2 = rest.join(' ') || 'Studios'; return null; })()}
       {/* Aurora glow */}
       <div ref={auroraRef} className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-0 h-[700px] w-[1100px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-60 blur-3xl"
