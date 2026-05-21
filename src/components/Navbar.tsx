@@ -5,7 +5,8 @@ import { Menu, X, User, LogOut, LayoutDashboard, Search, LogIn, UserPlus } from 
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
-import bnoyLogo from '@/assets/bnoy-logo.png';
+import { useQuery } from '@tanstack/react-query';
+import bnoyLogoFallback from '@/assets/bnoy-logo.png';
 
 
 export default function Navbar() {
@@ -15,6 +16,13 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const navigate = useNavigate();
+  const { data: settings } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
+  });
+  const bnoyLogo = (settings as any)?.logo_url || bnoyLogoFallback;
+  const brandName = settings?.brand_name?.split(' ')[0] || 'Bnoy';
+  const brandSuffix = settings?.brand_name?.split(' ').slice(1).join(' ') || 'Studios';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -49,9 +57,9 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src={bnoyLogo} alt="Bnoy Studios" width={36} height={36} className="h-9 w-9 object-contain" />
+          <img src={bnoyLogo} alt={settings?.brand_name || 'Bnoy Studios'} width={36} height={36} className="h-9 w-9 object-contain" />
           <span className="font-display text-xl font-extrabold text-ink tracking-tight">
-            Bnoy<span className="gradient-text">.Studios</span>
+            {brandName}<span className="gradient-text">.{brandSuffix}</span>
           </span>
         </Link>
 

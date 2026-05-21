@@ -298,10 +298,16 @@ export type Database = {
       site_settings: {
         Row: {
           address: string | null
+          banner_url: string | null
           brand_name: string | null
           brand_tagline: string | null
+          hero_badge: string | null
+          hero_bg_url: string | null
+          hero_lottie_url: string | null
           hero_video_url: string | null
+          hide_watermarks: boolean
           id: string
+          logo_url: string | null
           phone: string | null
           refund_policy: string | null
           social_github: string | null
@@ -315,10 +321,16 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          banner_url?: string | null
           brand_name?: string | null
           brand_tagline?: string | null
+          hero_badge?: string | null
+          hero_bg_url?: string | null
+          hero_lottie_url?: string | null
           hero_video_url?: string | null
+          hide_watermarks?: boolean
           id?: string
+          logo_url?: string | null
           phone?: string | null
           refund_policy?: string | null
           social_github?: string | null
@@ -332,10 +344,16 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          banner_url?: string | null
           brand_name?: string | null
           brand_tagline?: string | null
+          hero_badge?: string | null
+          hero_bg_url?: string | null
+          hero_lottie_url?: string | null
           hero_video_url?: string | null
+          hide_watermarks?: boolean
           id?: string
+          logo_url?: string | null
           phone?: string | null
           refund_policy?: string | null
           social_github?: string | null

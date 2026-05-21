@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useQuery } from '@tanstack/react-query';
 import { Github, Twitter, Linkedin, Instagram, Youtube, Mail, ArrowUpRight, Heart, ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import bnoyLogo from '@/assets/bnoy-logo.png';
+import bnoyLogoFallback from '@/assets/bnoy-logo.png';
 import { cn } from '@/lib/utils';
 
 if (typeof window !== 'undefined') {
@@ -131,8 +131,14 @@ export function CinematicFooter() {
     { title: 'Studio', links: [['How it works', '/#how'], ['FAQ', '/#faq'], ['Refund Policy', '/refund'], ['Contact', `mailto:${s?.support_email || 'hello@bnoy.studio'}`]] as const },
   ];
 
+  const bnoyLogo = (s as any)?.logo_url || bnoyLogoFallback;
+  const brandFull = s?.brand_name || 'Bnoy Studios';
+  const [brandLead, ...brandTailArr] = brandFull.split(' ');
+  const brandTail = brandTailArr.join(' ') || 'Studios';
+
   return (
-    <footer ref={wrapperRef} className="relative isolate overflow-hidden bg-ink text-white pt-24 pb-10">
+    <footer ref={wrapperRef} className="relative isolate overflow-hidden bg-ink text-white pt-24 pb-10 w-full">
+
       {/* Aurora glow */}
       <div ref={auroraRef} className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-0 h-[700px] w-[1100px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-60 blur-3xl"
@@ -205,9 +211,9 @@ export function CinematicFooter() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 pt-6">
           <Link to="/" className="flex items-center gap-2">
-            <img src={bnoyLogo} alt="Bnoy Studios" width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
+            <img src={bnoyLogo} alt={brandFull} width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
             <span className="font-display text-lg font-extrabold tracking-tight">
-              Bnoy<span className="text-fire">.</span>Studios
+              {brandLead}<span className="text-fire">.</span>{brandTail}
             </span>
           </Link>
           <div className="flex gap-2">
