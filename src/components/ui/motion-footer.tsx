@@ -131,9 +131,14 @@ export function CinematicFooter() {
     { title: 'Studio', links: [['How it works', '/#how'], ['FAQ', '/#faq'], ['Refund Policy', '/refund'], ['Contact', `mailto:${s?.support_email || 'hello@bnoy.studio'}`]] as const },
   ];
 
+  const bnoyLogo = (s as any)?.logo_url || bnoyLogoFallback;
+  const brandFull = s?.brand_name || 'Bnoy Studios';
+  const [brandLead, ...brandTailArr] = brandFull.split(' ');
+  const brandTail = brandTailArr.join(' ') || 'Studios';
+
   return (
     <footer ref={wrapperRef} className="relative isolate overflow-hidden bg-ink text-white pt-24 pb-10 w-full">
-      {(() => { const bnoyLogo = (s as any)?.logo_url || bnoyLogoFallback; const brand = s?.brand_name || 'Bnoy Studios'; const [b1, ...rest] = brand.split(' '); const b2 = rest.join(' ') || 'Studios'; return null; })()}
+
       {/* Aurora glow */}
       <div ref={auroraRef} className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-0 h-[700px] w-[1100px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-60 blur-3xl"
