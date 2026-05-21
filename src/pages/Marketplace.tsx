@@ -84,10 +84,10 @@ export default function Marketplace() {
       <AuthModal />
 
       {/* Cinematic hero with Lottie */}
-      <section className="relative pt-28 pb-12 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
+      <section className="relative pt-28 pb-10 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
         <div className="absolute -top-20 -right-20 w-[420px] h-[420px] rounded-full opacity-50 blur-3xl pointer-events-none"
              style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
-        <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-8 items-center relative">
+        <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-6 items-center relative">
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
               <Sparkles className="h-3.5 w-3.5" /> Bnoy Marketplace
@@ -95,60 +95,69 @@ export default function Marketplace() {
             <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold text-ink leading-[1.02] tracking-tight">
               Let some <span className="gradient-text">light in.</span>
             </h1>
-            <p className="text-muted-foreground mt-4 max-w-lg text-base md:text-lg">
+            <p className="text-muted-foreground mt-3 max-w-lg text-base">
               Browse every published project. Filter by stack, price or category — preview live, then buy with one click.
             </p>
           </div>
-          <div className="max-w-[420px] mx-auto w-full">
+          <div className="max-w-[360px] mx-auto w-full h-[220px] md:h-[260px]">
             <DotLottieReact src="/lottie/let-some-light-in.json" loop autoplay />
           </div>
         </div>
       </section>
 
 
-      {/* Search + Filters */}
-      <section className="py-8 bg-white border-b border-border sticky top-16 z-30 backdrop-blur-md bg-white/90">
+      {/* Compact modern filter bar */}
+      <section className="py-4 bg-white/95 border-b border-border sticky top-16 z-30 backdrop-blur-md">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
-            <div className="relative flex-1">
+          <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search projects, tech, categories…"
-                className="pl-10 h-11 bg-warm-bg border-border"
+                className="pl-10 h-10 bg-warm-bg/60 border-border rounded-full"
               />
             </div>
-            <Select value={priceFilter} onValueChange={(v: any) => setPriceFilter(v)}>
-              <SelectTrigger className="md:w-32 h-11"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All prices</SelectItem>
-                <SelectItem value="free">Free</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sort} onValueChange={(v: any) => setSort(v)}>
-              <SelectTrigger className="md:w-40 h-11"><SlidersHorizontal className="h-4 w-4 mr-2" /><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="popular">Most popular</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="h-10 w-[130px] rounded-full md:hidden"><SelectValue /></SelectTrigger>
+                <SelectContent>{allCats.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+              <Select value={priceFilter} onValueChange={(v: any) => setPriceFilter(v)}>
+                <SelectTrigger className="h-10 w-[110px] rounded-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All prices</SelectItem>
+                  <SelectItem value="free">Free</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={(v: any) => setSort(v)}>
+                <SelectTrigger className="h-10 w-[130px] rounded-full"><SlidersHorizontal className="h-3.5 w-3.5 mr-1" /><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="popular">Most popular</SelectItem>
+                  <SelectItem value="price-asc">Price ↑</SelectItem>
+                  <SelectItem value="price-desc">Price ↓</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-4">
+          {/* Desktop category pills (compact, scrollable) */}
+          <div className="hidden md:flex gap-1.5 mt-3 overflow-x-auto pb-1 -mx-1 px-1">
             {allCats.map((c) => (
-              <Button
+              <button
                 key={c}
-                size="sm"
-                variant={category === c ? 'default' : 'outline'}
                 onClick={() => setCategory(c)}
-                className={category === c ? 'gradient-fire-strong text-white border-0' : 'border-border bg-white text-ink hover:text-fire'}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
+                  category === c
+                    ? 'gradient-fire-strong text-white border-transparent shadow-card'
+                    : 'border-border bg-white text-muted-foreground hover:text-fire hover:border-fire/40'
+                }`}
               >
                 {c}
-              </Button>
+              </button>
             ))}
           </div>
         </div>

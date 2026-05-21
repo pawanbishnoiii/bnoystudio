@@ -243,9 +243,9 @@ export default function ProjectDetail() {
     : 4.9;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background w-full overflow-x-hidden">
       <Navbar /><AuthModal />
-      <div className="container mx-auto px-4 pt-28 pb-20">
+      <div className="container mx-auto px-4 pt-28 pb-20 max-w-7xl w-full">
         <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-fire mb-8">
           <ArrowLeft className="h-4 w-4" /> Back to marketplace
         </Link>
