@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Loader2, Monitor, Tablet, Smartphone, RefreshCw, Maximize2, Minimize2, ExternalLink } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 
 interface PreviewModalProps {
@@ -23,6 +25,12 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
   const [reloadKey, setReloadKey] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { data: settings } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
+  });
+  const hideWatermarks = (settings as any)?.hide_watermarks === true;
 
   useEffect(() => {
     const onChange = () => setFullscreen(!!document.fullscreenElement);
@@ -75,8 +83,12 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
             <div className="flex items-center gap-1">
               <span className="text-[11px] text-muted-foreground hidden md:inline mr-1">{size.label}</span>
               <Button variant="ghost" size="sm" onClick={() => { setLoading(true); setReloadKey(k => k + 1); }} aria-label="Reload"><RefreshCw className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="sm" onClick={toggleFullscreen} aria-label="Fullscreen">
-                {fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              <Button variant="ghost" size="sm" asChild aria-label="Open in new tab">
+                <a href={url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /></a>
+              </Button>
+              <Button variant="default" size="sm" onClick={toggleFullscreen} aria-label="Fullscreen" className="gradient-fire-strong text-white">
+                {fullscreen ? <Minimize2 className="h-4 w-4 md:mr-1" /> : <Maximize2 className="h-4 w-4 md:mr-1" />}
+                <span className="hidden md:inline text-xs">{fullscreen ? 'Exit' : 'Full Screen'}</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></Button>
             </div>
@@ -96,7 +108,7 @@ export default function PreviewModal({ url, onClose, watermark, title }: Preview
               )}
               <iframe key={reloadKey} src={url} className="w-full h-full border-0" onLoad={() => setLoading(false)}
                 title="Project Preview" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
-              {watermark && (
+              {watermark && !hideWatermarks && (
                 <>
                   <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none flex items-center justify-center py-2 px-3 bg-gradient-to-b from-ink/90 to-transparent">
                     <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-white/90 drop-shadow">{watermark}</span>
