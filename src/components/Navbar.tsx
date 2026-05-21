@@ -57,9 +57,9 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src={bnoyLogo} alt="Bnoy Studios" width={36} height={36} className="h-9 w-9 object-contain" />
+          <img src={bnoyLogo} alt={settings?.brand_name || 'Bnoy Studios'} width={36} height={36} className="h-9 w-9 object-contain" />
           <span className="font-display text-xl font-extrabold text-ink tracking-tight">
-            Bnoy<span className="gradient-text">.Studios</span>
+            {brandName}<span className="gradient-text">.{brandSuffix}</span>
           </span>
         </Link>
 
