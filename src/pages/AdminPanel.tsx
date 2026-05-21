@@ -874,6 +874,7 @@ function AdminSettings() {
     queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
   });
   const [form, setForm] = useState<any>({});
+  const [uploading, setUploading] = useState<string | null>(null);
   if (settings && !form.id) setTimeout(() => setForm(settings), 0);
 
   const save = async () => {
@@ -884,36 +885,89 @@ function AdminSettings() {
       social_linkedin: form.social_linkedin, social_instagram: form.social_instagram,
       social_youtube: form.social_youtube,
       hero_video_url: form.hero_video_url, brand_name: form.brand_name, brand_tagline: form.brand_tagline,
+      logo_url: form.logo_url, banner_url: form.banner_url,
+      hero_lottie_url: form.hero_lottie_url, hero_bg_url: form.hero_bg_url, hero_badge: form.hero_badge,
+      hide_watermarks: !!form.hide_watermarks,
     }).eq('id', settings!.id);
     if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
     else { toast({ title: 'Saved!' }); queryClient.invalidateQueries({ queryKey: ['site-settings'] }); }
   };
   const f = (k: string) => ({ value: form[k] || '', onChange: (e: any) => setForm({ ...form, [k]: e.target.value }) });
 
+  const uploadTo = async (key: string, file: File) => {
+    if (!file) return;
+    setUploading(key);
+    try {
+      const path = `branding/${key}-${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      const { error } = await supabase.storage.from('project-assets').upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data } = supabase.storage.from('project-assets').getPublicUrl(path);
+      setForm((prev: any) => ({ ...prev, [key]: data.publicUrl }));
+      toast({ title: 'Uploaded', description: 'Click Save Settings to apply.' });
+    } catch (e: any) {
+      toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
+    } finally { setUploading(null); }
+  };
+
+  const FileField = ({ k, label, accept = 'image/*' }: { k: string; label: string; accept?: string }) => (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Input {...f(k)} placeholder="https://… or upload" className="flex-1" />
+        <label className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md border border-border bg-white text-sm font-medium cursor-pointer hover:bg-warm-bg shrink-0">
+          {uploading === k ? 'Uploading…' : 'Upload'}
+          <input type="file" accept={accept} className="hidden" onChange={(e) => e.target.files?.[0] && uploadTo(k, e.target.files[0])} />
+        </label>
+      </div>
+      {form[k] && <img src={form[k]} alt="" className="h-12 rounded border border-border object-contain bg-warm-bg/40 p-1" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />}
+    </div>
+  );
+
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <h1 className="font-display text-2xl font-bold">Site Settings</h1>
+
       <div className="bg-white rounded-xl border border-border shadow-card p-6 space-y-4">
         <h3 className="font-display font-bold">Branding</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2"><Label>Brand name</Label><Input {...f('brand_name')} placeholder="Bnoy Studios" /></div>
           <div className="space-y-2"><Label>Brand tagline</Label><Input {...f('brand_tagline')} placeholder="Premium web & mobile projects" /></div>
-          <div className="space-y-2 col-span-2"><Label>Hero background video URL (mp4)</Label><Input {...f('hero_video_url')} placeholder="https://…/hero.mp4" /></div>
+          <div className="space-y-2 sm:col-span-2"><Label>Hero badge text</Label><Input {...f('hero_badge')} placeholder="New · 50+ Premium Projects" /></div>
+          <FileField k="logo_url" label="Logo (Navbar + Footer)" />
+          <FileField k="banner_url" label="Banner / OG image" />
         </div>
+
+        <h3 className="font-display font-bold pt-4">Hero Assets</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-2 sm:col-span-2"><Label>Hero background video URL (mp4)</Label><Input {...f('hero_video_url')} placeholder="https://…/hero.mp4" /></div>
+          <FileField k="hero_bg_url" label="Hero background image" />
+          <div className="space-y-2"><Label>Hero Lottie JSON URL</Label><Input {...f('hero_lottie_url')} placeholder="https://…/animation.json or .lottie" /></div>
+        </div>
+
+        <h3 className="font-display font-bold pt-4">Watermarks</h3>
+        <div className="flex items-center justify-between rounded-xl border border-border bg-warm-bg/50 p-4">
+          <div>
+            <p className="font-semibold text-sm text-ink">Master watermark switch</p>
+            <p className="text-xs text-muted-foreground">Hide all preview watermarks site-wide.</p>
+          </div>
+          <Switch checked={!!form.hide_watermarks} onCheckedChange={(v) => setForm({ ...form, hide_watermarks: v })} />
+        </div>
+
         <h3 className="font-display font-bold pt-4">Contact</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2"><Label>WhatsApp number</Label><Input {...f('whatsapp_number')} placeholder="+919999999999" /></div>
           <div className="space-y-2"><Label>Support email</Label><Input {...f('support_email')} /></div>
           <div className="space-y-2"><Label>Phone</Label><Input {...f('phone')} /></div>
           <div className="space-y-2"><Label>Address</Label><Input {...f('address')} /></div>
         </div>
+
         <h3 className="font-display font-bold pt-4">Social Media URLs</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2"><Label>GitHub</Label><Input {...f('social_github')} /></div>
           <div className="space-y-2"><Label>Twitter</Label><Input {...f('social_twitter')} /></div>
           <div className="space-y-2"><Label>LinkedIn</Label><Input {...f('social_linkedin')} /></div>
           <div className="space-y-2"><Label>Instagram</Label><Input {...f('social_instagram')} /></div>
-          <div className="space-y-2 col-span-2"><Label>YouTube</Label><Input {...f('social_youtube')} /></div>
+          <div className="space-y-2 sm:col-span-2"><Label>YouTube</Label><Input {...f('social_youtube')} /></div>
         </div>
         <div className="space-y-2"><Label>Refund Policy</Label><Textarea rows={6} {...f('refund_policy')} /></div>
         <Button onClick={save} className="gradient-fire-strong text-white">Save Settings</Button>
