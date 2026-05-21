@@ -211,9 +211,9 @@ export function CinematicFooter() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 pt-6">
           <Link to="/" className="flex items-center gap-2">
-            <img src={bnoyLogo} alt="Bnoy Studios" width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
+            <img src={bnoyLogo} alt={brandFull} width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
             <span className="font-display text-lg font-extrabold tracking-tight">
-              Bnoy<span className="text-fire">.</span>Studios
+              {brandLead}<span className="text-fire">.</span>{brandTail}
             </span>
           </Link>
           <div className="flex gap-2">
