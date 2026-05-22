@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import bnoyLogoFallback from '@/assets/bnoy-logo.png';
+import { UserDropdown } from '@/components/ui/user-dropdown';
 
 
 export default function Navbar() {
