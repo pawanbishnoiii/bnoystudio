@@ -88,15 +88,27 @@ export default function Navbar() {
           </Button>
 
           {user ? (
-            <>
-              {isAdmin && <Button variant="ghost" size="sm" onClick={() => navigate('/admin')}><LayoutDashboard className="h-5 w-5 mr-2" />Admin</Button>}
-              <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}><User className="h-5 w-5 mr-2" />Dashboard</Button>
-              <Button variant="ghost" size="sm" onClick={handleLogout}><LogOut className="h-5 w-5 mr-2" />Logout</Button>
-            </>
+            <UserDropdown
+              isAdmin={isAdmin}
+              user={{
+                name: user.user_metadata?.name || (user.email?.split('@')[0] ?? 'You'),
+                email: user.email ?? undefined,
+                avatar: user.user_metadata?.avatar_url,
+                initials: (user.user_metadata?.name || user.email || 'U').slice(0, 2).toUpperCase(),
+                status: 'online',
+              }}
+              onAction={(a) => {
+                if (a === 'dashboard') navigate('/dashboard');
+                else if (a === 'admin') navigate('/admin');
+                else if (a === 'purchases') navigate('/dashboard');
+                else if (a === 'wishlist') navigate('/dashboard');
+                else if (a === 'logout') handleLogout();
+              }}
+            />
           ) : (
             <>
               <Button variant="ghost" size="sm" onClick={() => setShowAuthModal(true)}><LogIn className="h-5 w-5 mr-2" />Login</Button>
-              <Button size="sm" className="gradient-fire-strong text-white hover:opacity-95" onClick={() => setShowAuthModal(true)}><UserPlus className="h-5 w-5 mr-2" />Sign Up</Button>
+              <Button size="sm" className="gradient-fire-strong text-white hover:opacity-95" onClick={() => navigate('/signup')}><UserPlus className="h-5 w-5 mr-2" />Sign Up</Button>
             </>
           )}
         </div>
