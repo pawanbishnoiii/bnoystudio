@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
+import Signup from "./pages/Signup";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuthBootstrap } from "@/hooks/useAuthBootstrap";
@@ -28,6 +29,8 @@ function AnimatedRoutes() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/refund" element={<RefundPolicy />} />
         <Route path="/apps" element={<Apps />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Signup />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
@@ -36,7 +39,11 @@ function AnimatedRoutes() {
 
 function AppShell() {
   useAuthBootstrap();
-  return <AnimatedRoutes />;
+  return (
+    <MotionConfig reducedMotion="user">
+      <AnimatedRoutes />
+    </MotionConfig>
+  );
 }
 
 const App = () => (

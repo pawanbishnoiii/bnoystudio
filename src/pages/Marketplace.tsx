@@ -163,7 +163,7 @@ export default function Marketplace() {
         </div>
       </section>
 
-      {/* Grid */}
+      {/* Grid with grouped sections */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           {isLoading ? (
@@ -174,12 +174,48 @@ export default function Marketplace() {
             </div>
           ) : filtered.length > 0 ? (
             <>
-              <p className="text-sm text-muted-foreground mb-4">{filtered.length} project{filtered.length !== 1 && 's'} found</p>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.map((project: any, i: number) => (
-                  <ProjectCard key={project.id} project={project} index={i} onPreview={setPreviewUrl} onBuy={handleBuy} />
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground mb-6">{filtered.length} project{filtered.length !== 1 && 's'} found</p>
+              {(() => {
+                // When the user is browsing "All" with no search, split into curated bands.
+                const showSections = priceFilter === 'all' && !search.trim() && category === 'All';
+                if (!showSections) {
+                  return (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filtered.map((project: any, i: number) => (
+                        <ProjectCard key={project.id} project={project} index={i} onPreview={setPreviewUrl} onBuy={handleBuy} />
+                      ))}
+                    </div>
+                  );
+                }
+                const featured = filtered.filter((p: any) => p.featured);
+                const free = filtered.filter((p: any) => p.price === 0 && !p.featured);
+                const paid = filtered.filter((p: any) => p.price > 0 && !p.featured);
+                const Section = ({ title, subtitle, items }: { title: string; subtitle: string; items: any[] }) => (
+                  items.length === 0 ? null : (
+                    <div className="mb-14">
+                      <div className="flex items-end justify-between mb-5">
+                        <div>
+                          <h2 className="font-display text-2xl font-extrabold text-ink tracking-tight">{title}</h2>
+                          <p className="text-sm text-muted-foreground">{subtitle}</p>
+                        </div>
+                        <span className="text-xs font-bold tracking-widest uppercase text-fire">{items.length} items</span>
+                      </div>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {items.map((project: any, i: number) => (
+                          <ProjectCard key={project.id} project={project} index={i} onPreview={setPreviewUrl} onBuy={handleBuy} />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                );
+                return (
+                  <>
+                    <Section title="Featured picks" subtitle="Hand-curated builds we love right now." items={featured} />
+                    <Section title="Free starters" subtitle="Battery-included open builds — clone, download, ship." items={free} />
+                    <Section title="Premium projects" subtitle="Production-ready codebases for serious launches." items={paid} />
+                  </>
+                );
+              })()}
             </>
           ) : (
             <div className="text-center py-20">

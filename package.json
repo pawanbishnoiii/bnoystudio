@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
+    "@iconify/react": "^6.0.2",
     "@lottiefiles/dotlottie-react": "^0.19.0",
     "@lottiefiles/react-lottie-player": "^3.6.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
