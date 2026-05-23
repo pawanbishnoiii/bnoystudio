@@ -172,6 +172,7 @@ export type Database = {
           demo_admin_email: string | null
           demo_admin_password: string | null
           discount_price: number | null
+          external_url_enabled: boolean
           featured: boolean
           full_desc: string
           id: string
@@ -202,6 +203,7 @@ export type Database = {
           demo_admin_email?: string | null
           demo_admin_password?: string | null
           discount_price?: number | null
+          external_url_enabled?: boolean
           featured?: boolean
           full_desc?: string
           id?: string
@@ -232,6 +234,7 @@ export type Database = {
           demo_admin_email?: string | null
           demo_admin_password?: string | null
           discount_price?: number | null
+          external_url_enabled?: boolean
           featured?: boolean
           full_desc?: string
           id?: string
