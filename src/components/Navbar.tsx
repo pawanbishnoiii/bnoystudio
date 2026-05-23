@@ -19,6 +19,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const navigate = useNavigate();
   const { data: settings } = useQuery({
