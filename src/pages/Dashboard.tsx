@@ -230,8 +230,14 @@ export default function Dashboard() {
                 </label>
               </div>
               <div className="space-y-2"><Label>Email</Label><Input value={user.email || ''} disabled /></div>
-              <div className="space-y-2"><Label>Name</Label><Input placeholder="Your name" defaultValue={profile?.name || ''} /></div>
-              <Button className="gradient-fire-strong text-white">Save changes</Button>
+              <div className="space-y-2"><Label>Display name</Label><Input placeholder="Your name" value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} /></div>
+              <Button disabled={savingProfile} onClick={async () => {
+                setSavingProfile(true);
+                const { error } = await supabase.from('profiles').update({ name: nameDraft }).eq('id', user.id);
+                setSavingProfile(false);
+                if (error) toast({ title: 'Could not save', description: error.message, variant: 'destructive' });
+                else { toast({ title: 'Profile updated ✨' }); qc.invalidateQueries({ queryKey: ['profile'] }); }
+              }} className="gradient-fire-strong text-white">{savingProfile ? 'Saving…' : 'Save changes'}</Button>
             </div>
           </TabsContent>
         </Tabs>
