@@ -21,6 +21,8 @@ export default function Dashboard() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [uploading, setUploading] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
 
   if (!user) return <Navigate to="/" replace />;
 
@@ -28,6 +30,21 @@ export default function Dashboard() {
     queryKey: ['profile', user.id],
     queryFn: async () => (await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()).data,
   });
+
+  // Auto-import Google/email metadata (avatar + name) once if profile is empty.
+  useEffect(() => {
+    if (!profile) return;
+    const meta = (user.user_metadata || {}) as any;
+    const gAvatar = meta.avatar_url || meta.picture;
+    const gName = meta.full_name || meta.name;
+    const patch: any = {};
+    if (!profile.avatar_url && gAvatar) patch.avatar_url = gAvatar;
+    if (!profile.name && gName) patch.name = gName;
+    if (Object.keys(patch).length) {
+      supabase.from('profiles').update(patch).eq('id', user.id).then(() => qc.invalidateQueries({ queryKey: ['profile'] }));
+    }
+    if (!nameDraft) setNameDraft(profile.name || gName || '');
+  }, [profile, user, qc]);
 
   const { data: purchases } = useQuery({
     queryKey: ['my-purchases', user.id],
