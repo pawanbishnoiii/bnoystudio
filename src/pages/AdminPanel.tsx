@@ -573,6 +573,12 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
             <Label>Project URL</Label>
             <Input value={form.project_url} onChange={(e) => setForm({ ...form, project_url: e.target.value })} placeholder="https://lovable.dev/projects/…" className="bg-white border-border" />
           </div>
+          <div className="md:col-span-2 flex items-center gap-3 pt-1">
+            <Switch checked={!!form.external_url_enabled} onCheckedChange={(v) => setForm({ ...form, external_url_enabled: v })} className="data-[state=checked]:bg-fire" />
+            <Label className="text-xs text-muted-foreground font-normal">
+              Show <b>"Go to project link"</b> button to buyers (only if they've purchased) {form.external_url_enabled ? <span className="text-green-700 font-semibold">· visible</span> : <span className="text-amber-700 font-semibold">· hidden (admin-only)</span>}
+            </Label>
+          </div>
         </div>
 
         {/* Demo admin login (shown to purchasers + admins) */}
