@@ -343,6 +343,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
+      external_url_enabled: !!(existing as any).external_url_enabled,
       demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
       preview_watermark: (existing as any).preview_watermark || '',
     });
