@@ -485,6 +485,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
+        external_url_enabled: !!form.external_url_enabled,
         demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
         preview_watermark: form.preview_watermark || null,
       };
