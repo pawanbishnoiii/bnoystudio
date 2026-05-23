@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { prefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 
 export default function Marketplace() {
