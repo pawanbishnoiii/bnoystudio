@@ -133,7 +133,6 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        <DashboardTabs />
         <Tabs value={tab} onValueChange={(v) => setSearchParams({ tab: v })} className="space-y-6">
           <TabsList className="bg-warm-bg border border-border flex flex-wrap h-auto">
             <TabsTrigger value="purchases"><Download className="h-5 w-5 mr-2" />Purchases</TabsTrigger>
