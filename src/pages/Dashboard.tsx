@@ -23,6 +23,8 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get('tab') || 'purchases';
 
   if (!user) return <Navigate to="/" replace />;
 
