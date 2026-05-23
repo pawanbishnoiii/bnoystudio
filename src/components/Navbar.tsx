@@ -96,18 +96,20 @@ export default function Navbar() {
             <UserDropdown
               isAdmin={isAdmin}
               user={{
-                name: user.user_metadata?.name || (user.email?.split('@')[0] ?? 'You'),
+                name: user.user_metadata?.name || user.user_metadata?.full_name || (user.email?.split('@')[0] ?? 'You'),
                 email: user.email ?? undefined,
-                avatar: user.user_metadata?.avatar_url,
+                avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture,
                 initials: (user.user_metadata?.name || user.email || 'U').slice(0, 2).toUpperCase(),
                 status: 'online',
               }}
               onAction={(a) => {
                 if (a === 'dashboard') navigate('/dashboard');
                 else if (a === 'admin') navigate('/admin');
-                else if (a === 'purchases') navigate('/dashboard');
-                else if (a === 'wishlist') navigate('/dashboard');
-                else if (a === 'logout') handleLogout();
+                else if (a === 'purchases') navigate('/dashboard?tab=purchases');
+                else if (a === 'wishlist') navigate('/dashboard?tab=wishlist');
+                else if (a === 'help') navigate('/refund');
+                else if (a === 'upgrade') navigate('/marketplace');
+                else if (a === 'logout') setConfirmLogout(true);
               }}
             />
           ) : (
