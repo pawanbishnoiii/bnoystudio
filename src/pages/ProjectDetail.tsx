@@ -245,12 +245,12 @@ export default function ProjectDetail() {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background w-full overflow-x-hidden">
       <Navbar /><AuthModal />
-      <div className="container mx-auto px-4 pt-28 pb-20 max-w-7xl w-full">
-        <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-fire mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-16 md:pb-20 max-w-7xl w-full">
+        <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-fire mb-6 md:mb-8">
           <ArrowLeft className="h-4 w-4" /> Back to marketplace
         </Link>
 
-        <div className="grid lg:grid-cols-3 gap-10">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-2 space-y-8">
             <motion.div initial={{ scale: 1.05, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}
               className="rounded-2xl overflow-hidden border border-border shadow-card">
