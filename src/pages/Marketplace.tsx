@@ -101,7 +101,7 @@ export default function Marketplace() {
             </p>
           </div>
           <div className="max-w-[360px] mx-auto w-full h-[220px] md:h-[260px]">
-            <DotLottieReact src="/lottie/let-some-light-in.json" loop autoplay />
+            <DotLottieReact src="/lottie/let-some-light-in.json" loop={!prefersReducedMotion()} autoplay={!prefersReducedMotion()} />
           </div>
         </div>
       </section>
