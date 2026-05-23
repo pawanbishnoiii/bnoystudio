@@ -505,8 +505,19 @@ export default function ProjectDetail() {
                       <LinkIcon className="h-4 w-4 text-fire shrink-0" /> {(project as any).project_url}
                     </a>
                   )}
+                  <p className="text-[10px] text-amber-700/80 pt-1">
+                    Public "Go to project" button: {(project as any).external_url_enabled ? '✅ visible to buyers' : '🚫 hidden (admin-only)'}
+                  </p>
                 </div>
               </div>
+            )}
+
+            {/* Public "go to project" button — only when admin explicitly enables it AND the user has purchased */}
+            {(project as any).project_url && (project as any).external_url_enabled && purchased && (
+              <a href={(project as any).project_url} target="_blank" rel="noopener noreferrer"
+                className="block w-full text-center rounded-xl border border-fire/30 bg-fire/5 hover:bg-fire/10 text-fire font-semibold text-sm px-4 py-3 transition">
+                ↗ Go to project link
+              </a>
             )}
 
             {related && related.length > 0 && (
