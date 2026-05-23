@@ -313,7 +313,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '', preview_enabled: true,
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
-    lov_email: '', project_url: '',
+    lov_email: '', project_url: '', external_url_enabled: false,
     demo_admin_email: '', demo_admin_password: '', preview_watermark: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
@@ -343,6 +343,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
       changelog: typeof (existing as any).changelog === 'string' ? (existing as any).changelog : JSON.stringify((existing as any).changelog || [], null, 2),
       views_count: (existing as any).views_count || 0,
       lov_email: (existing as any).lov_email || '', project_url: (existing as any).project_url || '',
+      external_url_enabled: !!(existing as any).external_url_enabled,
       demo_admin_email: (existing as any).demo_admin_email || '', demo_admin_password: (existing as any).demo_admin_password || '',
       preview_watermark: (existing as any).preview_watermark || '',
     });
@@ -484,6 +485,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
         featured: form.featured, status: form.status,
         changelog: parsedChangelog, views_count: parseInt(form.views_count) || 0,
         lov_email: form.lov_email || null, project_url: form.project_url || null,
+        external_url_enabled: !!form.external_url_enabled,
         demo_admin_email: form.demo_admin_email || null, demo_admin_password: form.demo_admin_password || null,
         preview_watermark: form.preview_watermark || null,
       };
@@ -570,6 +572,12 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
           <div className="space-y-2">
             <Label>Project URL</Label>
             <Input value={form.project_url} onChange={(e) => setForm({ ...form, project_url: e.target.value })} placeholder="https://lovable.dev/projects/…" className="bg-white border-border" />
+          </div>
+          <div className="md:col-span-2 flex items-center gap-3 pt-1">
+            <Switch checked={!!form.external_url_enabled} onCheckedChange={(v) => setForm({ ...form, external_url_enabled: v })} className="data-[state=checked]:bg-fire" />
+            <Label className="text-xs text-muted-foreground font-normal">
+              Show <b>"Go to project link"</b> button to buyers (only if they've purchased) {form.external_url_enabled ? <span className="text-green-700 font-semibold">· visible</span> : <span className="text-amber-700 font-semibold">· hidden (admin-only)</span>}
+            </Label>
           </div>
         </div>
 

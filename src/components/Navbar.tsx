@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, LogOut, LayoutDashboard, Search, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, Search, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import bnoyLogoFallback from '@/assets/bnoy-logo.png';
 import { UserDropdown } from '@/components/ui/user-dropdown';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 
 export default function Navbar() {
@@ -15,6 +19,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const navigate = useNavigate();
   const { data: settings } = useQuery({
@@ -91,18 +96,20 @@ export default function Navbar() {
             <UserDropdown
               isAdmin={isAdmin}
               user={{
-                name: user.user_metadata?.name || (user.email?.split('@')[0] ?? 'You'),
+                name: user.user_metadata?.name || user.user_metadata?.full_name || (user.email?.split('@')[0] ?? 'You'),
                 email: user.email ?? undefined,
-                avatar: user.user_metadata?.avatar_url,
+                avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture,
                 initials: (user.user_metadata?.name || user.email || 'U').slice(0, 2).toUpperCase(),
                 status: 'online',
               }}
               onAction={(a) => {
                 if (a === 'dashboard') navigate('/dashboard');
                 else if (a === 'admin') navigate('/admin');
-                else if (a === 'purchases') navigate('/dashboard');
-                else if (a === 'wishlist') navigate('/dashboard');
-                else if (a === 'logout') handleLogout();
+                else if (a === 'purchases') navigate('/dashboard?tab=purchases');
+                else if (a === 'wishlist') navigate('/dashboard?tab=wishlist');
+                else if (a === 'help') navigate('/refund');
+                else if (a === 'upgrade') navigate('/marketplace');
+                else if (a === 'logout') setConfirmLogout(true);
               }}
             />
           ) : (
@@ -134,7 +141,7 @@ export default function Navbar() {
               <>
                 {isAdmin && <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-sm py-2">Admin Panel</Link>}
                 <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="text-sm py-2">Dashboard</Link>
-                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-sm py-2 text-left text-destructive">Logout</button>
+                <button onClick={() => { setMobileOpen(false); setConfirmLogout(true); }} className="text-sm py-2 text-left text-destructive">Logout</button>
               </>
             ) : (
               <Button size="sm" className="gradient-fire-strong text-white" onClick={() => { setShowAuthModal(true); setMobileOpen(false); }}>Login / Sign Up</Button>
@@ -142,6 +149,23 @@ export default function Navbar() {
           </div>
         </motion.div>
       )}
+
+      <AlertDialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out of Bnoy Studios?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll be signed out and returned to the home page. Any in-progress work in this tab will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay signed in</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => { setConfirmLogout(false); await handleLogout(); }} className="bg-destructive text-white hover:bg-destructive/90">
+              Yes, log me out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.nav>
   );
 }

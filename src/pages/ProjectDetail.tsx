@@ -245,12 +245,12 @@ export default function ProjectDetail() {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background w-full overflow-x-hidden">
       <Navbar /><AuthModal />
-      <div className="container mx-auto px-4 pt-28 pb-20 max-w-7xl w-full">
-        <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-fire mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-16 md:pb-20 max-w-7xl w-full">
+        <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-fire mb-6 md:mb-8">
           <ArrowLeft className="h-4 w-4" /> Back to marketplace
         </Link>
 
-        <div className="grid lg:grid-cols-3 gap-10">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-2 space-y-8">
             <motion.div initial={{ scale: 1.05, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}
               className="rounded-2xl overflow-hidden border border-border shadow-card">
@@ -505,8 +505,19 @@ export default function ProjectDetail() {
                       <LinkIcon className="h-4 w-4 text-fire shrink-0" /> {(project as any).project_url}
                     </a>
                   )}
+                  <p className="text-[10px] text-amber-700/80 pt-1">
+                    Public "Go to project" button: {(project as any).external_url_enabled ? '✅ visible to buyers' : '🚫 hidden (admin-only)'}
+                  </p>
                 </div>
               </div>
+            )}
+
+            {/* Public "go to project" button — only when admin explicitly enables it AND the user has purchased */}
+            {(project as any).project_url && (project as any).external_url_enabled && purchased && (
+              <a href={(project as any).project_url} target="_blank" rel="noopener noreferrer"
+                className="block w-full text-center rounded-xl border border-fire/30 bg-fire/5 hover:bg-fire/10 text-fire font-semibold text-sm px-4 py-3 transition">
+                ↗ Go to project link
+              </a>
             )}
 
             {related && related.length > 0 && (

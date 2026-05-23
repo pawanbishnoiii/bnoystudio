@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, ShoppingCart, Lock, ImageOff } from 'lucide-react';
+import { prefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/authStore';
@@ -30,13 +31,17 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
     onBuy?.(project);
   };
 
+  const reduced = prefersReducedMotion();
+  // Cap stagger delay so off-screen rows never wait minutes to appear; cards above the fold animate fast.
+  const delay = reduced ? 0 : Math.min(index, 5) * 0.05;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ delay: index * 0.07, duration: 0.45 }}
-      whileHover={{ scale: 1.02 }}
+      initial={reduced ? false : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15, margin: '0px 0px -80px 0px' }}
+      transition={{ delay, duration: 0.35, ease: 'easeOut' }}
+      whileHover={reduced ? undefined : { y: -4 }}
+      style={{ contain: 'content', willChange: 'transform' }}
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
       <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">

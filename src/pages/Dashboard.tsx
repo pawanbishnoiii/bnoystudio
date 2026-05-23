@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ShoppingBag, CreditCard, Settings2, Heart, Download, Sparkles, IndianRupee, Trash2 } from 'lucide-react';
@@ -21,6 +21,10 @@ export default function Dashboard() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [uploading, setUploading] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get('tab') || 'purchases';
 
   if (!user) return <Navigate to="/" replace />;
 
@@ -28,6 +32,21 @@ export default function Dashboard() {
     queryKey: ['profile', user.id],
     queryFn: async () => (await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()).data,
   });
+
+  // Auto-import Google/email metadata (avatar + name) once if profile is empty.
+  useEffect(() => {
+    if (!profile) return;
+    const meta = (user.user_metadata || {}) as any;
+    const gAvatar = meta.avatar_url || meta.picture;
+    const gName = meta.full_name || meta.name;
+    const patch: any = {};
+    if (!profile.avatar_url && gAvatar) patch.avatar_url = gAvatar;
+    if (!profile.name && gName) patch.name = gName;
+    if (Object.keys(patch).length) {
+      supabase.from('profiles').update(patch).eq('id', user.id).then(() => qc.invalidateQueries({ queryKey: ['profile'] }));
+    }
+    if (!nameDraft) setNameDraft(profile.name || gName || '');
+  }, [profile, user, qc]);
 
   const { data: purchases } = useQuery({
     queryKey: ['my-purchases', user.id],
@@ -116,7 +135,7 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="purchases" className="space-y-6">
+        <Tabs value={tab} onValueChange={(v) => setSearchParams({ tab: v })} className="space-y-6">
           <TabsList className="bg-warm-bg border border-border flex flex-wrap h-auto">
             <TabsTrigger value="purchases"><Download className="h-5 w-5 mr-2" />Purchases</TabsTrigger>
             <TabsTrigger value="payments"><CreditCard className="h-5 w-5 mr-2" />Payments</TabsTrigger>
@@ -213,8 +232,14 @@ export default function Dashboard() {
                 </label>
               </div>
               <div className="space-y-2"><Label>Email</Label><Input value={user.email || ''} disabled /></div>
-              <div className="space-y-2"><Label>Name</Label><Input placeholder="Your name" defaultValue={profile?.name || ''} /></div>
-              <Button className="gradient-fire-strong text-white">Save changes</Button>
+              <div className="space-y-2"><Label>Display name</Label><Input placeholder="Your name" value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} /></div>
+              <Button disabled={savingProfile} onClick={async () => {
+                setSavingProfile(true);
+                const { error } = await supabase.from('profiles').update({ name: nameDraft }).eq('id', user.id);
+                setSavingProfile(false);
+                if (error) toast({ title: 'Could not save', description: error.message, variant: 'destructive' });
+                else { toast({ title: 'Profile updated ✨' }); qc.invalidateQueries({ queryKey: ['profile'] }); }
+              }} className="gradient-fire-strong text-white">{savingProfile ? 'Saving…' : 'Save changes'}</Button>
             </div>
           </TabsContent>
         </Tabs>
