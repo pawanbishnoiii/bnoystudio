@@ -141,7 +141,7 @@ export default function Navbar() {
               <>
                 {isAdmin && <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-sm py-2">Admin Panel</Link>}
                 <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="text-sm py-2">Dashboard</Link>
-                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-sm py-2 text-left text-destructive">Logout</button>
+                <button onClick={() => { setMobileOpen(false); setConfirmLogout(true); }} className="text-sm py-2 text-left text-destructive">Logout</button>
               </>
             ) : (
               <Button size="sm" className="gradient-fire-strong text-white" onClick={() => { setShowAuthModal(true); setMobileOpen(false); }}>Login / Sign Up</Button>
@@ -149,6 +149,23 @@ export default function Navbar() {
           </div>
         </motion.div>
       )}
+
+      <AlertDialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out of Bnoy Studios?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll be signed out and returned to the home page. Any in-progress work in this tab will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay signed in</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => { setConfirmLogout(false); await handleLogout(); }} className="bg-destructive text-white hover:bg-destructive/90">
+              Yes, log me out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.nav>
   );
 }
