@@ -313,7 +313,7 @@ function AdminAddProject({ editingId, onDone }: { editingId: string | null; onDo
     thumbnail_url: '', screenshots: [] as string[], video_url: '', preview_url: '', preview_enabled: true,
     source_code_url: '', featured: false, status: 'draft',
     changelog: '[]', views_count: 0,
-    lov_email: '', project_url: '',
+    lov_email: '', project_url: '', external_url_enabled: false,
     demo_admin_email: '', demo_admin_password: '', preview_watermark: '',
   });
   const [bumpOpen, setBumpOpen] = useState(false);
