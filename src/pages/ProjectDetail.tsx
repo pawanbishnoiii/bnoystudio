@@ -529,7 +529,7 @@ export default function ProjectDetail() {
                 )}
               </div>
 
-              <div ref={stickyAnchor} className="space-y-3 mb-6">
+              <div className="space-y-3 mb-6">
                 {project.preview_url && ((project as any).preview_enabled !== false || isAdmin) && (
                   <Button variant="outline" className="w-full border-border" onClick={() => setPreviewUrl(project.preview_url)}>
                     <Eye className="h-4 w-4 mr-2" /> Live preview {(project as any).preview_enabled === false && <span className="ml-2 text-[10px] uppercase tracking-wider text-amber-600">(admin)</span>}
@@ -590,8 +590,7 @@ export default function ProjectDetail() {
         </div>
       </div>
 
-      {/* MOBILE inline anchor + sticky CTA bar */}
-      <div ref={stickyAnchor} className="lg:hidden h-px" />
+      {/* MOBILE sticky CTA bar */}
       <AnimatePresence>
         {stickyVisible && (
           <motion.div
