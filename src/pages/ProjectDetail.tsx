@@ -49,7 +49,6 @@ export default function ProjectDetail() {
   const [selectedVersion, setSelectedVersion] = useState<string>('');
   const [commentText, setCommentText] = useState('');
   const [rating, setRating] = useState(5);
-  const stickyAnchor = useRef<HTMLDivElement>(null);
   const [stickyVisible, setStickyVisible] = useState(false);
 
   const { data: project, isLoading } = useQuery({
@@ -69,13 +68,13 @@ export default function ProjectDetail() {
 
   useEffect(() => { if (id) supabase.rpc('increment_project_views', { _project_id: id }); }, [id]);
 
-  // Show sticky mobile CTA once the inline primary CTA scrolls off screen.
+  // Show sticky mobile CTA after the user has scrolled past the hero area.
   useEffect(() => {
-    if (!stickyAnchor.current) return;
-    const io = new IntersectionObserver(([entry]) => setStickyVisible(!entry.isIntersecting), { rootMargin: '-80px 0px 0px 0px' });
-    io.observe(stickyAnchor.current);
-    return () => io.disconnect();
-  }, [project]);
+    const onScroll = () => setStickyVisible(window.scrollY > 320);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const { data: purchase, refetch: refetchPurchase } = useQuery({
     queryKey: ['purchase', id, user?.id],
