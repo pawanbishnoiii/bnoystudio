@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
@@ -9,24 +10,44 @@ import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import ProjectCard from '@/components/ProjectCard';
 import PreviewModal from '@/components/PreviewModal';
-import { Input } from '@/components/ui/input';
+import SearchBar from '@/components/marketplace/SearchBar';
+import LottieAnimation from '@/components/ui/lottie-animation';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { prefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
+type Price = 'all' | 'free' | 'paid';
+type Sort = 'newest' | 'price-asc' | 'price-desc' | 'popular';
 
 export default function Marketplace() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
-  const [priceFilter, setPriceFilter] = useState<'all' | 'free' | 'paid'>('all');
-  const [sort, setSort] = useState<'newest' | 'price-asc' | 'price-desc' | 'popular'>('newest');
+  const [params, setParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useState(params.get('q') || '');
+  const search = useDebouncedValue(searchInput, 300);
+  const category = params.get('category') || 'All';
+  const priceFilter = (params.get('price') as Price) || 'all';
+  const sort = (params.get('sort') as Sort) || 'newest';
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { user, setShowAuthModal } = useAuthStore();
   const { toast } = useToast();
+
+  // Keep URL in sync with debounced search so back/forward + share work.
+  useEffect(() => {
+    const next = new URLSearchParams(params);
+    if (search.trim()) next.set('q', search.trim()); else next.delete('q');
+    if (next.toString() !== params.toString()) setParams(next, { replace: true });
+  }, [search]); // eslint-disable-line
+
+  const setParam = (key: string, value: string | null) => {
+    const next = new URLSearchParams(params);
+    if (value && value !== 'All' && value !== 'all' && value !== 'newest') next.set(key, value);
+    else next.delete(key);
+    setParams(next, { replace: true });
+  };
 
   const { data: projects, isLoading } = useQuery({
     queryKey: ['marketplace-projects'],
@@ -38,10 +59,7 @@ export default function Marketplace() {
 
   const { data: categories } = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const { data } = await supabase.from('categories').select('name').order('name');
-      return data?.map((c: any) => c.name) || [];
-    },
+    queryFn: async () => (await supabase.from('categories').select('name').order('name')).data?.map((c: any) => c.name) || [],
   });
 
   const filtered = useMemo(() => {
@@ -65,6 +83,16 @@ export default function Marketplace() {
     return list;
   }, [projects, search, category, priceFilter, sort]);
 
+  const suggestions = useMemo(() => {
+    const set = new Set<string>();
+    (projects || []).forEach((p: any) => {
+      if (p.title) set.add(p.title);
+      (p.tech_stack || []).forEach((t: string) => set.add(t));
+      (p.category || []).forEach((c: string) => set.add(c));
+    });
+    return Array.from(set);
+  }, [projects]);
+
   const handleBuy = async (project: any) => {
     if (!user) {
       setShowAuthModal(true, project.price === 0 ? 'Sign in to download.' : `Sign in to buy "${project.title}".`);
@@ -78,16 +106,24 @@ export default function Marketplace() {
   };
 
   const allCats = ['All', ...(categories || [])];
+  const activeFilters = [
+    category !== 'All' && { key: 'category', label: category },
+    priceFilter !== 'all' && { key: 'price', label: priceFilter === 'free' ? 'Free' : 'Paid' },
+    sort !== 'newest' && { key: 'sort', label: { 'price-asc': 'Price ↑', 'price-desc': 'Price ↓', 'popular': 'Popular' }[sort] },
+    search.trim() && { key: 'q', label: `"${search.trim()}"` },
+  ].filter(Boolean) as { key: string; label: string }[];
+
+  const clearAll = () => { setSearchInput(''); setParams(new URLSearchParams(), { replace: true }); };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
       <Navbar />
       <AuthModal />
 
-      {/* Cinematic hero with Lottie */}
+      {/* Cinematic hero */}
       <section className="relative pt-28 pb-10 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
         <div className="absolute -top-20 -right-20 w-[420px] h-[420px] rounded-full opacity-50 blur-3xl pointer-events-none"
-             style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
+          style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
         <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-6 items-center relative">
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
@@ -101,31 +137,24 @@ export default function Marketplace() {
             </p>
           </div>
           <div className="max-w-[360px] mx-auto w-full h-[220px] md:h-[260px]">
-            <DotLottieReact src="/lottie/let-some-light-in.json" loop={!prefersReducedMotion()} autoplay={!prefersReducedMotion()} />
+            <LottieAnimation src="/lottie/let-some-light-in.json" />
           </div>
         </div>
       </section>
 
-
-      {/* Compact modern filter bar */}
-      <section className="py-4 bg-white/95 border-b border-border sticky top-16 z-30 backdrop-blur-md">
-        <div className="container mx-auto px-4">
+      {/* Sticky glass filter bar */}
+      <section className="py-4 bg-white/80 border-b border-border sticky top-16 z-30 backdrop-blur-xl">
+        <div className="container mx-auto px-4 space-y-3">
           <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
-            <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search projects, tech, categories…"
-                className="pl-10 h-10 bg-warm-bg/60 border-border rounded-full"
-              />
+            <div className="flex-1 min-w-0">
+              <SearchBar value={searchInput} onChange={setSearchInput} suggestions={suggestions} />
             </div>
             <div className="flex gap-2">
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={(v) => setParam('category', v)}>
                 <SelectTrigger className="h-10 w-[130px] rounded-full md:hidden"><SelectValue /></SelectTrigger>
                 <SelectContent>{allCats.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
               </Select>
-              <Select value={priceFilter} onValueChange={(v: any) => setPriceFilter(v)}>
+              <Select value={priceFilter} onValueChange={(v: any) => setParam('price', v)}>
                 <SelectTrigger className="h-10 w-[110px] rounded-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All prices</SelectItem>
@@ -133,8 +162,8 @@ export default function Marketplace() {
                   <SelectItem value="paid">Paid</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={sort} onValueChange={(v: any) => setSort(v)}>
-                <SelectTrigger className="h-10 w-[130px] rounded-full"><SlidersHorizontal className="h-3.5 w-3.5 mr-1" /><SelectValue /></SelectTrigger>
+              <Select value={sort} onValueChange={(v: any) => setParam('sort', v)}>
+                <SelectTrigger className="h-10 w-[140px] rounded-full"><SlidersHorizontal className="h-3.5 w-3.5 mr-1" /><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="newest">Newest</SelectItem>
                   <SelectItem value="popular">Most popular</SelectItem>
@@ -145,26 +174,33 @@ export default function Marketplace() {
             </div>
           </div>
 
-          {/* Desktop category pills (compact, scrollable) */}
-          <div className="hidden md:flex gap-1.5 mt-3 overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="hidden md:flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
             {allCats.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
+              <button key={c} onClick={() => setParam('category', c)}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
-                  category === c
-                    ? 'gradient-fire-strong text-white border-transparent shadow-card'
-                    : 'border-border bg-white text-muted-foreground hover:text-fire hover:border-fire/40'
-                }`}
-              >
-                {c}
-              </button>
+                  category === c ? 'gradient-fire-strong text-white border-transparent shadow-card' : 'border-border bg-white text-muted-foreground hover:text-fire hover:border-fire/40'
+                }`}>{c}</button>
             ))}
           </div>
+
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">Active</span>
+              {activeFilters.map((f) => (
+                <Badge key={f.key} variant="outline" className="border-fire/30 bg-fire/5 text-fire pl-2.5 pr-1 py-1 gap-1">
+                  {f.label}
+                  <button onClick={() => { if (f.key === 'q') setSearchInput(''); setParam(f.key, null); }}
+                    className="ml-0.5 p-0.5 rounded-full hover:bg-fire/20" aria-label={`Remove ${f.label}`}>
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+              <button onClick={clearAll} className="text-xs text-muted-foreground hover:text-fire underline-offset-2 hover:underline">Clear all</button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Grid with grouped sections */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           {isLoading ? (
@@ -177,7 +213,6 @@ export default function Marketplace() {
             <>
               <p className="text-sm text-muted-foreground mb-6">{filtered.length} project{filtered.length !== 1 && 's'} found</p>
               {(() => {
-                // When the user is browsing "All" with no search, split into curated bands.
                 const showSections = priceFilter === 'all' && !search.trim() && category === 'All';
                 if (!showSections) {
                   return (
@@ -219,9 +254,14 @@ export default function Marketplace() {
               })()}
             </>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground text-lg">No projects match your filters.</p>
-              <Button variant="outline" className="mt-4" onClick={() => { setSearch(''); setCategory('All'); setPriceFilter('all'); }}>Clear filters</Button>
+            <div className="text-center py-12 max-w-md mx-auto">
+              <div className="w-56 h-56 mx-auto">
+                <LottieAnimation src="https://lottie.host/4d42d6f3-7e2e-4f74-9c4d-d6df45e6f5f1/8O4Vp4f8nB.lottie"
+                  fallback={<div className="w-full h-full grid place-items-center text-7xl">🗂️</div>} />
+              </div>
+              <h3 className="font-display text-xl font-bold text-ink mt-2">No projects match your filters</h3>
+              <p className="text-muted-foreground text-sm mt-2">Try clearing a few filters or searching for something else.</p>
+              <Button variant="outline" className="mt-4" onClick={clearAll}>Clear all filters</Button>
             </div>
           )}
         </div>
