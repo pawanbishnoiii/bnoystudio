@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
+import { celebrate } from '@/lib/celebrate';
 
 const BUILT_IN = ['All', 'Free', 'Paid', 'React', 'Next.js', 'App', 'SaaS', 'E-Commerce', 'Portfolio', 'Dashboard'];
 
@@ -74,7 +75,7 @@ export default function FeaturedProducts({ limit, showFilters = true }: Featured
         toast({ title: 'Error', description: error.message, variant: 'destructive' });
         return;
       }
-      toast({ title: 'Project unlocked!', description: 'Open your dashboard to download the source code.' });
+      celebrate('Project unlocked!', 'Open your dashboard to download the source code.');
       return;
     }
     toast({ title: 'Payment gateway coming soon', description: 'Razorpay integration will activate once API keys are configured.' });
