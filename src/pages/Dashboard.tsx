@@ -115,33 +115,63 @@ export default function Dashboard() {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
       <Navbar /><AuthModal />
-      <div className="container mx-auto px-4 pt-28 pb-20">
-        {/* Profile header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-orange-50 to-white rounded-2xl border border-border shadow-card p-6 mb-8 flex flex-col md:flex-row md:items-center gap-6">
-          <Avatar className="h-20 w-20 ring-4 ring-fire/30">
-            <AvatarImage src={profile?.avatar_url || ''} />
-            <AvatarFallback className="gradient-fire-strong text-white font-bold text-2xl">{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <h1 className="font-display text-2xl font-extrabold text-ink">{profile?.name || user.email?.split('@')[0]}</h1>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Member since {memberSince}</p>
+      <div className="container mx-auto px-4 pt-24 md:pt-28 pb-24">
+        {/* Profile header — refreshed, responsive, polished */}
+        <motion.section
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-3xl border border-border shadow-card-hover mb-8"
+        >
+          {/* Decorative banner */}
+          <div className="relative h-28 sm:h-36 bg-gradient-to-br from-fire via-fire/80 to-sun">
+            <div className="absolute inset-0 opacity-30"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,.4) 0, transparent 35%)',
+              }} />
+            <div className="absolute inset-0"
+              style={{
+                backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
+                backgroundSize: '32px 32px',
+                maskImage: 'radial-gradient(circle at center, black 30%, transparent 75%)',
+              }} />
           </div>
-          <div className="flex gap-2">
-            <MiniStat label="Purchases" value={purchases?.length || 0} />
-            <MiniStat label="Spent" value={`₹${totalSpent.toLocaleString('en-IN')}`} />
-            <MiniStat label="Wishlist" value={wishlist?.length || 0} />
+
+          <div className="bg-white px-4 sm:px-6 pb-6 pt-0">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6 -mt-12 sm:-mt-14">
+              <label className="relative group cursor-pointer self-start" title="Change picture">
+                <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-white shadow-card-hover">
+                  <AvatarImage src={profile?.avatar_url || ''} />
+                  <AvatarFallback className="gradient-fire-strong text-white font-extrabold text-3xl">{initials}</AvatarFallback>
+                </Avatar>
+                <span className="absolute inset-0 rounded-full bg-black/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-[10px] font-bold uppercase tracking-widest">
+                  {uploading ? '…' : 'Change'}
+                </span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploading} />
+              </label>
+
+              <div className="flex-1 min-w-0">
+                <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-ink truncate">{profile?.name || user.email?.split('@')[0]}</h1>
+                <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                <p className="text-[11px] text-muted-foreground mt-1 inline-flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 text-fire" /> Member since {memberSince}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-2 sm:flex-none">
+                <MiniStat label="Buys" value={purchases?.length || 0} />
+                <MiniStat label="Spent" value={`₹${totalSpent.toLocaleString('en-IN')}`} />
+                <MiniStat label="Wish" value={wishlist?.length || 0} />
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </motion.section>
 
         <Tabs value={tab} onValueChange={(v) => setSearchParams({ tab: v })} className="space-y-6">
-          <TabsList className="bg-warm-bg border border-border flex flex-wrap h-auto">
-            <TabsTrigger value="purchases"><Download className="h-5 w-5 mr-2" />Purchases</TabsTrigger>
-            <TabsTrigger value="payments"><CreditCard className="h-5 w-5 mr-2" />Payments</TabsTrigger>
-            <TabsTrigger value="wishlist"><Heart className="h-5 w-5 mr-2" />Wishlist</TabsTrigger>
-            <TabsTrigger value="recommendations"><Sparkles className="h-5 w-5 mr-2" />For you</TabsTrigger>
-            <TabsTrigger value="settings"><Settings2 className="h-5 w-5 mr-2" />Settings</TabsTrigger>
+          <TabsList className="bg-warm-bg border border-border flex flex-wrap h-auto gap-1 p-1 rounded-xl w-full justify-start overflow-x-auto">
+            <TabsTrigger value="purchases" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Download className="h-4 w-4 mr-2" />Purchases</TabsTrigger>
+            <TabsTrigger value="payments" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><CreditCard className="h-4 w-4 mr-2" />Payments</TabsTrigger>
+            <TabsTrigger value="wishlist" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Heart className="h-4 w-4 mr-2" />Wishlist</TabsTrigger>
+            <TabsTrigger value="recommendations" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Sparkles className="h-4 w-4 mr-2" />For you</TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Settings2 className="h-4 w-4 mr-2" />Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="purchases">
@@ -251,9 +281,9 @@ export default function Dashboard() {
 
 function MiniStat({ label, value }: { label: string; value: any }) {
   return (
-    <div className="px-3 py-2 rounded-lg bg-white border border-border text-center min-w-[80px]">
-      <div className="text-[10px] uppercase text-muted-foreground tracking-wide">{label}</div>
-      <div className="font-display font-bold text-ink text-sm">{value}</div>
+    <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-white to-warm-bg/60 border border-border text-center min-w-[72px] shadow-card">
+      <div className="text-[10px] uppercase text-muted-foreground tracking-widest font-bold">{label}</div>
+      <div className="font-display font-extrabold text-ink text-sm sm:text-base mt-0.5">{value}</div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import LottieAnimation from '@/components/ui/lottie-animation';
 import CpuArchitecture from '@/components/ui/cpu-architecture';
 import { HeartIcon, DownloadDoneIcon, SuccessIcon, NotificationIcon } from '@/components/ui/animated-state-icons';
 import bnoyLogo from '@/assets/bnoy-logo.png';
@@ -38,17 +39,32 @@ export default function HeroSection() {
     if (typeof window === 'undefined' || !sectionRef.current) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
-      gsap.set('.bnoy-hero-word, .bnoy-hero-fade', { opacity: 1, y: 0, rotateX: 0 });
+      gsap.set('.bnoy-hero-word, .bnoy-hero-char, .bnoy-hero-fade', { opacity: 1, y: 0, rotateX: 0 });
       return;
     }
     const ctx = gsap.context(() => {
-      gsap.from('.bnoy-hero-word', { y: 70, opacity: 0, rotateX: 50, stagger: 0.07, duration: 1, ease: 'power4.out', delay: 0.1 });
-      gsap.from('.bnoy-hero-fade', { y: 24, opacity: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out', delay: 0.5 });
+      // SplitText-style letter-level stagger reveal with word grouping.
+      gsap.from('.bnoy-hero-char', {
+        yPercent: 110, opacity: 0, rotateX: 70,
+        duration: 0.9, ease: 'expo.out',
+        stagger: { each: 0.025, from: 'start' },
+        delay: 0.15,
+      });
+      gsap.from('.bnoy-hero-fade', { y: 24, opacity: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out', delay: 0.65 });
       gsap.to('.bnoy-layer-slow', { yPercent: -8, ease: 'none', scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'bottom top', scrub: true } });
       gsap.to('.bnoy-layer-fast', { yPercent: -20, ease: 'none', scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'bottom top', scrub: true } });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
+
+  // Helper: split a word into per-char spans for letter-level stagger.
+  const splitChars = (word: string, keyPrefix: string) => (
+    <span className="bnoy-hero-word inline-block mr-3 overflow-hidden align-bottom" style={{ perspective: 600 }}>
+      {Array.from(word).map((c, i) => (
+        <span key={`${keyPrefix}-${i}`} className="bnoy-hero-char inline-block" style={{ transformOrigin: '50% 100%' }}>{c}</span>
+      ))}
+    </span>
+  );
 
   const headline = ['Buy', 'ship-ready', 'projects.'];
   const headline2 = ['Launch', 'in', 'minutes.'];
@@ -82,6 +98,13 @@ export default function HeroSection() {
         className="absolute -bottom-32 -right-20 w-[600px] h-[600px] rounded-full bnoy-layer-fast pointer-events-none"
         style={{ background: 'radial-gradient(closest-side, hsl(43 100% 55% / 0.45), transparent)' }} />
 
+      {/* LAYER 3.5 — Lottie orb / particles backdrop (lazy + reduced-motion safe) */}
+      <LottieAnimation
+        src="https://lottie.host/b2f358e6-20fa-4646-8a8c-cb8d461d1f04/FqOqJH6vQN.lottie"
+        loop autoplay lazyPlay={false}
+        className="absolute inset-0 -z-10 pointer-events-none opacity-[0.35] mix-blend-multiply [&_*]:!w-full [&_*]:!h-full"
+      />
+
       {/* LAYER 4 — floating decorative SVGs */}
       <svg className="absolute top-20 right-[20%] w-24 h-24 bnoy-layer-fast text-fire/30 pointer-events-none" viewBox="0 0 100 100" fill="none">
         <motion.circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 6"
@@ -102,14 +125,12 @@ export default function HeroSection() {
               <span className="tracking-[0.18em] uppercase text-ink">{badge}</span>
             </div>
 
-            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-[80px] font-extrabold leading-[0.98] tracking-tight text-ink">
-              {headline.map((w, i) => (
-                <span key={i} className="bnoy-hero-word inline-block mr-3">{w}</span>
-              ))}
+            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-[80px] font-extrabold leading-[1.02] tracking-tight text-ink">
+              {headline.map((w, i) => splitChars(w, `a-${i}`))}
               <br />
-              {headline2.map((w, i) => (
-                <span key={i} className="bnoy-hero-word inline-block mr-3 bg-gradient-to-br from-fire via-sun to-fire bg-clip-text text-transparent">{w}</span>
-              ))}
+              <span className="bg-gradient-to-br from-fire via-sun to-fire bg-clip-text text-transparent">
+                {headline2.map((w, i) => splitChars(w, `b-${i}`))}
+              </span>
             </h1>
 
             <p className="bnoy-hero-fade mt-6 text-lg text-muted-foreground max-w-xl">{tagline}</p>
