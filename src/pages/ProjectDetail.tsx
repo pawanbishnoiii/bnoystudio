@@ -12,6 +12,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { useRazorpay } from '@/hooks/useRazorpay';
 import { useSwipe } from '@/hooks/useSwipe';
+import { celebrate } from '@/lib/celebrate';
 import { techIcon } from '@/lib/techIcons';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
@@ -155,7 +156,7 @@ export default function ProjectDetail() {
       const { error } = await supabase.from('purchases').insert({ user_id: user.id, project_id: project!.id, amount: 0 });
       if (error && !error.message.includes('duplicate')) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
       await refetchPurchase();
-      toast({ title: 'Unlocked!', description: 'You can now download the source code.' });
+      celebrate('Unlocked! 🚀', 'You can now download the source code from your dashboard.');
       return;
     }
     openPayment({
@@ -165,7 +166,7 @@ export default function ProjectDetail() {
         const { error } = await supabase.from('purchases').insert({ user_id: user.id, project_id: project!.id, amount: project!.price, razorpay_payment_id: paymentId });
         if (error) { toast({ title: 'Could not save purchase', description: error.message, variant: 'destructive' }); return; }
         await refetchPurchase();
-        toast({ title: 'Payment successful!', description: 'Download unlocked.' });
+        celebrate('Payment successful! 🎉', `Thank you — your purchase of ${project!.title} is ready to download.`);
       },
       onFailure: () => toast({ title: 'Payment cancelled or failed', variant: 'destructive' }),
     });
