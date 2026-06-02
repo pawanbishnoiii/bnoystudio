@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Package, PlusCircle, ShoppingBag, Users2, BarChart3,
-  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2, Smartphone, Tags
+  Pencil, Trash2, IndianRupee, TrendingUp, Eye, Settings2, Smartphone, Tags, Search
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
@@ -23,6 +23,7 @@ import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import AdminApps from '@/components/admin/AdminApps';
 import AdminCategories from '@/components/admin/AdminCategories';
+import AdminGoogle from '@/components/admin/AdminGoogle';
 import { TECH_SUGGESTIONS, techIcon } from '@/lib/techIcons';
 
 const sidebarItems = [
@@ -34,6 +35,7 @@ const sidebarItems = [
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
   { id: 'users', label: 'Users', icon: Users2 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'google', label: 'Google', icon: Search },
   { id: 'settings', label: 'Site Settings', icon: Settings2 },
 ];
 
@@ -104,6 +106,7 @@ export default function AdminPanel() {
             {activeTab === 'orders' && <AdminOrders />}
             {activeTab === 'users' && <AdminUsers />}
             {activeTab === 'analytics' && <AdminAnalytics />}
+            {activeTab === 'google' && <AdminGoogle />}
             {activeTab === 'settings' && <AdminSettings />}
           </motion.div>
         </main>

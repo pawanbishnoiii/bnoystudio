@@ -13,18 +13,19 @@ export default function RouteTransition() {
     if (first.current) { first.current = false; return; }
     if (prefersReducedMotion() || !ref.current) return;
     const el = ref.current;
+    // Smooth blur + curtain wipe — 120fps friendly (transform + filter only, no layout).
     gsap.fromTo(el,
-      { scaleY: 0, transformOrigin: 'top' },
-      { scaleY: 1, duration: 0.35, ease: 'power3.in',
+      { scaleY: 0, transformOrigin: 'top', filter: 'blur(0px)' },
+      { scaleY: 1, duration: 0.42, ease: 'expo.inOut', filter: 'blur(14px)',
         onComplete: () => {
-          gsap.to(el, { scaleY: 0, transformOrigin: 'bottom', duration: 0.45, delay: 0.05, ease: 'power3.out' });
+          gsap.to(el, { scaleY: 0, transformOrigin: 'bottom', duration: 0.5, delay: 0.04, ease: 'expo.out', filter: 'blur(0px)' });
         }
       });
   }, [pathname]);
 
   return (
     <div ref={ref} aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[150] bg-gradient-to-br from-ink via-ink to-fire/80 origin-top"
-      style={{ transform: 'scaleY(0)' }} />
+      className="pointer-events-none fixed inset-0 z-[150] bg-gradient-to-br from-ink via-ink/95 to-fire/70 origin-top"
+      style={{ transform: 'scaleY(0)', willChange: 'transform, filter' }} />
   );
 }

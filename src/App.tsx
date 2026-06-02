@@ -1,12 +1,15 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import Signup from "./pages/Signup";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuthBootstrap } from "@/hooks/useAuthBootstrap";
 import MagneticCursor from "@/components/MagneticCursor";
 import RouteTransition from "@/components/RouteTransition";
+import { injectGoogle } from "@/components/admin/AdminGoogle";
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import ProjectDetail from "./pages/ProjectDetail";
@@ -41,6 +44,7 @@ function AnimatedRoutes() {
 
 function AppShell() {
   useAuthBootstrap();
+  useEffect(() => { injectGoogle(); }, []);
   return (
     <MotionConfig reducedMotion="user">
       <RouteTransition />
@@ -54,6 +58,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+      <SonnerToaster position="top-center" richColors />
       <BrowserRouter>
         <AppShell />
       </BrowserRouter>
