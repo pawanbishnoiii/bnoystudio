@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import LottieAnimation from '@/components/ui/lottie-animation';
 import CpuArchitecture from '@/components/ui/cpu-architecture';
 import { HeartIcon, DownloadDoneIcon, SuccessIcon, NotificationIcon } from '@/components/ui/animated-state-icons';
 import bnoyLogo from '@/assets/bnoy-logo.png';
@@ -38,17 +39,32 @@ export default function HeroSection() {
     if (typeof window === 'undefined' || !sectionRef.current) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
-      gsap.set('.bnoy-hero-word, .bnoy-hero-fade', { opacity: 1, y: 0, rotateX: 0 });
+      gsap.set('.bnoy-hero-word, .bnoy-hero-char, .bnoy-hero-fade', { opacity: 1, y: 0, rotateX: 0 });
       return;
     }
     const ctx = gsap.context(() => {
-      gsap.from('.bnoy-hero-word', { y: 70, opacity: 0, rotateX: 50, stagger: 0.07, duration: 1, ease: 'power4.out', delay: 0.1 });
-      gsap.from('.bnoy-hero-fade', { y: 24, opacity: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out', delay: 0.5 });
+      // SplitText-style letter-level stagger reveal with word grouping.
+      gsap.from('.bnoy-hero-char', {
+        yPercent: 110, opacity: 0, rotateX: 70,
+        duration: 0.9, ease: 'expo.out',
+        stagger: { each: 0.025, from: 'start' },
+        delay: 0.15,
+      });
+      gsap.from('.bnoy-hero-fade', { y: 24, opacity: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out', delay: 0.65 });
       gsap.to('.bnoy-layer-slow', { yPercent: -8, ease: 'none', scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'bottom top', scrub: true } });
       gsap.to('.bnoy-layer-fast', { yPercent: -20, ease: 'none', scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'bottom top', scrub: true } });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
+
+  // Helper: split a word into per-char spans for letter-level stagger.
+  const splitChars = (word: string, keyPrefix: string) => (
+    <span className="bnoy-hero-word inline-block mr-3 overflow-hidden align-bottom" style={{ perspective: 600 }}>
+      {Array.from(word).map((c, i) => (
+        <span key={`${keyPrefix}-${i}`} className="bnoy-hero-char inline-block" style={{ transformOrigin: '50% 100%' }}>{c}</span>
+      ))}
+    </span>
+  );
 
   const headline = ['Buy', 'ship-ready', 'projects.'];
   const headline2 = ['Launch', 'in', 'minutes.'];
