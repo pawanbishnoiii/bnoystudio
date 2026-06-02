@@ -98,6 +98,13 @@ export default function HeroSection() {
         className="absolute -bottom-32 -right-20 w-[600px] h-[600px] rounded-full bnoy-layer-fast pointer-events-none"
         style={{ background: 'radial-gradient(closest-side, hsl(43 100% 55% / 0.45), transparent)' }} />
 
+      {/* LAYER 3.5 — Lottie orb / particles backdrop (lazy + reduced-motion safe) */}
+      <LottieAnimation
+        src="https://lottie.host/b2f358e6-20fa-4646-8a8c-cb8d461d1f04/FqOqJH6vQN.lottie"
+        loop autoplay lazyPlay={false}
+        className="absolute inset-0 -z-10 pointer-events-none opacity-[0.35] mix-blend-multiply [&_*]:!w-full [&_*]:!h-full"
+      />
+
       {/* LAYER 4 — floating decorative SVGs */}
       <svg className="absolute top-20 right-[20%] w-24 h-24 bnoy-layer-fast text-fire/30 pointer-events-none" viewBox="0 0 100 100" fill="none">
         <motion.circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 6"
@@ -118,14 +125,12 @@ export default function HeroSection() {
               <span className="tracking-[0.18em] uppercase text-ink">{badge}</span>
             </div>
 
-            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-[80px] font-extrabold leading-[0.98] tracking-tight text-ink">
-              {headline.map((w, i) => (
-                <span key={i} className="bnoy-hero-word inline-block mr-3">{w}</span>
-              ))}
+            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-[80px] font-extrabold leading-[1.02] tracking-tight text-ink">
+              {headline.map((w, i) => splitChars(w, `a-${i}`))}
               <br />
-              {headline2.map((w, i) => (
-                <span key={i} className="bnoy-hero-word inline-block mr-3 bg-gradient-to-br from-fire via-sun to-fire bg-clip-text text-transparent">{w}</span>
-              ))}
+              <span className="bg-gradient-to-br from-fire via-sun to-fire bg-clip-text text-transparent">
+                {headline2.map((w, i) => splitChars(w, `b-${i}`))}
+              </span>
             </h1>
 
             <p className="bnoy-hero-fade mt-6 text-lg text-muted-foreground max-w-xl">{tagline}</p>
