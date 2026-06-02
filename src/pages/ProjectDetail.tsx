@@ -273,25 +273,29 @@ export default function ProjectDetail() {
         <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-2 space-y-8">
             {/* GALLERY with swipe + arrows + counter */}
-            <div className="relative rounded-2xl overflow-hidden border border-border shadow-card bg-black" {...swipe}>
-              <AnimatePresence mode="wait">
-                <motion.img key={activeImg}
-                  initial={{ opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-                  transition={{ duration: 0.35 }}
-                  src={images[activeImg] || '/placeholder.svg'} alt={`${project.title} screenshot ${activeImg + 1}`}
-                  className="w-full aspect-video object-cover select-none" draggable={false} />
-              </AnimatePresence>
+            <div className="relative rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink" {...swipe}>
+              <div className="relative w-full aspect-[16/10] bg-black overflow-hidden rounded-3xl">
+                <AnimatePresence mode="wait">
+                  <motion.img key={activeImg}
+                    initial={{ opacity: 0, scale: 1.03, filter: 'blur(8px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, filter: 'blur(6px)' }}
+                    transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+                    src={images[activeImg] || '/placeholder.svg'} alt={`${project.title} screenshot ${activeImg + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover select-none" draggable={false} />
+                </AnimatePresence>
+              </div>
               {images.length > 1 && (
                 <>
                   <button onClick={galleryPrev} aria-label="Previous image"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white grid place-items-center hover:bg-black/60 transition">
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white grid place-items-center hover:bg-black/60 transition z-10">
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button onClick={galleryNext} aria-label="Next image"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white grid place-items-center hover:bg-black/60 transition">
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white grid place-items-center hover:bg-black/60 transition z-10">
                     <ChevronRight className="h-5 w-5" />
                   </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 backdrop-blur text-white text-[11px] font-bold">
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 backdrop-blur text-white text-[11px] font-bold z-10">
                     {activeImg + 1} / {images.length}
                   </div>
                 </>

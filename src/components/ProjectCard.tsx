@@ -36,22 +36,23 @@ export default function ProjectCard({ project, onPreview, onBuy, index = 0 }: Pr
   const delay = reduced ? 0 : Math.min(index, 5) * 0.05;
   return (
     <motion.div
-      initial={reduced ? false : { opacity: 0, y: 16 }}
+      data-magnetic
+      initial={reduced ? false : { opacity: 0, y: 40 }}
       whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15, margin: '0px 0px -80px 0px' }}
-      transition={{ delay, duration: 0.35, ease: 'easeOut' }}
-      whileHover={reduced ? undefined : { y: -4 }}
-      style={{ contain: 'content', willChange: 'transform' }}
+      transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+      whileHover={reduced ? undefined : { y: -6, rotateX: 2, rotateY: -2 }}
+      style={{ contain: 'content', willChange: 'transform', transformStyle: 'preserve-3d', perspective: 800 }}
       className="group bg-white rounded-2xl overflow-hidden border border-border shadow-card card-hover flex flex-col"
     >
-      <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-video overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block">
+      <Link to={project.slug ? `/p/${project.slug}` : `/project/${project.id}`} className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-fire/15 to-sun/20 block rounded-t-2xl">
         <ThumbWithFallback src={project.thumbnail_url} alt={project.title} />
 
         <div className="absolute top-3 right-3">
           {isFree ? (
-            <Badge className="bg-green-500 text-white border-0">FREE</Badge>
+            <Badge className="bg-green-500 text-white border-0 shadow-card">FREE</Badge>
           ) : (
-            <Badge className="gradient-fire-strong text-white border-0">₹{project.price.toLocaleString('en-IN')}</Badge>
+            <Badge className="gradient-fire-strong text-white border-0 shadow-card">₹{project.price.toLocaleString('en-IN')}</Badge>
           )}
         </div>
       </Link>
