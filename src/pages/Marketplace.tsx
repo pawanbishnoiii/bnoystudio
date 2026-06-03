@@ -11,7 +11,7 @@ import BackToTop from '@/components/BackToTop';
 import ProjectCard from '@/components/ProjectCard';
 import PreviewModal from '@/components/PreviewModal';
 import SearchBar from '@/components/marketplace/SearchBar';
-import LottieAnimation from '@/components/ui/lottie-animation';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -120,25 +120,22 @@ export default function Marketplace() {
       <Navbar />
       <AuthModal />
 
-      {/* Cinematic hero */}
+      {/* Cinematic hero — typographic, no Lottie. */}
       <section className="relative pt-28 pb-10 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
         <div className="absolute -top-20 -right-20 w-[420px] h-[420px] rounded-full opacity-50 blur-3xl pointer-events-none"
           style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
-        <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-6 items-center relative">
-          <div>
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
-              <Sparkles className="h-3.5 w-3.5" /> Bnoy Marketplace
-            </span>
-            <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold text-ink leading-[1.02] tracking-tight">
-              Let some <span className="gradient-text">light in.</span>
-            </h1>
-            <p className="text-muted-foreground mt-3 max-w-lg text-base">
-              Browse every published project. Filter by stack, price or category — preview live, then buy with one click.
-            </p>
-          </div>
-          <div className="max-w-[360px] mx-auto w-full h-[220px] md:h-[260px]">
-            <LottieAnimation src="/lottie/let-some-light-in.json" />
-          </div>
+        <div className="absolute -bottom-32 -left-20 w-[360px] h-[360px] rounded-full opacity-40 blur-3xl pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, hsl(43 100% 55% / 0.4), transparent)' }} />
+        <div className="container mx-auto px-4 relative text-center max-w-3xl">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
+            <Sparkles className="h-3.5 w-3.5" /> Bnoy Marketplace
+          </span>
+          <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold text-ink leading-[1.02] tracking-tight">
+            Let some <span className="gradient-text">light in.</span>
+          </h1>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-base">
+            Browse every published project. Filter by stack, price or category — preview live, then buy with one click.
+          </p>
         </div>
       </section>
 
@@ -255,11 +252,10 @@ export default function Marketplace() {
             </>
           ) : (
             <div className="text-center py-12 max-w-md mx-auto">
-              <div className="w-56 h-56 mx-auto">
-                <LottieAnimation src="https://lottie.host/4d42d6f3-7e2e-4f74-9c4d-d6df45e6f5f1/8O4Vp4f8nB.lottie"
-                  fallback={<div className="w-full h-full grid place-items-center text-7xl">🗂️</div>} />
+              <div className="w-40 h-40 mx-auto grid place-items-center rounded-3xl bg-warm-bg/60 border border-border text-7xl">
+                🗂️
               </div>
-              <h3 className="font-display text-xl font-bold text-ink mt-2">No projects match your filters</h3>
+              <h3 className="font-display text-xl font-bold text-ink mt-4">No projects match your filters</h3>
               <p className="text-muted-foreground text-sm mt-2">Try clearing a few filters or searching for something else.</p>
               <Button variant="outline" className="mt-4" onClick={clearAll}>Clear all filters</Button>
             </div>

@@ -12,7 +12,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { useRazorpay } from '@/hooks/useRazorpay';
 import { useSwipe } from '@/hooks/useSwipe';
-import { celebrate } from '@/lib/celebrate';
+import { celebrateCart, celebratePurchase } from '@/lib/celebrate';
 import { techIcon } from '@/lib/techIcons';
 import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
@@ -156,7 +156,7 @@ export default function ProjectDetail() {
       const { error } = await supabase.from('purchases').insert({ user_id: user.id, project_id: project!.id, amount: 0 });
       if (error && !error.message.includes('duplicate')) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
       await refetchPurchase();
-      celebrate('Unlocked! 🚀', 'You can now download the source code from your dashboard.');
+      celebrateCart('Unlocked! 🚀', 'Download it from your dashboard anytime.');
       return;
     }
     openPayment({
@@ -166,7 +166,7 @@ export default function ProjectDetail() {
         const { error } = await supabase.from('purchases').insert({ user_id: user.id, project_id: project!.id, amount: project!.price, razorpay_payment_id: paymentId });
         if (error) { toast({ title: 'Could not save purchase', description: error.message, variant: 'destructive' }); return; }
         await refetchPurchase();
-        celebrate('Payment successful! 🎉', `Thank you — your purchase of ${project!.title} is ready to download.`);
+        celebratePurchase('Payment successful! 🎉', `${project!.title} is ready to download.`);
       },
       onFailure: () => toast({ title: 'Payment cancelled or failed', variant: 'destructive' }),
     });
@@ -274,8 +274,8 @@ export default function ProjectDetail() {
         <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-2 space-y-8">
             {/* GALLERY with swipe + arrows + counter */}
-            <div className="relative rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink" {...swipe}>
-              <div className="relative w-full aspect-[16/10] bg-black overflow-hidden rounded-3xl">
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink max-w-full" {...swipe}>
+              <div className="relative w-full aspect-[16/10] bg-black overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.img key={activeImg}
                     initial={{ opacity: 0, scale: 1.03, filter: 'blur(8px)' }}
@@ -283,6 +283,7 @@ export default function ProjectDetail() {
                     exit={{ opacity: 0, filter: 'blur(6px)' }}
                     transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
                     src={images[activeImg] || '/placeholder.svg'} alt={`${project.title} screenshot ${activeImg + 1}`}
+                    loading="lazy" decoding="async"
                     className="absolute inset-0 w-full h-full object-cover select-none" draggable={false} />
                 </AnimatePresence>
               </div>
@@ -304,11 +305,11 @@ export default function ProjectDetail() {
             </div>
 
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory">
+              <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory max-w-full">
                 {images.map((src, i) => (
                   <button key={i} onClick={() => setActiveImg(i)} aria-label={`View image ${i + 1}`}
-                    className={`flex-shrink-0 snap-start w-24 sm:w-28 aspect-video rounded-lg overflow-hidden border-2 transition ${activeImg === i ? 'border-fire scale-[1.02]' : 'border-border opacity-70 hover:opacity-100'}`}>
-                    <img src={src!} alt="" className="w-full h-full object-cover" />
+                    className={`flex-shrink-0 snap-start w-20 sm:w-24 md:w-28 aspect-video rounded-lg overflow-hidden border-2 transition ${activeImg === i ? 'border-fire scale-[1.02]' : 'border-border opacity-70 hover:opacity-100'}`}>
+                    <img src={src!} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -644,10 +645,10 @@ export default function ProjectDetail() {
 
 function CredRow({ label, value, onCopy }: { label: string; value: string; onCopy: (v: string) => void }) {
   return (
-    <div className="flex items-center gap-2 bg-warm-bg/60 border border-border rounded-lg px-3 py-2">
+    <div className="flex items-center gap-2 bg-warm-bg/60 border border-border rounded-lg px-3 py-2 min-w-0 max-w-full">
       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-16 shrink-0">{label}</span>
-      <code className="text-sm text-ink font-mono truncate flex-1">{value}</code>
-      <button onClick={() => onCopy(value)} className="p-1.5 rounded hover:bg-fire/10 text-fire min-w-11 min-h-11 grid place-items-center" aria-label={`Copy ${label}`}>
+      <code className="text-sm text-ink font-mono truncate flex-1 min-w-0">{value}</code>
+      <button onClick={() => onCopy(value)} className="p-1.5 rounded hover:bg-fire/10 text-fire shrink-0 grid place-items-center" aria-label={`Copy ${label}`}>
         <Copy className="h-3.5 w-3.5" />
       </button>
     </div>
