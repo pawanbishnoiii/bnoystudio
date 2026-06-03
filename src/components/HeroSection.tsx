@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Star, ShieldCheck, Sparkles, Zap, Play } from 'lucide-react';
+import { Star, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { Link } from 'react-router-dom';
