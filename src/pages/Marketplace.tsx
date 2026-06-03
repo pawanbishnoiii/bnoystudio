@@ -252,11 +252,10 @@ export default function Marketplace() {
             </>
           ) : (
             <div className="text-center py-12 max-w-md mx-auto">
-              <div className="w-56 h-56 mx-auto">
-                <LottieAnimation src="https://lottie.host/4d42d6f3-7e2e-4f74-9c4d-d6df45e6f5f1/8O4Vp4f8nB.lottie"
-                  fallback={<div className="w-full h-full grid place-items-center text-7xl">🗂️</div>} />
+              <div className="w-40 h-40 mx-auto grid place-items-center rounded-3xl bg-warm-bg/60 border border-border text-7xl">
+                🗂️
               </div>
-              <h3 className="font-display text-xl font-bold text-ink mt-2">No projects match your filters</h3>
+              <h3 className="font-display text-xl font-bold text-ink mt-4">No projects match your filters</h3>
               <p className="text-muted-foreground text-sm mt-2">Try clearing a few filters or searching for something else.</p>
               <Button variant="outline" className="mt-4" onClick={clearAll}>Clear all filters</Button>
             </div>
