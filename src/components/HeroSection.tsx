@@ -10,6 +10,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import LottieAnimation from '@/components/ui/lottie-animation';
+import Hero3DButton from '@/components/ui/3d-button';
+import ArrowCTA from '@/components/ui/button-1';
 import CpuArchitecture from '@/components/ui/cpu-architecture';
 import { HeartIcon, DownloadDoneIcon, SuccessIcon, NotificationIcon } from '@/components/ui/animated-state-icons';
 import bnoyLogo from '@/assets/bnoy-logo.png';
@@ -135,18 +137,16 @@ export default function HeroSection() {
 
             <p className="bnoy-hero-fade mt-6 text-lg text-muted-foreground max-w-xl">{tagline}</p>
 
-            <div className="bnoy-hero-fade mt-8 flex flex-wrap gap-3">
+            <div className="bnoy-hero-fade mt-8 flex flex-wrap items-center gap-3">
               <Link to="/marketplace">
-                <Button size="lg" className="gradient-fire-strong text-white px-7 shadow-card-hover">
-                  Browse Projects <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <ArrowCTA label="Browse Projects" />
               </Link>
               {isAdmin ? (
                 <Link to="/admin"><Button size="lg" variant="outline" className="border-border">Admin Panel</Button></Link>
               ) : (
-                <Button size="lg" variant="outline" className="border-border" onClick={() => setShowAuthModal(true, 'Sign in to start buying.')}>
-                  <Play className="mr-2 h-4 w-4 fill-current" /> Get Started
-                </Button>
+                <Hero3DButton onClick={() => setShowAuthModal(true, 'Sign in to start buying.')}>
+                  Get Started
+                </Hero3DButton>
               )}
             </div>
 
