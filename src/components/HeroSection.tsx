@@ -103,7 +103,7 @@ export default function HeroSection() {
       {/* LAYER 3.5 — Lottie orb / particles backdrop (lazy + reduced-motion safe) */}
       <LottieAnimation
         src="https://lottie.host/b2f358e6-20fa-4646-8a8c-cb8d461d1f04/FqOqJH6vQN.lottie"
-        loop autoplay lazyPlay={false}
+        loop autoplay lazyPlay={true}
         className="absolute inset-0 -z-10 pointer-events-none opacity-[0.35] mix-blend-multiply [&_*]:!w-full [&_*]:!h-full"
       />
 
