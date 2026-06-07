@@ -44,6 +44,9 @@ export default function MagnifiedBento() {
   const [active, setActive] = React.useState(false);
 
   const clipPath = useMotionTemplate`circle(46px at calc(50% + ${lensX}px) calc(50% + ${lensY}px))`;
+  const lensLeft = useMotionTemplate`calc(50% + ${lensX}px)`;
+  const lensTop = useMotionTemplate`calc(50% + ${lensY}px)`;
+
 
   const onMove = (e: React.MouseEvent | React.TouchEvent) => {
     const el = containerRef.current; if (!el) return;
