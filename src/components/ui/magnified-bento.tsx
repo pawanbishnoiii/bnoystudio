@@ -44,6 +44,9 @@ export default function MagnifiedBento() {
   const [active, setActive] = React.useState(false);
 
   const clipPath = useMotionTemplate`circle(46px at calc(50% + ${lensX}px) calc(50% + ${lensY}px))`;
+  const lensLeft = useMotionTemplate`calc(50% + ${lensX}px)`;
+  const lensTop = useMotionTemplate`calc(50% + ${lensY}px)`;
+
 
   const onMove = (e: React.MouseEvent | React.TouchEvent) => {
     const el = containerRef.current; if (!el) return;
@@ -108,9 +111,10 @@ export default function MagnifiedBento() {
           {active && (
             <motion.div
               className="pointer-events-none absolute h-[92px] w-[92px] -ml-[46px] -mt-[46px] rounded-full border-2 border-fire/70 shadow-[0_0_0_2px_white,0_10px_30px_-8px_hsl(14_100%_57%/0.6)]"
-              style={{ left: useMotionTemplate`calc(50% + ${lensX}px)` as any, top: useMotionTemplate`calc(50% + ${lensY}px)` as any }}
+              style={{ left: lensLeft, top: lensTop }}
             />
           )}
+
         </div>
 
         <div className="lg:col-span-2">
