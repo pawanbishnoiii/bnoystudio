@@ -20,6 +20,9 @@ import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
 import { useGSAPAnimations, useMagneticButtons } from '@/hooks/useGSAPAnimations';
 import { motion } from 'framer-motion';
+import MagnifiedBento from '@/components/ui/magnified-bento';
+import FolderInteraction from '@/components/ui/folder-interaction';
+import { ContainerTextFlip } from '@/components/ui/container-text-flip';
 
 export default function Index() {
   useGSAPAnimations();
@@ -58,15 +61,24 @@ export default function Index() {
 
       <FeaturedProducts limit={6} />
 
-      {/* Lottie strip */}
-      <section className="py-12 bg-warm-bg/50">
-        <div className="container mx-auto px-4 grid md:grid-cols-3 items-center gap-8">
-          <div className="md:col-span-1 max-w-[280px] mx-auto">
-            <DotLottieReact src="https://lottie.host/b2f358e6-20fa-4646-8a8c-cb8d461d1f04/FqOqJH6vQN.lottie" loop autoplay />
-          </div>
-          <div className="md:col-span-2 text-center md:text-left">
-            <h3 className="font-display text-3xl md:text-4xl font-extrabold text-ink leading-tight">Ship faster. <span className="gradient-text">Skip the boilerplate.</span></h3>
-            <p className="text-muted-foreground mt-3 max-w-xl">Every build comes with auth, payments, dashboards and CI ready out-of-the-box. Just clone, configure, and launch.</p>
+      {/* Magnified bento — interactive workflow lens */}
+      <MagnifiedBento />
+
+      {/* Folder + word-flip strip */}
+      <section className="py-16 bg-warm-bg/50">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
+          <FolderInteraction />
+          <div className="text-center md:text-left">
+            <h3 className="font-display text-3xl md:text-5xl font-extrabold text-ink leading-[1.05]">
+              Ship something{' '}
+              <ContainerTextFlip
+                words={['better', 'faster', 'beautiful', 'profitable']}
+                className="text-2xl md:text-4xl"
+              />
+            </h3>
+            <p className="text-muted-foreground mt-4 max-w-xl mx-auto md:mx-0">
+              Tap the folder — every Bnoy build comes with auth, payments, dashboards and CI ready out-of-the-box. Clone, configure, launch.
+            </p>
           </div>
         </div>
       </section>

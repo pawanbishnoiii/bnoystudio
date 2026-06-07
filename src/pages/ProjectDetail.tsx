@@ -272,9 +272,9 @@ export default function ProjectDetail() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
-          <div className="lg:col-span-2 space-y-8">
-            {/* GALLERY with swipe + arrows + counter */}
-            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink max-w-full" {...swipe}>
+          <div className="lg:col-span-2 space-y-8 min-w-0 w-full">
+            {/* GALLERY with swipe + arrows + counter — locked aspect, never overflows */}
+            <div className="relative w-full max-w-full rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink" {...swipe}>
               <div className="relative w-full aspect-[16/10] bg-black overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.img key={activeImg}
