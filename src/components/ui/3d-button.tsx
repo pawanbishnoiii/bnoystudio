@@ -51,17 +51,18 @@ export const Hero3DButton = React.forwardRef<HTMLButtonElement, Props>(
           <div className="outline" />
           <div className="content">
             <span className="char state-1">
-              {'JoinToday'.split('').map((ch, i) => (
-                <span key={i} data-label={ch} style={{ ['--i' as any]: i + 1 }}>{ch}</span>
+              {rest.split('').map((ch, i) => (
+                <span key={`r-${i}`} data-label={ch} style={{ ['--i' as any]: i + 1 }}>{ch}</span>
               ))}
             </span>
             <div className="icon"><div /></div>
             <span className="char state-2">
-              {'JoinNow'.split('').map((ch, i) => (
-                <span key={i} data-label={ch} style={{ ['--i' as any]: i + 1 }}>{ch}</span>
+              {hover.split('').map((ch, i) => (
+                <span key={`h-${i}`} data-label={ch} style={{ ['--i' as any]: i + 1 }}>{ch}</span>
               ))}
             </span>
           </div>
+          <div className="spinner" aria-hidden="true" />
         </div>
       </button>
     );
