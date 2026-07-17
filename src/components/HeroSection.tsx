@@ -144,9 +144,7 @@ export default function HeroSection() {
               {isAdmin ? (
                 <Link to="/admin"><Button size="lg" variant="outline" className="border-border">Admin Panel</Button></Link>
               ) : (
-                <Hero3DButton onClick={() => setShowAuthModal(true, 'Sign in to start buying.')}>
-                  Get Started
-                </Hero3DButton>
+                <HeroStartButton />
               )}
             </div>
 
