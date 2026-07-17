@@ -3,23 +3,32 @@ import { cn } from '@/lib/utils';
 import './3d-button.css';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Optional label override; ignored — component always renders the two animated states. */
   label?: string;
+  /** Primary label shown at rest. Defaults to "Join Today". */
+  labelRest?: string;
+  /** Label shown on hover. Defaults to "Join Now". */
+  labelHover?: string;
+  /** Show a spinner and disable interaction while true. */
+  loading?: boolean;
 }
 
 /**
- * Signature 3D "Join Today → Join Now" hero button.
- * Full-fidelity port of the 21st.dev interaction:
- *  - animated splash lines on hover
- *  - dashed SVG outline path draw
- *  - per-character blur / stagger swap between two states
- *  - arrow swipe + rotate on the trailing icon
- * Themed to fire/orange to match the site's design system.
+ * Signature 3D hero button — indigo → violet → cyan.
+ * Animated splash lines, dashed outline draw, per-char stagger swap, arrow swipe.
+ * Reduced-motion users get a simplified static rendering (see 3d-button.css).
  */
 export const Hero3DButton = React.forwardRef<HTMLButtonElement, Props>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, labelRest = 'Get Started', labelHover = 'Let\'s Go', loading, disabled, children, ...props }, ref) => {
+    const rest = (labelRest || 'Get Started').replace(/\s+/g, '');
+    const hover = (labelHover || rest).replace(/\s+/g, '');
     return (
-      <button ref={ref} className={cn('bnoy-3d-button', className)} {...props}>
+      <button
+        ref={ref}
+        aria-busy={loading || undefined}
+        disabled={disabled || loading}
+        className={cn('bnoy-3d-button', loading && 'is-loading', className)}
+        {...props}
+      >
         <div className="bg" />
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 342 208" height={208} width={342} className="splash">
           <path strokeLinecap="round" strokeWidth={3} d="M54.1054 99.7837C54.1054 99.7837 40.0984 90.7874 26.6893 97.6362C13.2802 104.485 1.5 97.6362 1.5 97.6362" />
