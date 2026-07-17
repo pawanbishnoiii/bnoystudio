@@ -230,3 +230,26 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
     </div>
   );
 }
+
+function HeroStartButton() {
+  const { user, setShowAuthModal } = useAuthStore();
+  const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
+  const onClick = () => {
+    setLoading(true);
+    // Small perceived latency so the loading state is visible.
+    window.setTimeout(() => {
+      if (user) navigate('/marketplace');
+      else setShowAuthModal(true, 'Sign in to start buying.');
+      setLoading(false);
+    }, 420);
+  };
+  return (
+    <Hero3DButton
+      onClick={onClick}
+      loading={loading}
+      labelRest="Get Started"
+      labelHover={user ? 'Explore' : "Let's Go"}
+    />
+  );
+}
