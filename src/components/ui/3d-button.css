@@ -1,8 +1,13 @@
-/* Signature 3D hero button — themed to fire/orange. Scoped to .bnoy-3d-button. */
+/* Signature 3D hero button — themed indigo/violet/cyan. Scoped to .bnoy-3d-button. */
 
 .bnoy-3d-button {
   --bnoy-btn-w: 200px;
   --bnoy-btn-h: 60px;
+  --bnoy-from: 250 90% 62%;  /* indigo/violet */
+  --bnoy-mid:  260 85% 55%;
+  --bnoy-to:   190 95% 55%;  /* cyan */
+  --bnoy-shadow: 250 90% 55%;
+  --bnoy-deep:   255 85% 40%;
   position: relative;
   display: inline-block;
   width: var(--bnoy-btn-w);
@@ -15,26 +20,28 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
+.bnoy-3d-button[disabled] { cursor: wait; opacity: 0.85; }
+
 .bnoy-3d-button .bg {
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, hsl(14 100% 60%) 0%, hsl(14 90% 52%) 55%, hsl(30 100% 55%) 100%);
+  background: linear-gradient(135deg, hsl(var(--bnoy-from)) 0%, hsl(var(--bnoy-mid)) 55%, hsl(var(--bnoy-to)) 100%);
   box-shadow:
-    0 10px 22px -6px hsl(14 100% 50% / 0.55),
-    0 2px 0 0 hsl(14 100% 40%),
-    inset 0 -6px 12px hsl(14 100% 42% / 0.55),
-    inset 0 6px 12px hsl(45 100% 75% / 0.35);
+    0 10px 22px -6px hsl(var(--bnoy-shadow) / 0.55),
+    0 2px 0 0 hsl(var(--bnoy-deep)),
+    inset 0 -6px 12px hsl(var(--bnoy-deep) / 0.55),
+    inset 0 6px 12px hsl(190 100% 85% / 0.35);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
 }
 
 .bnoy-3d-button:hover .bg {
   transform: translateY(-2px) scale(1.02);
   box-shadow:
-    0 16px 32px -8px hsl(14 100% 50% / 0.7),
-    0 3px 0 0 hsl(14 100% 40%),
-    inset 0 -6px 12px hsl(14 100% 42% / 0.55),
-    inset 0 6px 12px hsl(45 100% 80% / 0.5);
+    0 16px 32px -8px hsl(var(--bnoy-shadow) / 0.7),
+    0 3px 0 0 hsl(var(--bnoy-deep)),
+    inset 0 -6px 12px hsl(var(--bnoy-deep) / 0.55),
+    inset 0 6px 12px hsl(190 100% 85% / 0.5);
 }
 .bnoy-3d-button:active .bg { transform: translateY(1px) scale(0.99); }
 
@@ -46,7 +53,7 @@
   transform: translate(-50%, -50%);
   width: calc(var(--bnoy-btn-w) * 1.7);
   height: auto;
-  stroke: hsl(14 100% 55%);
+  stroke: hsl(var(--bnoy-mid));
   stroke-dasharray: 60 0;
   stroke-dashoffset: 0;
   opacity: 0;
@@ -61,7 +68,6 @@
   100% { stroke-dasharray: 2 60; stroke-dashoffset: -60; }
 }
 
-/* wrap */
 .bnoy-3d-button .wrap {
   position: absolute;
   inset: 0;
@@ -69,7 +75,6 @@
   border-radius: 999px;
 }
 
-/* dashed animating path outline */
 .bnoy-3d-button .path {
   position: absolute;
   top: 50%;
@@ -77,7 +82,7 @@
   transform: translate(-50%, -50%);
   width: calc(100% - 12px);
   height: auto;
-  stroke: hsl(45 100% 85%);
+  stroke: hsl(190 100% 90%);
   stroke-dasharray: 240;
   stroke-dashoffset: 240;
   opacity: 0;
@@ -89,14 +94,14 @@
 }
 @keyframes bnoy-path {
   from { stroke-dashoffset: 240; stroke: hsl(0 0% 100%); }
-  to   { stroke-dashoffset: -240; stroke: hsl(45 100% 85%); }
+  to   { stroke-dashoffset: -240; stroke: hsl(190 100% 90%); }
 }
 
 .bnoy-3d-button .outline {
   position: absolute;
   inset: 4px;
   border-radius: 999px;
-  border: 1.5px solid hsl(0 0% 100% / 0.35);
+  border: 1.5px solid hsl(0 0% 100% / 0.4);
   pointer-events: none;
 }
 
@@ -112,7 +117,7 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   font-size: 16px;
-  text-shadow: 0 1px 2px hsl(14 100% 30% / 0.5);
+  text-shadow: 0 1px 2px hsl(var(--bnoy-deep) / 0.5);
 }
 
 .bnoy-3d-button .char {
@@ -128,7 +133,6 @@
   opacity: 1;
 }
 
-/* state-2 hidden until hover */
 .bnoy-3d-button .char.state-2 {
   position: absolute;
   left: 50%;
@@ -138,7 +142,6 @@
 }
 .bnoy-3d-button .char.state-2 span { opacity: 0; transform: translateY(50%); filter: blur(20px); }
 
-/* On hover: state-1 disappears, state-2 appears */
 .bnoy-3d-button:hover .char.state-1 span {
   animation: bnoy-char-disappear 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: calc(var(--i) * 0.03s);
@@ -159,7 +162,6 @@
   100% { transform: translateY(-70%); opacity: 0; filter: blur(3px); }
 }
 
-/* arrow icon */
 .bnoy-3d-button .icon {
   position: relative;
   width: 22px;
@@ -216,12 +218,37 @@
   80% { transform: rotate(-55deg) translateY(1px); }
 }
 
+/* Loading state — replaces label with a spinner */
+.bnoy-3d-button.is-loading .content .char,
+.bnoy-3d-button.is-loading .content .icon { visibility: hidden; }
+.bnoy-3d-button .spinner {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  color: #fff;
+}
+.bnoy-3d-button.is-loading .spinner { display: flex; }
+.bnoy-3d-button .spinner::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2.5px solid hsl(0 0% 100% / 0.35);
+  border-top-color: #fff;
+  animation: bnoy-spin 0.7s linear infinite;
+}
+@keyframes bnoy-spin { to { transform: rotate(360deg); } }
+
 .bnoy-3d-button:focus-visible {
-  outline: 2px solid hsl(14 100% 60%);
+  outline: 2px solid hsl(var(--bnoy-from));
   outline-offset: 4px;
   border-radius: 999px;
 }
 
+/* Reduced-motion: switch to a simplified static style. */
 @media (prefers-reduced-motion: reduce) {
   .bnoy-3d-button *,
   .bnoy-3d-button *::before,
@@ -229,6 +256,10 @@
     animation: none !important;
     transition: none !important;
   }
-  .bnoy-3d-button .char.state-2 span { opacity: 1; transform: translate(0,0); filter: none; }
-  .bnoy-3d-button:hover .char.state-1 { opacity: 0; }
+  .bnoy-3d-button .splash,
+  .bnoy-3d-button .path { display: none !important; }
+  .bnoy-3d-button .char.state-2 { display: none; }
+  .bnoy-3d-button .char.state-1 span { opacity: 1; transform: none; filter: none; }
+  .bnoy-3d-button:hover .bg { transform: none; }
+  .bnoy-3d-button.is-loading .spinner::after { animation: none !important; border-top-color: hsl(0 0% 100% / 0.6); }
 }

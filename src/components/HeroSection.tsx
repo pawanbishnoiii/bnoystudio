@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Star, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
@@ -144,9 +144,7 @@ export default function HeroSection() {
               {isAdmin ? (
                 <Link to="/admin"><Button size="lg" variant="outline" className="border-border">Admin Panel</Button></Link>
               ) : (
-                <Hero3DButton onClick={() => setShowAuthModal(true, 'Sign in to start buying.')}>
-                  Get Started
-                </Hero3DButton>
+                <HeroStartButton />
               )}
             </div>
 
@@ -230,5 +228,28 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-sm font-medium text-ink">
       {icon}{children}
     </div>
+  );
+}
+
+function HeroStartButton() {
+  const { user, setShowAuthModal } = useAuthStore();
+  const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
+  const onClick = () => {
+    setLoading(true);
+    // Small perceived latency so the loading state is visible.
+    window.setTimeout(() => {
+      if (user) navigate('/marketplace');
+      else setShowAuthModal(true, 'Sign in to start buying.');
+      setLoading(false);
+    }, 420);
+  };
+  return (
+    <Hero3DButton
+      onClick={onClick}
+      loading={loading}
+      labelRest="Get Started"
+      labelHover={user ? 'Explore' : "Let's Go"}
+    />
   );
 }
