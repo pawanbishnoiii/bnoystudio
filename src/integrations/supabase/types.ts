@@ -68,6 +68,63 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_settings: {
+        Row: {
+          created_at: string
+          email_login_enabled: boolean
+          google_auth_mode: string
+          google_callback_url: string | null
+          google_client_id: string | null
+          google_login_enabled: boolean
+          id: string
+          notes: string | null
+          smtp_enabled: boolean
+          smtp_from_email: string | null
+          smtp_from_name: string | null
+          smtp_host: string | null
+          smtp_port: number | null
+          smtp_secure: boolean
+          smtp_user: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email_login_enabled?: boolean
+          google_auth_mode?: string
+          google_callback_url?: string | null
+          google_client_id?: string | null
+          google_login_enabled?: boolean
+          id?: string
+          notes?: string | null
+          smtp_enabled?: boolean
+          smtp_from_email?: string | null
+          smtp_from_name?: string | null
+          smtp_host?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean
+          smtp_user?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email_login_enabled?: boolean
+          google_auth_mode?: string
+          google_callback_url?: string | null
+          google_client_id?: string | null
+          google_login_enabled?: boolean
+          id?: string
+          notes?: string | null
+          smtp_enabled?: boolean
+          smtp_from_email?: string | null
+          smtp_from_name?: string | null
+          smtp_host?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean
+          smtp_user?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -163,6 +220,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      project_versions: {
+        Row: {
+          changelog: string | null
+          created_at: string
+          id: string
+          is_latest: boolean
+          notes: string | null
+          preview_url: string | null
+          project_id: string
+          released_at: string
+          source_code_url: string | null
+          thumbnail_url: string | null
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          changelog?: string | null
+          created_at?: string
+          id?: string
+          is_latest?: boolean
+          notes?: string | null
+          preview_url?: string | null
+          project_id: string
+          released_at?: string
+          source_code_url?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          changelog?: string | null
+          created_at?: string
+          id?: string
+          is_latest?: boolean
+          notes?: string | null
+          preview_url?: string | null
+          project_id?: string
+          released_at?: string
+          source_code_url?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_versions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -301,9 +411,16 @@ export type Database = {
       site_settings: {
         Row: {
           address: string | null
+          ai_section_enabled: boolean
           banner_url: string | null
           brand_name: string | null
           brand_tagline: string | null
+          elevenlabs_agent_id: string | null
+          google_auth_mode: string
+          google_client_id: string | null
+          google_redirect_uri: string | null
+          google_verify_file_content: string | null
+          google_verify_file_name: string | null
           hero_badge: string | null
           hero_bg_url: string | null
           hero_lottie_url: string | null
@@ -324,9 +441,16 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          ai_section_enabled?: boolean
           banner_url?: string | null
           brand_name?: string | null
           brand_tagline?: string | null
+          elevenlabs_agent_id?: string | null
+          google_auth_mode?: string
+          google_client_id?: string | null
+          google_redirect_uri?: string | null
+          google_verify_file_content?: string | null
+          google_verify_file_name?: string | null
           hero_badge?: string | null
           hero_bg_url?: string | null
           hero_lottie_url?: string | null
@@ -347,9 +471,16 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          ai_section_enabled?: boolean
           banner_url?: string | null
           brand_name?: string | null
           brand_tagline?: string | null
+          elevenlabs_agent_id?: string | null
+          google_auth_mode?: string
+          google_client_id?: string | null
+          google_redirect_uri?: string | null
+          google_verify_file_content?: string | null
+          google_verify_file_name?: string | null
           hero_badge?: string | null
           hero_bg_url?: string | null
           hero_lottie_url?: string | null
