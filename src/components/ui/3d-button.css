@@ -1,8 +1,8 @@
 /* Signature 3D hero button — themed indigo/violet/cyan. Scoped to .bnoy-3d-button. */
 
 .bnoy-3d-button {
-  --bnoy-btn-w: 200px;
-  --bnoy-btn-h: 60px;
+  --bnoy-btn-w: 224px;
+  --bnoy-btn-h: 64px;
   --bnoy-from: 250 90% 62%;  /* indigo/violet */
   --bnoy-mid:  260 85% 55%;
   --bnoy-to:   190 95% 55%;  /* cyan */
@@ -28,7 +28,8 @@
   border-radius: 999px;
   background: linear-gradient(135deg, hsl(var(--bnoy-from)) 0%, hsl(var(--bnoy-mid)) 55%, hsl(var(--bnoy-to)) 100%);
   box-shadow:
-    0 10px 22px -6px hsl(var(--bnoy-shadow) / 0.55),
+    0 0 42px -4px hsl(var(--bnoy-from) / 0.55),
+    0 12px 26px -6px hsl(var(--bnoy-shadow) / 0.6),
     0 2px 0 0 hsl(var(--bnoy-deep)),
     inset 0 -6px 12px hsl(var(--bnoy-deep) / 0.55),
     inset 0 6px 12px hsl(190 100% 85% / 0.35);
@@ -116,7 +117,7 @@
   color: #fff;
   font-weight: 800;
   letter-spacing: -0.01em;
-  font-size: 16px;
+  font-size: 17px;
   text-shadow: 0 1px 2px hsl(var(--bnoy-deep) / 0.5);
 }
 
