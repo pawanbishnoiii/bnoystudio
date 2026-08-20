@@ -41,6 +41,8 @@ export default {
         fire: { DEFAULT: "#FF5722", deep: "#E64A19", light: "#FF8A65" },
         sun: { DEFAULT: "#FFC107", light: "#FFD54F" },
         ink: { DEFAULT: "#1A1A2E" },
+        iris: { DEFAULT: "#6366F1", deep: "#4338CA", light: "#A5B4FC" },
+        aqua: { DEFAULT: "#22D3EE", deep: "#0891B2", light: "#A5F3FC" },
       },
       borderRadius: {
         lg: "var(--radius)",
