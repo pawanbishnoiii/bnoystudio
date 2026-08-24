@@ -17,6 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import RefundPolicy from "./pages/RefundPolicy";
 import Apps from "./pages/Apps";
+import GoogleVerify from "./pages/GoogleVerify";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ function AnimatedRoutes() {
         <Route path="/apps" element={<Apps />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Signup />} />
+        <Route path="/:file" element={<GoogleVerify />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
