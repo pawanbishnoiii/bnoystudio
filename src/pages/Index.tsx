@@ -16,8 +16,8 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SocialProofTicker from '@/components/SocialProofTicker';
-import ProgressBar from '@/components/ProgressBar';
 import BackToTop from '@/components/BackToTop';
+import AISection from '@/components/AISection';
 import { useGSAPAnimations, useMagneticButtons } from '@/hooks/useGSAPAnimations';
 import { motion } from 'framer-motion';
 import MagnifiedBento from '@/components/ui/magnified-bento';
@@ -43,7 +43,6 @@ export default function Index() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
-      <ProgressBar />
       <Navbar />
       <AuthModal />
       <HeroSection />
@@ -83,6 +82,7 @@ export default function Index() {
         </div>
       </section>
 
+      <AISection />
       <HowItWorks />
       <TestimonialsSection />
       <FAQSection />

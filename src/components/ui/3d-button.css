@@ -264,3 +264,11 @@
   .bnoy-3d-button:hover .bg { transform: none; }
   .bnoy-3d-button.is-loading .spinner::after { animation: none !important; border-top-color: hsl(0 0% 100% / 0.6); }
 }
+
+/* Compact sizing on phones */
+@media (max-width: 640px) {
+  .bnoy-3d-button {
+    --bnoy-btn-w: 170px;
+    --bnoy-btn-h: 50px;
+  }
+}
