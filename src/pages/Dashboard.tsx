@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ShoppingBag, CreditCard, Settings2, Heart, Download, Sparkles, IndianRupee, Trash2, Pencil, Camera } from 'lucide-react';
+import { ShoppingBag, CreditCard, Settings2, Heart, Download, Sparkles, IndianRupee, Trash2, Pencil, Camera, Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/Navbar';
@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import AIHelper from '@/components/AIHelper';
 
 const NAME_MAX = 60;
 
@@ -220,6 +221,7 @@ export default function Dashboard() {
             <TabsTrigger value="payments" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><CreditCard className="h-4 w-4 mr-2" />Payments</TabsTrigger>
             <TabsTrigger value="wishlist" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Heart className="h-4 w-4 mr-2" />Wishlist</TabsTrigger>
             <TabsTrigger value="recommendations" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Sparkles className="h-4 w-4 mr-2" />For you</TabsTrigger>
+            <TabsTrigger value="assistant" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Bot className="h-4 w-4 mr-2" />Assistant</TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Settings2 className="h-4 w-4 mr-2" />Settings</TabsTrigger>
           </TabsList>
 
@@ -310,6 +312,10 @@ export default function Dashboard() {
               ))}
               {(!recommendations || recommendations.length === 0) && <p className="col-span-full text-center py-8 text-muted-foreground">No recommendations yet.</p>}
             </div>
+          </TabsContent>
+
+          <TabsContent value="assistant">
+            <div className="max-w-2xl"><AIHelper /></div>
           </TabsContent>
 
           <TabsContent value="settings">

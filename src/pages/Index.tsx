@@ -17,7 +17,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SocialProofTicker from '@/components/SocialProofTicker';
 import BackToTop from '@/components/BackToTop';
-import AISection from '@/components/AISection';
 import { useGSAPAnimations, useMagneticButtons } from '@/hooks/useGSAPAnimations';
 import { motion } from 'framer-motion';
 import MagnifiedBento from '@/components/ui/magnified-bento';
@@ -82,7 +81,6 @@ export default function Index() {
         </div>
       </section>
 
-      <AISection />
       <HowItWorks />
       <TestimonialsSection />
       <FAQSection />
