@@ -3,7 +3,7 @@ import { X, Monitor, Tablet, Smartphone, RefreshCw, Plus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { LottieLoader } from '@/components/ui/lottie-loader';
+import LottieLoader from '@/components/ui/lottie-loader';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface PreviewModalProps {
