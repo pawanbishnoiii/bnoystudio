@@ -26,12 +26,8 @@ export default function NotificationPrompt() {
   // Foreground notifications become toasts.
   useEffect(() => {
     let off: (() => void) | undefined;
-    listenForeground(({ title, body, url }) => {
-      toast({
-        title,
-        description: body,
-        onClick: url ? () => window.open(url, '_blank') : undefined,
-      } as never);
+    listenForeground(({ title, body }) => {
+      toast({ title, description: body });
     }).then((fn) => { off = fn; });
     return () => off?.();
   }, [toast]);
