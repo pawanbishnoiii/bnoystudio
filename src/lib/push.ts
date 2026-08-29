@@ -28,7 +28,10 @@ export const pushConfigured = () =>
 const SUB_KEY = 'bnoy_push_subscribed';
 
 export const isSubscribedLocally = () => localStorage.getItem(SUB_KEY) === '1';
-export const markSubscribed = (token: string) => localStorage.setItem(SUB_KEY, '1') ?? localStorage.setItem('bnoy_push_token', token);
+export const markSubscribed = (token: string) => {
+  localStorage.setItem(SUB_KEY, '1');
+  localStorage.setItem('bnoy_push_token', token);
+};
 export const dismissedAt = () => Number(localStorage.getItem('bnoy_push_dismissed') || 0);
 export const markDismissed = () => localStorage.setItem('bnoy_push_dismissed', String(Date.now()));
 
