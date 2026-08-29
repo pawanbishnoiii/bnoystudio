@@ -149,6 +149,63 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          audience: string
+          banner_url: string | null
+          body: string
+          created_at: string
+          created_by: string | null
+          error: string | null
+          failed_count: number
+          id: string
+          sent_at: string | null
+          sent_count: number
+          status: string
+          tag: string | null
+          target_user_id: string | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          audience?: string
+          banner_url?: string | null
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          failed_count?: number
+          id?: string
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          tag?: string | null
+          target_user_id?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          audience?: string
+          banner_url?: string | null
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          failed_count?: number
+          id?: string
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          tag?: string | null
+          target_user_id?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -407,6 +464,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscribers: {
+        Row: {
+          created_at: string
+          id: string
+          platform: string | null
+          token: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          platform?: string | null
+          token: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          platform?: string | null
+          token?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       site_settings: {
         Row: {
