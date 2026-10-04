@@ -13,6 +13,8 @@ import Navbar from '@/components/Navbar';
 import AuthModal from '@/components/AuthModal';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
+import { ClayIcon } from '@/components/ui/clay-icon';
+import craftStillLife from '@/assets/generated/craft-still-life.webp';
 
 const platformMeta: Record<string, { color: string; icon: any; label: string }> = {
   android: { color: 'bg-green-100 text-green-700 border-green-200', icon: Smartphone, label: 'Android' },
@@ -99,18 +101,18 @@ export default function AppsPage() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="studio-shell min-h-screen">
       <Navbar /><AuthModal />
       <div className="container mx-auto px-4 pt-28 pb-20">
         {/* Header */}
-        <div className="relative text-center mb-12 overflow-hidden py-12">
-          <div className="absolute -z-10 inset-0 bg-gradient-to-br from-orange-100/60 via-transparent to-red-100/40 blur-3xl" />
-          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-ink">
-            Mobile & Desktop <span className="gradient-text">Apps</span>
-          </h1>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-            Download our companion apps for the best experience.
-          </p>
+        <div className="relative mb-12 min-h-[360px] overflow-hidden rounded-[32px] bg-[#080d17] text-white">
+          <img src={craftStillLife} alt="Crafted digital tools" className="absolute inset-0 h-full w-full object-cover object-center opacity-65" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080d17] via-[#080d17]/75 to-transparent" />
+          <div className="relative flex min-h-[360px] max-w-2xl flex-col justify-center p-7 sm:p-12">
+            <span className="studio-kicker self-start border-white/10 bg-white/5 text-aqua"><ClayIcon name="download" className="h-8 w-8" /> Native collection</span>
+            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[.95] tracking-[-.05em] md:text-6xl">Your tools.<br/><span className="text-fire">Everywhere.</span></h1>
+            <p className="mt-4 max-w-lg text-white/55">Download Bnoy companions built with the same care, speed and security as the studio collection.</p>
+          </div>
         </div>
 
         {/* Platform tabs */}
@@ -146,7 +148,7 @@ export default function AppsPage() {
               <motion.div
                 key={app.id}
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-orange-200 transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                className="studio-card flex flex-col rounded-[26px] p-6 transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="flex items-start gap-4 mb-3">
                   {app.icon_url ? (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Search, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,11 +22,13 @@ export default function Navbar() {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const { user, isAdmin, setShowAuthModal } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const overDarkHero = location.pathname === '/' && !scrolled;
   const { data: settings } = useQuery({
     queryKey: ['site-settings'],
     queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
   });
-  const bnoyLogo = (settings as any)?.logo_url || bnoyLogoFallback;
+  const bnoyLogo = (settings as (typeof settings & { logo_url?: string | null }))?.logo_url || bnoyLogoFallback;
   const brandName = settings?.brand_name?.split(' ')[0] || 'Bnoy';
   const brandSuffix = settings?.brand_name?.split(' ').slice(1).join(' ') || 'Studios';
 
@@ -59,19 +61,19 @@ export default function Navbar() {
   return (
     <motion.nav
       animate={{ paddingTop: scrolled ? 8 : 18, paddingBottom: scrolled ? 8 : 18 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-colors ${scrolled ? 'bg-white/85 backdrop-blur-xl border-b border-border shadow-card' : 'bg-transparent'}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/75 backdrop-blur-2xl border-b border-white/70 shadow-card' : 'bg-transparent'}`}
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <img src={bnoyLogo} alt={settings?.brand_name || 'Bnoy Studios'} width={36} height={36} className="h-9 w-9 object-contain" />
-          <span className="font-display text-xl font-extrabold text-ink tracking-tight">
+          <span className={`font-display text-xl font-extrabold tracking-tight transition-colors ${overDarkHero ? 'text-white' : 'text-ink'}`}>
             {brandName}<span className="gradient-text">.{brandSuffix}</span>
           </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
           {links.map((l) => (
-            <Link key={l.label} to={l.href} className="text-sm font-medium text-muted-foreground hover:text-fire transition-colors">{l.label}</Link>
+            <Link key={l.label} to={l.href} className={`text-sm font-medium transition-colors hover:text-fire ${overDarkHero ? 'text-white/65' : 'text-muted-foreground'}`}>{l.label}</Link>
           ))}
         </div>
 
@@ -88,7 +90,7 @@ export default function Navbar() {
               />
             )}
           </AnimatePresence>
-          <Button variant="ghost" size="icon" onClick={() => setSearchOpen((s) => !s)} aria-label="Search">
+          <Button variant="ghost" size="icon" onClick={() => setSearchOpen((s) => !s)} aria-label="Search" className={overDarkHero ? 'text-white hover:bg-white/10 hover:text-white' : ''}>
             <Search className="h-5 w-5" />
           </Button>
 
@@ -114,13 +116,13 @@ export default function Navbar() {
             />
           ) : (
             <>
-              <Button variant="ghost" size="sm" onClick={() => setShowAuthModal(true)}><LogIn className="h-5 w-5 mr-2" />Login</Button>
-              <Button size="sm" className="gradient-fire-strong text-white hover:opacity-95" onClick={() => navigate('/signup')}><UserPlus className="h-5 w-5 mr-2" />Sign Up</Button>
+              <Button variant="ghost" size="sm" className={overDarkHero ? 'text-white hover:bg-white/10 hover:text-white' : ''} onClick={() => setShowAuthModal(true)}><LogIn className="h-5 w-5 mr-2" />Login</Button>
+              <Button size="sm" className="gradient-fire-strong rounded-full px-5 text-white hover:opacity-95" onClick={() => navigate('/signup')}><UserPlus className="h-5 w-5 mr-2" />Sign Up</Button>
             </>
           )}
         </div>
 
-        <button className="md:hidden text-ink" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+        <button className={`md:hidden ${overDarkHero ? 'text-white' : 'text-ink'}`} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>

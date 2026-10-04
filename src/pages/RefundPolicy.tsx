@@ -11,7 +11,7 @@ export default function RefundPolicy() {
     queryFn: async () => (await supabase.from('site_settings').select('*').limit(1).maybeSingle()).data,
   });
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-screen bg-background">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="studio-shell min-h-screen">
       <Navbar /><AuthModal />
       <div className="container mx-auto px-4 pt-32 pb-20 max-w-3xl">
         <h1 className="font-display text-4xl font-extrabold text-ink mb-2">Refund <span className="gradient-text">Policy</span></h1>

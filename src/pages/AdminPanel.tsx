@@ -25,6 +25,8 @@ import AdminApps from '@/components/admin/AdminApps';
 import AdminCategories from '@/components/admin/AdminCategories';
 import AdminGoogle from '@/components/admin/AdminGoogle';
 import { TECH_SUGGESTIONS, techIcon } from '@/lib/techIcons';
+import { ClayIcon } from '@/components/ui/clay-icon';
+import dashboardOrbit from '@/assets/generated/dashboard-orbit.webp';
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -65,10 +67,11 @@ export default function AdminPanel() {
   const goAdd = (id: string | null = null) => { setEditingId(id); setActiveTab('add'); };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="studio-shell min-h-screen">
       <Navbar /><AuthModal />
       <div className="flex pt-20">
-        <aside className="hidden md:flex w-64 flex-col warm-bg border-r border-border min-h-[calc(100vh-5rem)] p-4 fixed left-0 top-20">
+        <aside className="fixed left-0 top-20 hidden min-h-[calc(100vh-5rem)] w-64 flex-col border-r border-white/10 bg-[#080d17] p-4 text-white md:flex">
+          <div className="mb-5 rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-[9px] font-bold uppercase tracking-[.24em] text-aqua">Control room</span><p className="mt-1 font-display text-lg font-bold">Studio operations</p></div>
           <nav className="space-y-1">
             {sidebarItems.map((item) => (
               <button
@@ -77,7 +80,7 @@ export default function AdminPanel() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all ${
                   activeTab === item.id
                     ? 'gradient-fire-strong text-white font-semibold shadow-card'
-                    : 'text-muted-foreground hover:text-ink hover:bg-white'
+                    : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <item.icon className="h-4 w-4" />
@@ -96,7 +99,7 @@ export default function AdminPanel() {
           ))}
         </div>
 
-        <main className="flex-1 md:ml-64 p-6 pb-24 md:pb-6">
+        <main className="flex-1 p-4 pb-24 sm:p-6 md:ml-64 md:pb-8 lg:p-8">
           <motion.div key={activeTab + (editingId || '')} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             {activeTab === 'dashboard' && <AdminDashboard />}
             {activeTab === 'projects' && <AdminProjects onEdit={goAdd} onAdd={() => goAdd(null)} />}
@@ -137,10 +140,14 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold">Dashboard Overview</h1>
+      <div className="relative min-h-48 overflow-hidden rounded-[28px] bg-[#080d17] p-6 text-white sm:p-8">
+        <img src={dashboardOrbit} alt="" className="absolute inset-0 h-full w-full object-cover object-[75%_center] opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080d17] via-[#080d17]/80 to-transparent" />
+        <div className="relative max-w-lg"><span className="studio-kicker border-white/10 bg-white/5 text-aqua"><ClayIcon name="analytics" className="h-7 w-7" /> Live workspace</span><h1 className="mt-4 font-display text-3xl font-extrabold tracking-[-.04em] sm:text-4xl">Dashboard overview</h1><p className="mt-2 text-sm text-white/55">Track the health, reach and momentum of every Bnoy product.</p></div>
+      </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c) => (
-          <div key={c.label} className="bg-white rounded-xl border border-border shadow-card p-5">
+          <div key={c.label} className="studio-card rounded-[24px] p-5 transition duration-300 hover:-translate-y-1">
             <div className={`inline-flex w-10 h-10 rounded-lg bg-gradient-to-br ${c.color} items-center justify-center mb-3`}>
               <c.icon className="h-5 w-5 text-primary-foreground" />
             </div>

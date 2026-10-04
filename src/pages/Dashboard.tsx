@@ -18,6 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import AIHelper from '@/components/AIHelper';
+import { ClayIcon } from '@/components/ui/clay-icon';
+import dashboardOrbit from '@/assets/generated/dashboard-orbit.webp';
 
 const NAME_MAX = 60;
 
@@ -142,28 +144,21 @@ export default function Dashboard() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="studio-shell min-h-screen">
       <Navbar /><AuthModal />
       <div className="container mx-auto px-4 pt-24 md:pt-28 pb-24">
         {/* Profile header */}
         <motion.section
           initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl border border-border shadow-card-hover mb-8"
+          className="relative mb-8 overflow-hidden rounded-[32px] border border-white/10 bg-[#09101d] shadow-[0_35px_90px_-42px_rgba(7,11,20,.75)]"
         >
-          <div className="relative h-28 sm:h-36 bg-gradient-to-br from-fire via-fire/80 to-sun">
-            <div className="absolute inset-0 opacity-30"
-              style={{
-                backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,.4) 0, transparent 35%)',
-              }} />
-            <div className="absolute inset-0"
-              style={{
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
-                backgroundSize: '32px 32px',
-                maskImage: 'radial-gradient(circle at center, black 30%, transparent 75%)',
-              }} />
+          <div className="relative h-36 overflow-hidden sm:h-48">
+            <img src={dashboardOrbit} alt="" className="absolute inset-0 h-full w-full object-cover object-[70%_58%] opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#070b14] via-[#070b14]/55 to-transparent" />
+            <div className="absolute left-5 top-6 hidden items-center gap-3 text-white sm:flex"><ClayIcon name="analytics" className="h-16 w-16" /><div><span className="text-[9px] font-bold uppercase tracking-[.25em] text-aqua">Personal command center</span><p className="font-display text-lg font-bold">Everything you own. Ready to move.</p></div></div>
           </div>
 
-          <div className="bg-white px-4 sm:px-6 pb-6 pt-0">
+          <div className="bg-white/95 px-4 sm:px-6 pb-6 pt-0 backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6 -mt-12 sm:-mt-14">
               <label className="relative group cursor-pointer self-start" title="Change picture">
                 <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-white shadow-card-hover">
@@ -216,7 +211,7 @@ export default function Dashboard() {
         </motion.section>
 
         <Tabs value={tab} onValueChange={(v) => setSearchParams({ tab: v })} className="space-y-6">
-          <TabsList className="bg-warm-bg border border-border flex flex-nowrap h-auto gap-1 p-1 rounded-xl w-full justify-start overflow-x-auto">
+          <TabsList className="studio-card flex h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto rounded-2xl p-1.5">
             <TabsTrigger value="purchases" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Download className="h-4 w-4 mr-2" />Purchases</TabsTrigger>
             <TabsTrigger value="payments" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><CreditCard className="h-4 w-4 mr-2" />Payments</TabsTrigger>
             <TabsTrigger value="wishlist" className="data-[state=active]:gradient-fire-strong data-[state=active]:text-white"><Heart className="h-4 w-4 mr-2" />Wishlist</TabsTrigger>

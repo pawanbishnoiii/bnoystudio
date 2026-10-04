@@ -243,7 +243,7 @@ export default function ProjectDetail() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background w-full overflow-x-hidden">
+      className="studio-shell min-h-screen w-full overflow-x-hidden">
       <Navbar /><AuthModal />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-28 md:pb-20 max-w-7xl w-full">
@@ -274,7 +274,7 @@ export default function ProjectDetail() {
         <div className="grid lg:grid-cols-3 gap-6 md:gap-10">
           <div className="lg:col-span-2 space-y-8 min-w-0 w-full">
             {/* GALLERY with swipe + arrows + counter — locked aspect, never overflows */}
-            <div className="relative w-full max-w-full rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-card-hover bg-ink" {...swipe}>
+            <div className="relative w-full max-w-full overflow-hidden rounded-[28px] border border-white/80 bg-ink shadow-[0_30px_80px_-38px_rgba(7,11,20,.6)]" {...swipe}>
               <div className="relative w-full aspect-[16/10] bg-black overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.img key={activeImg}
@@ -334,7 +334,7 @@ export default function ProjectDetail() {
             </div>
 
             {/* ACCORDIONS — premium info layout */}
-            <Accordion type="multiple" defaultValue={['about', 'stack']} className="rounded-2xl border border-border bg-white shadow-card divide-y divide-border overflow-hidden">
+            <Accordion type="multiple" defaultValue={['about', 'stack']} className="studio-card divide-y divide-border overflow-hidden rounded-[26px]">
               <AccordionItem value="about" className="border-0">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline">
                   <span className="font-display font-bold text-base text-ink">About this project</span>
