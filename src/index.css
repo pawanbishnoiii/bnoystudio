@@ -2,40 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Bnoy 2026 — midnight glass, solar coral and electric mint */
+/* DevMarket — Fire + White + Orange theme */
 @layer base {
   :root {
-    --background: 36 38% 97%;
-    --background-warm: 32 48% 94%;
-    --foreground: 220 46% 9%;
+    --background: 0 0% 100%;          /* Pure white */
+    --background-warm: 30 100% 97%;   /* #FFF8F0 warm wash */
+    --foreground: 240 24% 14%;        /* #1A1A2E charcoal */
 
     --card: 0 0% 100%;
     --card-foreground: 240 24% 14%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 24% 14%;
 
-    --primary: 11 100% 67%;
+    --primary: 14 100% 57%;           /* #FF5722 fiery orange */
     --primary-foreground: 0 0% 100%;
     --secondary: 30 100% 97%;
     --secondary-foreground: 240 24% 14%;
     --muted: 30 50% 95%;
     --muted-foreground: 240 8% 40%;
-    --accent: 158 82% 71%;
+    --accent: 45 100% 51%;            /* #FFC107 yellow */
     --accent-foreground: 240 24% 14%;
     --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 218 22% 86%;
-    --input: 218 22% 88%;
-    --ring: 11 100% 67%;
-    --radius: 1.35rem;
+    --border: 24 60% 90%;
+    --input: 24 60% 92%;
+    --ring: 14 100% 57%;
+    --radius: 1rem;
 
     /* Brand-specific */
-    --orange-deep: 8 82% 56%;
-    --gradient-fire: linear-gradient(135deg, #ff7657, #ff9b68 52%, #78f3c6);
-    --gradient-fire-strong: linear-gradient(120deg, #ff674d, #ff8d64 55%, #78f3c6);
-    --shadow-glow: 0 18px 64px -22px rgb(255 103 77 / 0.58);
-    --shadow-card: 0 18px 60px -38px rgb(7 11 20 / 0.3);
-    --shadow-card-hover: 0 30px 80px -38px rgb(7 11 20 / 0.4);
+    --orange-deep: 14 80% 50%;        /* #E64A19 */
+    --gradient-fire: linear-gradient(135deg, hsl(14 100% 57%), hsl(45 100% 51%));
+    --gradient-fire-strong: linear-gradient(135deg, hsl(14 100% 57%), hsl(14 80% 50%) 50%, hsl(45 100% 51%));
+    --shadow-glow: 0 10px 40px -10px hsl(14 100% 57% / 0.45);
+    --shadow-card: 0 4px 24px -8px hsl(14 80% 50% / 0.15);
+    --shadow-card-hover: 0 14px 40px -12px hsl(14 80% 50% / 0.35);
 
     --sidebar-background: 30 100% 97%;
     --sidebar-foreground: 240 24% 14%;
@@ -61,7 +61,6 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     font-feature-settings: "ss01", "cv01";
-    background-image: radial-gradient(circle at 10% -10%, rgb(255 118 87 / .1), transparent 30%), radial-gradient(circle at 90% 10%, rgb(120 243 198 / .08), transparent 26%);
   }
   h1, h2, h3, h4, h5, h6 { @apply font-display; letter-spacing: -0.02em; }
 }
@@ -86,10 +85,10 @@
   .warm-bg { background-color: hsl(var(--background-warm)); }
 
   .glass {
-    background: rgb(255 255 255 / 0.62);
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid rgb(255 255 255 / 0.72);
+    background: hsl(0 0% 100% / 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border));
   }
   .glass-strong {
     background: hsl(0 0% 100% / 0.9);
@@ -138,8 +137,8 @@
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #ff7657; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #ef5c43; }
+::-webkit-scrollbar-thumb { background: #FF5722; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #E64A19; }
 
 ::selection { background: hsl(14 100% 57% / 0.25); color: hsl(var(--foreground)); }
 
@@ -147,44 +146,6 @@
 @keyframes tech-marquee-scroll {
   0% { transform: translate3d(0,0,0); }
   100% { transform: translate3d(-33.3333%,0,0); }
-}
-
-@layer components {
-  .studio-shell {
-    background:
-      radial-gradient(circle at 8% 4%, rgb(255 118 87 / .12), transparent 28rem),
-      radial-gradient(circle at 92% 8%, rgb(120 243 198 / .1), transparent 26rem),
-      hsl(var(--background));
-  }
-  .studio-card {
-    @apply rounded-[28px] border border-white/80 bg-white/70 backdrop-blur-xl;
-    box-shadow: 0 24px 80px -44px rgb(7 11 20 / .42), inset 0 1px 0 rgb(255 255 255 / .9);
-  }
-  .studio-dark {
-    background:
-      radial-gradient(circle at 72% 16%, rgb(255 118 87 / .17), transparent 24rem),
-      radial-gradient(circle at 22% 78%, rgb(120 243 198 / .1), transparent 28rem),
-      #070b14;
-  }
-  .studio-kicker {
-    @apply inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em];
-  }
-  .studio-button {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold text-white transition duration-300;
-    background: linear-gradient(120deg, #ff674d, #ff8d64);
-    box-shadow: 0 16px 34px -16px rgb(255 103 77 / .78), inset 0 1px 0 rgb(255 255 255 / .28);
-  }
-  .studio-button:hover { transform: translate3d(0, -2px, 0); box-shadow: 0 22px 42px -16px rgb(255 103 77 / .85); }
-  .auth-input { @apply min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink/30; }
-  .gpu-layer { transform: translateZ(0); backface-visibility: hidden; will-change: transform; }
-  .noise-overlay::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: .035;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
-  }
 }
 .tech-marquee-track {
   animation: tech-marquee-scroll 40s linear infinite;

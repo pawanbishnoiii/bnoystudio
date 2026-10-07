@@ -13,8 +13,6 @@ import PreviewModal from '@/components/PreviewModal';
 import SearchBar from '@/components/marketplace/SearchBar';
 
 import { Button } from '@/components/ui/button';
-import { ClayIcon } from '@/components/ui/clay-icon';
-import clayFactory from '@/assets/generated/clay-launch-factory.webp';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -118,24 +116,31 @@ export default function Marketplace() {
   const clearAll = () => { setSearchInput(''); setParams(new URLSearchParams(), { replace: true }); };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="studio-shell min-h-screen">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="min-h-screen bg-background">
       <Navbar />
       <AuthModal />
 
       {/* Cinematic hero — typographic, no Lottie. */}
-      <section className="studio-dark relative overflow-hidden pb-12 pt-28 text-white md:pb-16">
-        <div className="container relative mx-auto grid items-center gap-10 px-4 md:grid-cols-[1fr_.72fr]">
-          <div className="max-w-3xl">
-            <span className="studio-kicker border-white/10 bg-white/5 text-aqua"><Sparkles className="h-3.5 w-3.5" /> Curated Bnoy collection</span>
-            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[.95] tracking-[-.055em] md:text-7xl">Skip the blank canvas.<br/><span className="bg-gradient-to-r from-[#ff896b] to-[#78f3c6] bg-clip-text text-transparent">Start in motion.</span></h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-white/55">Explore production-ready foundations with real product logic. Preview the experience, choose your stack and make it unmistakably yours.</p>
-          </div>
-          <div className="relative mx-auto hidden aspect-square w-full max-w-sm md:block"><div className="absolute inset-0 overflow-hidden rounded-[32px] border border-white/15 bg-white/5 p-3 rotate-2"><img src={clayFactory} alt="Clay-style digital product factory" className="h-full w-full rounded-[24px] object-cover" /></div><div className="absolute -bottom-5 -left-5 rounded-2xl border border-white/15 bg-[#0b1220]/85 p-3 backdrop-blur-xl"><ClayIcon name="store" className="h-16 w-16" /></div></div>
+      <section className="relative pt-28 pb-10 bg-gradient-to-br from-warm-bg via-white to-warm-bg overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-[420px] h-[420px] rounded-full opacity-50 blur-3xl pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, hsl(14 100% 56% / 0.4), transparent)' }} />
+        <div className="absolute -bottom-32 -left-20 w-[360px] h-[360px] rounded-full opacity-40 blur-3xl pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, hsl(43 100% 55% / 0.4), transparent)' }} />
+        <div className="container mx-auto px-4 relative text-center max-w-3xl">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border shadow-card text-xs font-bold tracking-[0.18em] uppercase text-fire">
+            <Sparkles className="h-3.5 w-3.5" /> Bnoy Marketplace
+          </span>
+          <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold text-ink leading-[1.02] tracking-tight">
+            Let some <span className="gradient-text">light in.</span>
+          </h1>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-base">
+            Browse every published project. Filter by stack, price or category — preview live, then buy with one click.
+          </p>
         </div>
       </section>
 
       {/* Sticky glass filter bar */}
-      <section className="sticky top-16 z-30 border-b border-white/70 bg-white/75 py-4 backdrop-blur-2xl">
+      <section className="py-4 bg-white/80 border-b border-border sticky top-16 z-30 backdrop-blur-xl">
         <div className="container mx-auto px-4 space-y-3">
           <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
             <div className="flex-1 min-w-0">
@@ -193,7 +198,7 @@ export default function Marketplace() {
         </div>
       </section>
 
-      <section className="py-12">
+      <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           {isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
